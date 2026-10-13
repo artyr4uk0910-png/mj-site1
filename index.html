@@ -370,7 +370,7 @@ async function sendCode(){
 async function verifyCode(){
   const email = $('authEmail').value.trim();
   const code = $('authCode').value.trim();
-  if(code.length !== 6){ setStatus(2, 'Введи 6-значный код', 'err'); return; }
+  if(code.length < 6){ setStatus(2, 'Введи код из письма', 'err'); return; }
   const btn = $('verifyCodeBtn');
   btn.disabled = true; btn.textContent = '⏳ Проверяем...';
 
