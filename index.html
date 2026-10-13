@@ -331,7 +331,7 @@ function renderWeekPicker(){
       <span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span>
     </button>`;
   }).join('');
-  picker.querySelectorAll('button').forEach(b => b.onclick = () => {
+  picker.querySelectorAll('button').forEach(b => b.onclick = async () => {
     currentWeekOffset = +b.dataset.week;
     const r = getWeekRange(currentWeekOffset);
     periodStart = r.start;
@@ -339,6 +339,9 @@ function renderWeekPicker(){
     updatePeriodDisplay();
     renderWeekPicker();
     picker.classList.remove('open');
+    if(currentProfile && currentProfile.role >= 1){
+      await loadWeekLogs();
+    }
   });
 }
 
@@ -551,6 +554,45 @@ function render(){
   if(canEdit) attachRowHandlers();
 }
 
+// Загрузка логов за выбранную неделю из БД
+async function loadWeekLogs(){
+  const tbody = $('result');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Загрузка недели...</td></tr>';
+
+  const { data, error } = await sb.from('online_logs')
+    .select('*')
+    .eq('period_start', periodStart)
+    .eq('period_end', periodEnd)
+    .order('created_at', { ascending: false });
+
+  if(error){
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Ошибка: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+
+  if(!data || !data.length){
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">За эту неделю логов нет. Вставь данные и нажми «Посчитать».</td></tr>';
+    parsedData = [];
+    return;
+  }
+
+  const byNick = {};
+  data.forEach(r => {
+    if(!byNick[r.player_nick]) byNick[r.player_nick] = r;
+  });
+
+  parsedData = Object.values(byNick).map(r => ({
+    nick: r.player_nick,
+    hours: +r.hours,
+    perDayHours: r.per_day_hours ? +r.per_day_hours : null,
+    activeDays: r.active_days,
+    bonusHours: 0,
+    inactiveDays: 0
+  })).sort((a,b) => effectiveHours(b) - effectiveHours(a));
+
+  render();
+}
+
 async function calculate(){
   if(currentProfile.role < 2){ alert('Нет прав.'); return; }
   const text = $('input').value;
@@ -586,6 +628,7 @@ async function calculate(){
   }));
   const { error } = await sb.from('online_logs').insert(rows);
   if(error){ console.error(error); alert('Логи не сохранены: ' + error.message); }
+  else { alert('✅ Сохранено ' + rows.length + ' записей за неделю ' + periodStart); }
 }
 
 // ============ ЛОГИ ============
@@ -702,6 +745,9 @@ async function initFullApp(){
   periodStart = range.start; periodEnd = range.end;
   updatePeriodDisplay();
   renderWeekPicker();
+  if(currentProfile && currentProfile.role >= 1){
+    await loadWeekLogs();
+  }
 
   $('periodTitle').onclick = () => {
     $('periodWeekPicker').classList.toggle('open');
