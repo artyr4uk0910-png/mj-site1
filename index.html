@@ -29,7 +29,7 @@ body{background-color:var(--bg-body);background-image:repeating-linear-gradient(
 .auth-tab i{font-size:15px}
 .auth-input{width:100%;background:var(--bg-input);border:2px solid var(--border-color);border-radius:12px;color:var(--text-primary);padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s;text-align:center}
 .auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow)}
-.auth-input.code{font-size:24px;letter-spacing:8px;font-weight:700;font-family:monospace}
+.auth-input.code{font-size:24px;letter-spacing:6px;font-weight:700;font-family:monospace}
 .auth-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px}
 .auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
 .auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
@@ -42,8 +42,6 @@ body{background-color:var(--bg-body);background-image:repeating-linear-gradient(
 .auth-status.ok{background:rgba(76,219,140,.15);color:#4cdb8c;border:1px solid rgba(76,219,140,.3)}
 .auth-back{font-size:12px;color:var(--accent);text-align:center;margin-top:14px;cursor:pointer;text-decoration:underline}
 .auth-hint{font-size:11px;color:var(--text-dim);margin-top:20px;text-align:center;line-height:1.5}
-.auth-sep{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-dim);font-size:11px}
-.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border-color)}
 
 .container{max-width:1300px;margin:0 auto;position:relative;z-index:2;padding-left:230px;transition:padding-left .3s}
 body.menu-closed .container{padding-left:0}
@@ -83,7 +81,6 @@ body.menu-closed .tabs-vertical{transform:translateX(-230px)}
 #calcButton{padding:0 36px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));border:none;color:#fff;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
 #calcButton:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-glow)}
 
-/* Период с неделями */
 .period-wrap{margin:0 auto 14px;width:100%;max-width:900px}
 .period-title{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,rgba(26,21,51,.95),rgba(20,16,42,.95));border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:14px 32px;cursor:pointer;user-select:none;transition:.2s}
 .period-title:hover{border-color:var(--accent)}
@@ -130,6 +127,9 @@ body.menu-closed .tabs-vertical{transform:translateX(-230px)}
 .empty-state{padding:40px;text-align:center;color:var(--text-dim);font-size:14px}
 
 .admin-select{background:var(--bg-input);color:#fff;border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;cursor:pointer}
+.admin-nick{width:100%;background:var(--bg-input);border:1px solid var(--border-color);border-radius:6px;color:#fff;padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;outline:none}
+.admin-nick:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+.admin-nick::placeholder{color:var(--text-dim);opacity:.6}
 .admin-btn{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid;font-family:'Inter',sans-serif;margin-left:4px}
 .admin-btn.danger{background:rgba(255,107,107,.2);border-color:rgba(255,107,107,.3);color:#ff6b6b}
 .admin-btn.success{background:rgba(76,219,140,.2);border-color:rgba(76,219,140,.3);color:#4cdb8c}
@@ -164,7 +164,7 @@ body.menu-open .menu-toggle{left:200px}
         <div class="auth-status" id="authStatus1"></div>
         <input class="auth-input" id="authEmail" type="email" placeholder="твой@email.com" autocomplete="email">
         <button class="auth-btn" id="sendCodeBtn">📧 Отправить код на почту</button>
-        <p class="auth-hint">Придёт письмо с 6-значным кодом. Проверь папку «Спам».</p>
+        <p class="auth-hint">Придёт письмо с кодом. Проверь папку «Спам».</p>
       </div>
       <div id="step2" style="display:none">
         <div class="auth-status" id="authStatus2"></div>
@@ -266,10 +266,10 @@ body.menu-open .menu-toggle{left:200px}
           <table class="table">
             <thead><tr>
               <th style="width:22%">Имя</th>
-              <th style="width:15%">Игровой ник</th>
+              <th style="width:22%">Игровой ник</th>
               <th style="width:12%">Роль</th>
               <th style="width:8%">Статус</th>
-              <th style="width:43%">Действия</th>
+              <th style="width:36%">Действия</th>
             </tr></thead>
             <tbody id="adminTbody"></tbody>
           </table>
@@ -284,14 +284,14 @@ const SUPABASE_URL = 'https://ulnatwncazooeussorxf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const ROLE_NAMES = { 0:'Нет доступа', 1:'Лидер/Зам', 2:'Следящий', 3:'ЗГС МЮ', 4:'ГС МЮ' };
-const ROLE_COLORS = { 0:'#8a94c9', 1:'#8a94c9', 2:'#4cdb8c', 3:'#f0c45a', 4:'#a78bfa' };
+const ROLE_NAMES = { 0:'Нет доступа', 1:'Лидер/Зам', 2:'Следящий', 3:'ЗГС МЮ', 4:'ГС МЮ', 5:'Owner' };
+const ROLE_COLORS = { 0:'#8a94c9', 1:'#8a94c9', 2:'#4cdb8c', 3:'#f0c45a', 4:'#a78bfa', 5:'#ffd966' };
 
 let currentUser = null, currentProfile = null;
 let settings = { norm: 21, predThreshold: 17, rewardPerHour: 10, bonusHoursPerDay: 3 };
 let parsedData = [];
 let periodStart = null, periodEnd = null;
-let currentWeekOffset = 0; // 0 = текущая, 1 = прошлая, ..., 3 = 4 недели назад
+let currentWeekOffset = 0;
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]); }
@@ -333,8 +333,9 @@ function renderWeekPicker(){
   }).join('');
   picker.querySelectorAll('button').forEach(b => b.onclick = () => {
     currentWeekOffset = +b.dataset.week;
-    periodStart = getWeekRange(currentWeekOffset).start;
-    periodEnd = getWeekRange(currentWeekOffset).end;
+    const r = getWeekRange(currentWeekOffset);
+    periodStart = r.start;
+    periodEnd = r.end;
     updatePeriodDisplay();
     renderWeekPicker();
     picker.classList.remove('open');
@@ -401,7 +402,6 @@ window.logout = logout;
 async function loadProfile(userId, email, meta){
   const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
   if(data) return data;
-  // Создаём профиль если нет
   const name = meta?.full_name || meta?.name || (email ? email.split('@')[0] : 'Игрок');
   const { data: created, error } = await sb.from('profiles').insert({
     id: userId,
@@ -414,7 +414,6 @@ async function loadProfile(userId, email, meta){
 }
 
 async function initAuth(){
-  // Табы
   $('tabEmail').onclick = () => {
     $('tabEmail').classList.add('active'); $('tabDiscord').classList.remove('active');
     $('emailForm').style.display = 'block'; $('discordForm').style.display = 'none';
@@ -474,7 +473,7 @@ function updateUserBadge(){
 function applyRole(){
   const role = currentProfile.role;
   const canEdit = role >= 2;
-  const canAdmin = role >= 2; // Следящий+ видит управление
+  const canAdmin = role >= 2;
 
   if(!canEdit) $('inputArea').style.display = 'none';
   if(canAdmin) $('adminTabBtn').style.display = 'flex';
@@ -612,19 +611,17 @@ async function loadLogs(){
 }
 
 // ============ АДМИН ============
-// Логика прав:
-// role 2 (Следящий): может выдавать/забирать role 1 (0 или 1)
-// role 3 (ЗГС): может выдавать/забирать role 1 и 2 (0, 1, 2)
-// role 4 (ГС): может выдавать/забирать role 1, 2, 3 (0, 1, 2, 3)
 function getAssignableRoles(myRole){
-  if(myRole >= 4) return [0, 1, 2, 3];   // ГС — до 3
-  if(myRole === 3) return [0, 1, 2];      // ЗГС — до 2
-  if(myRole === 2) return [0, 1];         // Следящий — только 0/1
+  if(myRole >= 5) return [0, 1, 2, 3, 4];
+  if(myRole === 4) return [0, 1, 2, 3];
+  if(myRole === 3) return [0, 1, 2];
+  if(myRole === 2) return [0, 1];
   return [];
 }
 function canManage(myRole, targetRole){
   if(myRole < 2) return false;
-  if(myRole >= 4) return targetRole <= 3;
+  if(myRole >= 5) return true;
+  if(myRole === 4) return targetRole <= 3;
   if(myRole === 3) return targetRole <= 2;
   if(myRole === 2) return targetRole <= 1;
   return false;
@@ -644,21 +641,26 @@ async function loadAdminTable(){
   if(error){ tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${esc(error.message)}</td></tr>`; return; }
 
   const hints = {
-    2: 'Ты можешь выдавать/забирать доступ Лидеров/Замов (роль 1).',
-    3: 'Ты можешь выдавать/забирать доступ Следящих и Лидеров/Замов (роль 1-2).',
-    4: 'Ты можешь выдавать/забирать доступ ЗГС, Следящих, Лидеров/Замов (роль 1-3).'
+    2: 'Ты можешь менять ники и выдавать/забирать роль 0-1 (Лидер/Зам).',
+    3: 'Ты можешь менять ники и выдавать/забирать роль 0-2.',
+    4: 'Ты можешь менять ники и выдавать/забирать роль 0-3.',
+    5: 'Полный доступ. Можешь всё.'
   };
-  $('adminHint').textContent = hints[myRole] || '';
+  $('adminHint').textContent = hints[Math.min(myRole, 5)] || '';
 
   const assignable = getAssignableRoles(myRole);
+  const canEditNick = myRole >= 2;
 
   tbody.innerHTML = data.map(p => {
     const canManageThis = canManage(myRole, p.role) && p.id !== currentProfile.id;
     const roleOpts = assignable.map(r => `<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
+    const nickCell = canEditNick
+      ? `<input class="admin-nick" data-nick-for="${p.id}" value="${esc(p.game_nick || '')}" placeholder="введи ник" />`
+      : esc(p.game_nick || '—');
 
     return `<tr>
-      <td>${esc(p.discord_name || '—')}</td>
-      <td>${esc(p.game_nick || '—')}</td>
+      <td>${esc(p.discord_name || p.discord_id || '—')}</td>
+      <td>${nickCell}</td>
       <td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td>
       <td>${p.active ? '✅' : '❌'}</td>
       <td>${canManageThis ? `
@@ -678,6 +680,19 @@ async function loadAdminTable(){
     const { error } = await sb.from('profiles').update({ active: newActive }).eq('id', b.dataset.toggle);
     if(error){ alert(error.message); }
     else { loadAdminTable(); }
+  });
+  tbody.querySelectorAll('[data-nick-for]').forEach(inp => {
+    inp.onblur = async () => {
+      const newNick = inp.value.trim();
+      const id = inp.dataset.nickFor;
+      const { error } = await sb.from('profiles').update({ game_nick: newNick || null }).eq('id', id);
+      if(error){ alert('Ошибка ника: ' + error.message); return; }
+      if(id === currentProfile.id){
+        currentProfile.game_nick = newNick || null;
+        updateUserBadge();
+      }
+    };
+    inp.onkeypress = (e) => { if(e.key === 'Enter') inp.blur(); };
   });
 }
 
