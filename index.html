@@ -11,67 +11,69 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg-body:#0b0d1a;--bg-card:rgba(8,10,22,0.8);--bg-header:rgba(12,15,30,0.8);--bg-menu:rgba(8,10,24,0.95);--bg-table-alt1:rgba(6,8,20,0.5);--bg-table-alt2:rgba(14,17,32,0.5);--bg-input:rgba(10,13,28,0.8);--border-color:rgba(200,150,255,0.15);--text-primary:#eef3ff;--text-secondary:#b8c2f0;--text-muted:#8a94c9;--text-dim:#6a74b0;--accent:#a78bfa;--accent-dark:#7c64ff;--accent-glow:rgba(92,66,255,0.3);--shadow:0 6px 24px rgba(0,0,0,0.3)}
+:root{--bg-body:#0b0d1a;--bg-header:rgba(12,15,30,0.8);--bg-menu:rgba(8,10,24,0.95);--bg-table-alt1:rgba(6,8,20,0.5);--bg-table-alt2:rgba(14,17,32,0.5);--bg-input:rgba(10,13,28,0.8);--border-color:rgba(200,150,255,0.15);--text-primary:#eef3ff;--text-secondary:#b8c2f0;--text-muted:#8a94c9;--text-dim:#6a74b0;--accent:#a78bfa;--accent-dark:#7c64ff;--accent-glow:rgba(92,66,255,0.3)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background-color:var(--bg-body);background-image:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px);color:var(--text-primary);font-family:'Inter',system-ui,sans-serif;padding:20px 16px;min-height:100vh;overflow-x:hidden}
+body{background-color:var(--bg-body);background-image:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px);color:var(--text-primary);font-family:'Inter',system-ui,sans-serif;padding:20px 16px;min-height:100vh}
 .cosmic-particles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.9) 0%,rgba(167,139,250,0) 70%);animation:particleFloat linear infinite}
-@keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.7}90%{opacity:.7}100%{transform:translateY(-20vh) scale(1);opacity:0}}
-.loading-overlay{position:fixed;inset:0;background:rgba(5,7,18,.88);backdrop-filter:blur(12px);z-index:4000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
-.loading-overlay.open{display:flex;opacity:1}
-.loading-box{text-align:center;padding:40px 50px;background:linear-gradient(180deg,rgba(20,16,40,.95),rgba(12,10,28,.95));border:1px solid rgba(167,139,250,.35);border-radius:24px;min-width:320px}
-.loading-spinner{width:70px;height:70px;margin:0 auto 22px;border-radius:50%;border:3px solid rgba(167,139,250,.15);border-top-color:#a78bfa;animation:spinLoader 1s linear infinite}
-@keyframes spinLoader{to{transform:rotate(360deg)}}
-.loading-text{color:#fff;font-size:15px;font-weight:700;margin-bottom:18px}
-.loading-text b{color:#a78bfa}
-.loading-bar{width:260px;height:6px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
-.loading-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#7c64ff,#a78bfa,#ffd966);border-radius:999px;transition:width .15s linear}
+.particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.9),transparent 70%);animation:particleFloat linear infinite}
+@keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%,90%{opacity:.7}100%{transform:translateY(-20vh) scale(1);opacity:0}}
 
-/* AUTH */
-.auth-overlay{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse at 50% 40%,#151233 0%,#0b0d1c 50%,#05060e 100%);display:none;align-items:center;justify-content:center;padding:20px}
+.auth-overlay{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse at 50% 40%,#151233,#0b0d1c 50%,#05060e);display:none;align-items:center;justify-content:center;padding:20px}
 .auth-overlay.open{display:flex}
-.auth-card{background:rgba(12,15,30,.98);border:1px solid var(--border-color);border-radius:24px;padding:40px 32px;width:100%;max-width:460px;box-shadow:0 30px 80px rgba(0,0,0,.8);text-align:center}
-.auth-card h2{font-size:26px;margin-bottom:8px;color:#fff;font-weight:800}
-.auth-card .auth-sub{font-size:14px;color:var(--text-muted);margin-bottom:32px;line-height:1.5}
-.auth-card .auth-sub b{color:#ffd966}
-.discord-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:12px;transition:.25s;box-shadow:0 6px 20px rgba(88,101,242,.4)}
-.discord-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(88,101,242,.6)}
-.discord-btn i{font-size:22px}
-.auth-note{font-size:11px;color:var(--text-dim);margin-top:20px;line-height:1.6}
-.auth-note code{background:rgba(0,0,0,.4);padding:2px 6px;border-radius:4px;color:#ffd966;font-family:monospace}
+.auth-card{background:rgba(12,15,30,.98);border:1px solid var(--border-color);border-radius:24px;padding:40px 32px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.auth-card h2{font-size:24px;margin-bottom:8px;color:#fff;font-weight:800;text-align:center}
+.auth-card .auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;text-align:center;line-height:1.5}
+.auth-tabs{display:flex;gap:8px;margin-bottom:20px;background:rgba(0,0,0,.3);padding:4px;border-radius:12px}
+.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--text-muted);font-weight:700;font-size:13px;cursor:pointer;border-radius:8px;font-family:'Inter',sans-serif;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-tab.active{background:var(--accent-glow);color:#fff}
+.auth-tab i{font-size:15px}
+.auth-input{width:100%;background:var(--bg-input);border:2px solid var(--border-color);border-radius:12px;color:var(--text-primary);padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s;text-align:center}
+.auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow)}
+.auth-input.code{font-size:24px;letter-spacing:8px;font-weight:700;font-family:monospace}
+.auth-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-btn.discord{background:linear-gradient(135deg,#5865F2,#4752C4);box-shadow:0 6px 20px rgba(88,101,242,.4)}
+.auth-btn.discord:hover{box-shadow:0 12px 32px rgba(88,101,242,.6)}
+.auth-btn.discord i{font-size:20px}
+.auth-status{font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:12px;text-align:center;line-height:1.5;display:none}
+.auth-status.show{display:block}
+.auth-status.err{background:rgba(255,80,80,.15);color:#ff6b6b;border:1px solid rgba(255,80,80,.3)}
+.auth-status.ok{background:rgba(76,219,140,.15);color:#4cdb8c;border:1px solid rgba(76,219,140,.3)}
+.auth-back{font-size:12px;color:var(--accent);text-align:center;margin-top:14px;cursor:pointer;text-decoration:underline}
+.auth-hint{font-size:11px;color:var(--text-dim);margin-top:20px;text-align:center;line-height:1.5}
+.auth-sep{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-dim);font-size:11px}
+.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border-color)}
 
 .container{max-width:1300px;margin:0 auto;position:relative;z-index:2;padding-left:230px;transition:padding-left .3s}
-.menu-toggle{position:fixed;left:12px;top:20px;z-index:200;background:var(--bg-header);border:1px solid var(--border-color);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--text-primary);font-size:20px;cursor:pointer;box-shadow:var(--shadow)}
-.menu-toggle:hover{transform:scale(1.05);background:var(--accent-glow)}
-.tabs-vertical{position:fixed;left:0;top:0;height:100%;width:220px;background:var(--bg-menu);backdrop-filter:blur(12px);border-right:1px solid var(--border-color);padding:70px 12px 24px;display:flex;flex-direction:column;gap:4px;z-index:100;overflow-y:auto;transition:transform .3s}
-body.menu-closed .tabs-vertical{transform:translateX(-230px)}
 body.menu-closed .container{padding-left:0}
-.menu-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);padding:0 6px 14px;border-bottom:1px solid var(--border-color);margin-bottom:8px;font-weight:600;display:flex;align-items:center;gap:8px}
+.menu-toggle{position:fixed;left:12px;top:20px;z-index:200;background:var(--bg-header);border:1px solid var(--border-color);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--text-primary);font-size:20px;cursor:pointer}
+.menu-toggle:hover{background:var(--accent-glow)}
+.tabs-vertical{position:fixed;left:0;top:0;height:100%;width:220px;background:var(--bg-menu);backdrop-filter:blur(12px);border-right:1px solid var(--border-color);padding:70px 12px 24px;display:flex;flex-direction:column;gap:4px;z-index:100;transition:transform .3s}
+body.menu-closed .tabs-vertical{transform:translateX(-230px)}
+.menu-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);padding:0 6px 14px;border-bottom:1px solid var(--border-color);margin-bottom:8px;font-weight:600}
 .tab-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:30px;border:none;background:transparent;color:var(--text-muted);font-weight:600;font-size:13px;cursor:pointer;transition:.3s;width:100%;text-align:left;font-family:'Inter',sans-serif}
-.tab-btn:hover{color:var(--text-primary);background:rgba(255,255,255,.04);transform:translateX(4px)}
+.tab-btn:hover{color:var(--text-primary);background:rgba(255,255,255,.04)}
 .tab-btn.active{background:linear-gradient(135deg,var(--accent-glow),rgba(255,255,255,.05));color:var(--text-primary);box-shadow:0 4px 20px var(--accent-glow)}
 .tab-btn.active i{color:#ffd966}
 .tab-pane{display:none}
-.tab-pane.active-pane{display:block;animation:fade .3s}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tab-pane.active-pane{display:block}
 
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:14px 24px;margin-left:50px;background:var(--bg-header);border-radius:28px;border:1px solid var(--border-color);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:14px 24px;margin-left:50px;background:var(--bg-header);border-radius:28px;border:1px solid var(--border-color);backdrop-filter:blur(8px);flex-wrap:wrap;gap:10px}
 .header-left{display:flex;align-items:center;gap:14px}
-.logo-icon{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff 0%,#f0ecff 55%,#e0d8ff 100%);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;animation:spin 6s linear infinite;border:2px solid rgba(124,100,255,.4)}
+.logo-icon{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#f0ecff 55%,#e0d8ff);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;animation:spin 6s linear infinite;border:2px solid rgba(124,100,255,.4)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .header-title{font-size:24px;font-weight:700}
 .header-title span{color:var(--accent)}
 .header-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
 .user-badge{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:30px;font-size:12px}
-.user-badge .ub-ava{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;overflow:hidden}
-.user-badge .ub-ava img{width:100%;height:100%;object-fit:cover}
+.user-badge .ub-ava{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
 .user-badge .ub-info{display:flex;flex-direction:column;line-height:1.2}
 .user-badge .ub-name{font-weight:700;color:#fff}
 .user-badge .ub-source{font-size:10px;color:var(--text-muted)}
 .user-badge .ub-logout{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);color:#ff6b6b;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;margin-left:6px;font-family:'Inter',sans-serif}
 .user-badge .ub-logout:hover{background:rgba(255,80,80,.3);color:#fff}
 
-.content-area{margin-top:12px}
 .input-area{padding:10px 14px;background:var(--bg-header);border-radius:20px;border:1px solid var(--border-color);margin-bottom:14px}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .input-wrapper{flex:1;min-width:200px;position:relative}
@@ -81,13 +83,22 @@ body.menu-closed .container{padding-left:0}
 #calcButton{padding:0 36px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));border:none;color:#fff;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
 #calcButton:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-glow)}
 
-.period-display{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,rgba(26,21,51,.95),rgba(20,16,42,.95));border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:14px 32px;margin:0 auto 14px;width:100%;max-width:720px;cursor:pointer}
-.period-display:hover{border-color:var(--accent)}
-.period-display-icon{color:#ffd966;font-size:18px}
-.period-display-text{font-size:15px;font-weight:600;color:var(--text-secondary)}
-.period-display-text span{color:#fff;font-weight:700;margin-left:6px}
+/* Период с неделями */
+.period-wrap{margin:0 auto 14px;width:100%;max-width:900px}
+.period-title{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,rgba(26,21,51,.95),rgba(20,16,42,.95));border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:14px 32px;cursor:pointer;user-select:none;transition:.2s}
+.period-title:hover{border-color:var(--accent)}
+.period-title-icon{color:#ffd966;font-size:18px}
+.period-title-text{font-size:15px;font-weight:600;color:var(--text-secondary)}
+.period-title-text span{color:#fff;font-weight:700;margin-left:6px}
+.period-week-picker{display:none;background:var(--bg-input);border:1px solid var(--border-color);border-radius:14px;padding:10px;margin-top:8px}
+.period-week-picker.open{display:block}
+.period-week-picker button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:10px 14px;background:transparent;border:none;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;border-radius:10px;transition:.2s;margin-bottom:4px}
+.period-week-picker button:hover{background:var(--accent-glow)}
+.period-week-picker button.active{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;font-weight:700}
+.period-week-picker button span:last-child{font-size:11px;color:var(--text-muted)}
+.period-week-picker button.active span:last-child{color:rgba(255,255,255,.8)}
 
-.table-wrapper{border-radius:14px;overflow:hidden;border:1px solid var(--border-color);background:#0d0e1c;box-shadow:var(--shadow)}
+.table-wrapper{border-radius:14px;overflow:hidden;border:1px solid var(--border-color);background:#0d0e1c}
 .table{width:100%;border-collapse:collapse;font-size:11px}
 .table th{color:#7d87b8;font-size:9px;text-transform:uppercase;letter-spacing:.6px;padding:10px 8px;font-weight:700;border-bottom:1px solid var(--border-color);text-align:left;background:#0a0b18}
 .table td{padding:9px 8px;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.03);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -95,15 +106,14 @@ body.menu-closed .container{padding-left:0}
 .table tbody tr:nth-child(even){background:var(--bg-table-alt2)}
 .table tbody tr:hover{background:var(--accent-glow)}
 .rank-circle{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:800;background:rgba(255,255,255,.06);color:var(--text-secondary);border:1px solid rgba(255,255,255,.1)}
-.rank-circle.gold{background:linear-gradient(135deg,#ffd700,#f0a500);color:#4a2e00;border:1px solid #ffd966}
+.rank-circle.gold{background:linear-gradient(135deg,#ffd700,#f0a500);color:#4a2e00}
 .nick{font-weight:600;color:var(--text-primary);font-size:12px}
-.progress-cell{padding-left:12px !important;padding-right:12px !important}
 .progress-line{display:flex;align-items:center;gap:10px;width:100%}
 .progress-track{flex:1;min-width:60px;height:5px;background:rgba(0,0,0,.4);border-radius:999px;overflow:hidden}
 .progress-fill{height:100%;border-radius:999px;transition:width .7s}
-.p-hours{font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.p-hours{font-size:12px;font-weight:700;white-space:nowrap}
 .p-hours .unit{font-size:9px;color:var(--text-muted)}
-.p-percent{font-size:10px;font-weight:800;white-space:nowrap;flex-shrink:0}
+.p-percent{font-size:10px;font-weight:800;white-space:nowrap}
 .over-norm-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(76,219,140,.2);border:1px solid rgba(76,219,140,.5);color:#6ee7a7}
 .inactive-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--text-secondary);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:3px 8px;border-radius:6px}
 .status-badge{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:10px;padding:3px 10px;border-radius:6px;border:1px solid transparent}
@@ -117,13 +127,17 @@ body.menu-closed .container{padding-left:0}
 .minus{color:#d46a6a}
 .plus:hover{background:var(--accent-glow);color:#fff}
 .minus:hover{background:rgba(255,100,100,.2);color:#fff}
-
 .empty-state{padding:40px;text-align:center;color:var(--text-dim);font-size:14px}
-.hidden{display:none !important}
+
+.admin-select{background:var(--bg-input);color:#fff;border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;font-size:11px;font-family:'Inter',sans-serif;cursor:pointer}
+.admin-btn{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid;font-family:'Inter',sans-serif;margin-left:4px}
+.admin-btn.danger{background:rgba(255,107,107,.2);border-color:rgba(255,107,107,.3);color:#ff6b6b}
+.admin-btn.success{background:rgba(76,219,140,.2);border-color:rgba(76,219,140,.3);color:#4cdb8c}
 
 @media(max-width:760px){
 .container{padding-left:0 !important}
-.header{margin-left:0}
+.header{margin-left:0;padding:10px 14px}
+.header-title{font-size:18px}
 .tabs-vertical{width:200px;transform:translateX(-210px);padding-top:60px}
 body.menu-open .tabs-vertical{transform:translateX(0)}
 body.menu-open .menu-toggle{left:200px}
@@ -135,25 +149,35 @@ body.menu-open .menu-toggle{left:200px}
 
 <div class="cosmic-particles" id="cosmicParticles"></div>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-box">
-    <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText">Загрузка...</div>
-    <div class="loading-bar"><div class="loading-bar-fill" id="loadingBarFill"></div></div>
-  </div>
-</div>
-
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-card">
     <h2>🔐 Space MJ</h2>
-    <p class="auth-sub">Войди через Discord, чтобы продолжить.<br>Твоя роль определится <b>автоматически</b>.</p>
-    <button class="discord-btn" id="discordLoginBtn">
-      <i class="fab fa-discord"></i> Войти через Discord
-    </button>
-    <p class="auth-note">
-      Если у тебя нет доступа — попроси ГС/ЗГС МЮ выдать тебе роль.<br>
-      Свой <code>Discord ID</code> можно узнать в настройках Discord → Режим разработчика → правый клик по себе → Копировать ID.
-    </p>
+    <p class="auth-sub">Войди, чтобы продолжить</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabEmail"><i class="fas fa-envelope"></i> Email</button>
+      <button class="auth-tab" id="tabDiscord"><i class="fab fa-discord"></i> Discord</button>
+    </div>
+
+    <div id="emailForm">
+      <div id="step1">
+        <div class="auth-status" id="authStatus1"></div>
+        <input class="auth-input" id="authEmail" type="email" placeholder="твой@email.com" autocomplete="email">
+        <button class="auth-btn" id="sendCodeBtn">📧 Отправить код на почту</button>
+        <p class="auth-hint">Придёт письмо с 6-значным кодом. Проверь папку «Спам».</p>
+      </div>
+      <div id="step2" style="display:none">
+        <div class="auth-status" id="authStatus2"></div>
+        <input class="auth-input code" id="authCode" type="text" maxlength="6" inputmode="numeric" placeholder="000000">
+        <button class="auth-btn" id="verifyCodeBtn">✅ Войти</button>
+        <p class="auth-back" id="backBtn">← Ввести другой email</p>
+      </div>
+    </div>
+
+    <div id="discordForm" style="display:none">
+      <button class="auth-btn discord" id="discordLoginBtn"><i class="fab fa-discord"></i> Войти через Discord</button>
+      <p class="auth-hint">Может не работать в РФ без VPN.</p>
+    </div>
   </div>
 </div>
 
@@ -180,7 +204,7 @@ body.menu-open .menu-toggle{left:200px}
     </div>
 
     <div class="tabs-vertical" id="sideMenu">
-      <div class="menu-label"><i class="fas fa-bars"></i> <span>Меню</span></div>
+      <div class="menu-label"><i class="fas fa-bars"></i> Меню</div>
       <button class="tab-btn active" data-tab="onlineTab"><i class="fas fa-chart-line"></i> Онлайн</button>
       <button class="tab-btn" data-tab="logsTab" id="logsTabBtn" style="display:none"><i class="fas fa-history"></i> Логи</button>
       <button class="tab-btn" data-tab="adminTab" id="adminTabBtn" style="display:none"><i class="fas fa-user-shield"></i> Управление</button>
@@ -198,44 +222,38 @@ body.menu-open .menu-toggle{left:200px}
           </div>
         </div>
 
-        <div class="period-display" id="periodDisplay" title="Нажмите для изменения">
-          <i class="fas fa-calendar-alt period-display-icon"></i>
-          <div class="period-display-text">Период: <span id="periodDatesText">— — —</span></div>
+        <div class="period-wrap">
+          <div class="period-title" id="periodTitle">
+            <i class="fas fa-calendar-alt period-title-icon"></i>
+            <div class="period-title-text">Период: <span id="periodDatesText">— — —</span></div>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px"></i>
+          </div>
+          <div class="period-week-picker" id="periodWeekPicker"></div>
         </div>
 
         <div class="table-wrapper">
           <table class="table">
-            <thead>
-              <tr>
-                <th style="width:42px;text-align:center">#</th>
-                <th style="width:17%">НИК</th>
-                <th>ОНЛАЙН / НОРМА</th>
-                <th style="width:9%;text-align:center">НЕАКТИВ</th>
-                <th style="width:11%;text-align:center">СТАТУС</th>
-                <th style="width:13%;text-align:center">ПООЩРЕНИЕ</th>
-                <th style="width:10%;text-align:center">ДЕЙСТВИЯ</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th style="width:42px;text-align:center">#</th>
+              <th style="width:17%">НИК</th>
+              <th>ОНЛАЙН / НОРМА</th>
+              <th style="width:9%;text-align:center">НЕАКТИВ</th>
+              <th style="width:11%;text-align:center">СТАТУС</th>
+              <th style="width:13%;text-align:center">ПООЩРЕНИЕ</th>
+              <th style="width:10%;text-align:center">ДЕЙСТВИЯ</th>
+            </tr></thead>
             <tbody id="result"></tbody>
           </table>
         </div>
       </div>
 
       <div id="logsTab" class="tab-pane">
-        <h3 style="margin-bottom:12px;color:var(--text-secondary)">История онлайнов (последние 100 записей)</h3>
+        <h3 style="margin-bottom:12px;color:var(--text-secondary)">История (последние 100)</h3>
         <div class="table-wrapper">
           <table class="table">
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th>Игрок</th>
-                <th>Часы</th>
-                <th>ч/день</th>
-                <th>Акт. дней</th>
-                <th>Период</th>
-                <th>Кто внёс</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th>Дата</th><th>Игрок</th><th>Часы</th><th>ч/день</th><th>Акт. дней</th><th>Период</th><th>Кто внёс</th>
+            </tr></thead>
             <tbody id="logsTbody"></tbody>
           </table>
         </div>
@@ -246,16 +264,13 @@ body.menu-open .menu-toggle{left:200px}
         <p id="adminHint" style="font-size:13px;color:var(--text-muted);margin-bottom:14px"></p>
         <div class="table-wrapper">
           <table class="table">
-            <thead>
-              <tr>
-                <th style="width:20%">Discord ник</th>
-                <th style="width:15%">Игровой ник</th>
-                <th style="width:15%">Discord ID</th>
-                <th style="width:12%">Роль</th>
-                <th style="width:10%">Статус</th>
-                <th style="width:28%">Действия</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th style="width:22%">Имя</th>
+              <th style="width:15%">Игровой ник</th>
+              <th style="width:12%">Роль</th>
+              <th style="width:8%">Статус</th>
+              <th style="width:43%">Действия</th>
+            </tr></thead>
             <tbody id="adminTbody"></tbody>
           </table>
         </div>
@@ -269,95 +284,173 @@ const SUPABASE_URL = 'https://ulnatwncazooeussorxf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const ROLE_NAMES = { 1:'Лидер/Зам', 2:'Следящий', 3:'ГС/ЗГС МЮ', 4:'ГС МЮ', 5:'Owner' };
-const ROLE_COLORS = { 1:'#8a94c9', 2:'#4cdb8c', 3:'#f0c45a', 4:'#a78bfa', 5:'#ffd966' };
+const ROLE_NAMES = { 0:'Нет доступа', 1:'Лидер/Зам', 2:'Следящий', 3:'ЗГС МЮ', 4:'ГС МЮ' };
+const ROLE_COLORS = { 0:'#8a94c9', 1:'#8a94c9', 2:'#4cdb8c', 3:'#f0c45a', 4:'#a78bfa' };
 
-let currentUser = null;
-let currentProfile = null;
+let currentUser = null, currentProfile = null;
 let settings = { norm: 21, predThreshold: 17, rewardPerHour: 10, bonusHoursPerDay: 3 };
 let parsedData = [];
 let periodStart = null, periodEnd = null;
+let currentWeekOffset = 0; // 0 = текущая, 1 = прошлая, ..., 3 = 4 недели назад
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]); }
-
-function showLoader(text) {
-  $('loadingText').innerHTML = text;
-  $('loadingBarFill').style.width = '30%';
-  $('loadingOverlay').classList.add('open');
-  setTimeout(()=>{ $('loadingBarFill').style.width='80%'; }, 200);
-  setTimeout(()=>{ $('loadingBarFill').style.width='100%'; setTimeout(()=>$('loadingOverlay').classList.remove('open'), 200); }, 800);
-}
 
 function timeToHours(t){ const p = t.split(':'); if(p.length!==3) return 0; return +p[0] + (+p[1])/60 + (+p[2])/3600; }
 function effectiveHours(u){ return u.hours + (u.bonusHours||0); }
 function rewardPoints(h){ if(h < settings.norm + 1) return 0; const e = Math.floor(h) - settings.norm; return e > 0 ? e * settings.rewardPerHour : 0; }
 function barColor(h){ if(h >= settings.norm) return '#22c55e'; if(h >= settings.predThreshold) return '#facc15'; return '#ef4444'; }
 
-// ========== ПЕРИОД ==========
-function getWeekRange(){
+// ============ ПЕРИОДЫ (4 недели) ============
+function getWeekRange(offset = 0){
   const now = new Date();
   const day = now.getDay();
-  const offset = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now); monday.setDate(now.getDate() + offset); monday.setHours(0,0,0,0);
-  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const offsetToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + offsetToMonday - offset * 7);
+  monday.setHours(0,0,0,0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
   const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  return { start: fmt(monday), end: fmt(sunday) };
+  return { start: fmt(monday), end: fmt(sunday), monday, sunday };
+}
+function fmtRu(d){
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
 }
 function updatePeriodDisplay(){
-  const el = $('periodDatesText');
-  if(periodStart && periodEnd) el.textContent = `${periodStart} — ${periodEnd}`;
-  else el.textContent = '— — —';
+  const range = getWeekRange(currentWeekOffset);
+  $('periodDatesText').textContent = `${range.start} — ${range.end}`;
+}
+function renderWeekPicker(){
+  const picker = $('periodWeekPicker');
+  const labels = ['Текущая неделя', 'Прошлая неделя', '2 недели назад', '3 недели назад'];
+  picker.innerHTML = labels.map((label, i) => {
+    const r = getWeekRange(i);
+    return `<button data-week="${i}" class="${i === currentWeekOffset ? 'active' : ''}">
+      <span>${label}</span>
+      <span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span>
+    </button>`;
+  }).join('');
+  picker.querySelectorAll('button').forEach(b => b.onclick = () => {
+    currentWeekOffset = +b.dataset.week;
+    periodStart = getWeekRange(currentWeekOffset).start;
+    periodEnd = getWeekRange(currentWeekOffset).end;
+    updatePeriodDisplay();
+    renderWeekPicker();
+    picker.classList.remove('open');
+  });
 }
 
-// ========== AUTH ==========
-async function loginWithDiscord(){
+// ============ AUTH ============
+function setStatus(step, msg, type){
+  const el = $('authStatus' + step);
+  if(!el) return;
+  el.className = 'auth-status' + (type ? ' show ' + type : '');
+  el.textContent = msg || '';
+}
+
+async function sendCode(){
+  const email = $('authEmail').value.trim();
+  if(!email || !email.includes('@')){ setStatus(1, 'Введи корректный email', 'err'); return; }
+  const btn = $('sendCodeBtn');
+  btn.disabled = true; btn.textContent = '⏳ Отправляем...';
+  setStatus(1, '', '');
+
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  btn.disabled = false; btn.textContent = '📧 Отправить код на почту';
+
+  if(error){ setStatus(1, 'Ошибка: ' + error.message, 'err'); return; }
+
+  setStatus(2, '✅ Код отправлен на ' + email, 'ok');
+  $('step1').style.display = 'none';
+  $('step2').style.display = 'block';
+  $('authCode').focus();
+}
+
+async function verifyCode(){
+  const email = $('authEmail').value.trim();
+  const code = $('authCode').value.trim();
+  if(code.length !== 6){ setStatus(2, 'Введи 6-значный код', 'err'); return; }
+  const btn = $('verifyCodeBtn');
+  btn.disabled = true; btn.textContent = '⏳ Проверяем...';
+
+  const { error } = await sb.auth.verifyOtp({ email, token: code, type: 'email' });
+  btn.disabled = false; btn.textContent = '✅ Войти';
+  if(error){ setStatus(2, 'Ошибка: ' + error.message, 'err'); return; }
+  location.reload();
+}
+
+async function loginDiscord(){
   const btn = $('discordLoginBtn');
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Переход в Discord...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Переход...';
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'discord',
     options: { redirectTo: window.location.origin }
   });
-  if(error){ alert('Ошибка входа: ' + error.message); btn.disabled = false; }
+  if(error){ alert('Ошибка: ' + error.message); btn.disabled = false; }
 }
+
 async function logout(){
-  if(!confirm('Выйти из аккаунта?')) return;
+  if(!confirm('Выйти?')) return;
   await sb.auth.signOut();
   location.reload();
 }
 window.logout = logout;
 
-async function loadProfile(userId){
-  const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
-  if(error){ console.error(error); return null; }
-  return data;
+async function loadProfile(userId, email, meta){
+  const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if(data) return data;
+  // Создаём профиль если нет
+  const name = meta?.full_name || meta?.name || (email ? email.split('@')[0] : 'Игрок');
+  const { data: created, error } = await sb.from('profiles').insert({
+    id: userId,
+    discord_name: name,
+    role: 0,
+    active: true
+  }).select().single();
+  if(error){ console.error('Profile create error:', error); return null; }
+  return created;
 }
 
 async function initAuth(){
-  $('discordLoginBtn').onclick = loginWithDiscord;
+  // Табы
+  $('tabEmail').onclick = () => {
+    $('tabEmail').classList.add('active'); $('tabDiscord').classList.remove('active');
+    $('emailForm').style.display = 'block'; $('discordForm').style.display = 'none';
+  };
+  $('tabDiscord').onclick = () => {
+    $('tabDiscord').classList.add('active'); $('tabEmail').classList.remove('active');
+    $('discordForm').style.display = 'block'; $('emailForm').style.display = 'none';
+  };
+  $('sendCodeBtn').onclick = sendCode;
+  $('verifyCodeBtn').onclick = verifyCode;
+  $('discordLoginBtn').onclick = loginDiscord;
+  $('backBtn').onclick = () => {
+    $('step1').style.display = 'block'; $('step2').style.display = 'none';
+    setStatus(1, '', '');
+  };
+  $('authCode').addEventListener('keypress', e => { if(e.key === 'Enter') verifyCode(); });
+  $('authEmail').addEventListener('keypress', e => { if(e.key === 'Enter') sendCode(); });
 
   const { data: { session } } = await sb.auth.getSession();
-  if(!session){ $('authOverlay').classList.add('open'); return; }
+
+  if(!session){
+    $('authOverlay').classList.add('open');
+    return;
+  }
 
   currentUser = session.user;
-  currentProfile = await loadProfile(session.user.id);
+  currentProfile = await loadProfile(session.user.id, session.user.email, session.user.user_metadata);
 
   if(!currentProfile){
-    // Если триггер не сработал — создаём вручную
-    const meta = session.user.user_metadata || {};
-    const { data, error } = await sb.from('profiles').insert({
-      id: session.user.id,
-      discord_id: meta.provider_id || meta.sub,
-      discord_name: meta.full_name || meta.name || meta.user_name || 'Unknown',
-      role: 0
-    }).select().single();
-    if(error){ console.error(error); alert('Ошибка профиля: ' + error.message); return; }
-    currentProfile = data;
+    setStatus(1, 'Ошибка профиля. Попробуй позже.', 'err');
+    $('authOverlay').classList.add('open');
+    return;
   }
 
   if(currentProfile.active === false){
-    alert('Твой доступ отключён. Обратись к ГС/ЗГС МЮ.');
+    alert('Доступ отключён. Обратись к ГС/ЗГС МЮ.');
     await sb.auth.signOut();
     location.reload();
     return;
@@ -365,60 +458,34 @@ async function initAuth(){
 
   $('authOverlay').classList.remove('open');
   $('mainInterface').style.display = 'block';
-  applyRole();
   updateUserBadge();
+  applyRole();
   await initFullApp();
 }
 
 function updateUserBadge(){
-  const name = currentProfile.discord_name || currentProfile.game_nick || 'Игрок';
+  const name = currentProfile.game_nick || currentProfile.discord_name || currentUser.email || 'Игрок';
   $('ubName').textContent = name;
-  $('ubRole').textContent = ROLE_NAMES[currentProfile.role] || 'Нет доступа';
+  $('ubRole').textContent = ROLE_NAMES[currentProfile.role] || 'Нет';
   $('ubRole').style.color = ROLE_COLORS[currentProfile.role] || '#8a94c9';
-  const ava = $('ubAva');
-  if(currentUser.user_metadata?.avatar_url){
-    ava.innerHTML = `<img src="${esc(currentUser.user_metadata.avatar_url)}" alt="">`;
-  } else {
-    ava.textContent = name[0].toUpperCase();
-  }
+  $('ubAva').textContent = (name[0] || '?').toUpperCase();
 }
 
-// ========== РОЛИ ==========
 function applyRole(){
   const role = currentProfile.role;
-
-  // Роль 0 = нет доступа
-  if(role === 0){
-    $('inputArea').style.display = 'none';
-    $('adminTabBtn').style.display = 'none';
-    $('logsTabBtn').style.display = 'none';
-    $('result').innerHTML = '<tr><td colspan="7" class="empty-state">У тебя нет активной роли. Обратись к ГС/ЗГС МЮ.</td></tr>';
-    return;
-  }
-
-  // Роль 1: лидер/зам — только просмотр
   const canEdit = role >= 2;
-  const canAdmin = role >= 3;
-  const canManageRoles = role >= 4;
+  const canAdmin = role >= 2; // Следящий+ видит управление
 
-  if(!canEdit){
-    $('inputArea').style.display = 'none';
-  } else {
-    $('inputArea').style.display = 'block';
-  }
+  if(!canEdit) $('inputArea').style.display = 'none';
+  if(canAdmin) $('adminTabBtn').style.display = 'flex';
+  if(role >= 2) $('logsTabBtn').style.display = 'flex';
 
-  if(canAdmin){
-    $('adminTabBtn').style.display = 'flex';
-  }
-  $('logsTabBtn').style.display = role >= 2 ? 'flex' : 'none';
-
-  // Подсказки
-  if(role === 1){
-    $('result').innerHTML = '<tr><td colspan="7" class="empty-state">Ты видишь только свой онлайн. Для просмотра нажми «Лидер» — данные появятся ниже.</td></tr>';
+  if(role === 0){
+    $('result').innerHTML = '<tr><td colspan="7" class="empty-state">У тебя нет активной роли. Обратись к ГС/ЗГС МЮ.</td></tr>';
   }
 }
 
-// ========== ОНЛАЙН ==========
+// ============ ОНЛАЙН ============
 function attachRowHandlers(){
   document.querySelectorAll('.plus').forEach(b => b.onclick = () => {
     const idx = +b.closest('tr').dataset.index;
@@ -445,7 +512,6 @@ function render(){
   const role = currentProfile.role;
   const canEdit = role >= 2;
 
-  // Фильтрация для лидера (роль 1): видит только свой ник
   let list = parsedData;
   if(role === 1 && currentProfile.game_nick){
     list = parsedData.filter(u => u.nick.toLowerCase() === currentProfile.game_nick.toLowerCase());
@@ -468,7 +534,7 @@ function render(){
     return `<tr data-index="${parsedData.indexOf(u)}">
       <td style="text-align:center"><span class="rank-circle ${idx===0?'gold':''}">${idx+1}</span></td>
       <td><span class="nick">${esc(u.nick)}</span></td>
-      <td class="progress-cell">
+      <td>
         <div class="progress-line">
           <div class="progress-track"><div class="progress-fill" style="width:${percent}%;background:${color}"></div></div>
           <span class="p-hours">${eff.toFixed(1)}<span class="unit">ч</span></span>
@@ -487,31 +553,29 @@ function render(){
 }
 
 async function calculate(){
-  if(currentProfile.role < 2){ alert('У тебя нет прав для расчёта.'); return; }
+  if(currentProfile.role < 2){ alert('Нет прав.'); return; }
   const text = $('input').value;
   if(!text.trim()){ alert('Вставь данные!'); return; }
-
-  showLoader('Идёт подсчёт, <b>ожидайте...</b>');
-  await new Promise(r => setTimeout(r, 900));
 
   const data = [];
   const regex = /(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
   let m;
   while((m = regex.exec(text)) !== null){
     const nick = m[2].trim();
-    const online = m[3];
-    const perDay = m[4] ? parseFloat(m[4].replace(',', '.')) : null;
-    const activeDays = m[5] ? parseInt(m[5]) : null;
-    const hours = timeToHours(online);
+    const hours = timeToHours(m[3]);
     if(isNaN(hours)) continue;
-    data.push({ nick, hours, perDayHours: perDay, activeDays, bonusHours: 0, inactiveDays: 0 });
+    data.push({
+      nick, hours,
+      perDayHours: m[4] ? parseFloat(m[4].replace(',', '.')) : null,
+      activeDays: m[5] ? parseInt(m[5]) : null,
+      bonusHours: 0, inactiveDays: 0
+    });
   }
 
-  if(!data.length){ alert('Не удалось распарсить данные'); return; }
+  if(!data.length){ alert('Не удалось распарсить'); return; }
   parsedData = data.sort((a,b) => effectiveHours(b) - effectiveHours(a));
   render();
 
-  // Сохраняем в БД
   const rows = parsedData.map(u => ({
     user_id: currentProfile.id,
     player_nick: u.nick,
@@ -523,21 +587,17 @@ async function calculate(){
   }));
   const { error } = await sb.from('online_logs').insert(rows);
   if(error){ console.error(error); alert('Логи не сохранены: ' + error.message); }
-  else { console.log('✅ Сохранено ' + rows.length + ' логов'); }
 }
 
-// ========== ЛОГИ ==========
+// ============ ЛОГИ ============
 async function loadLogs(){
   const tbody = $('logsTbody');
   tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Загрузка...</td></tr>';
   const { data, error } = await sb.from('online_logs')
     .select('*, profiles(discord_name)')
-    .order('created_at', { ascending: false })
-    .limit(100);
-
-  if(error){ tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Ошибка: ${esc(error.message)}</td></tr>`; return; }
+    .order('created_at', { ascending: false }).limit(100);
+  if(error){ tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${esc(error.message)}</td></tr>`; return; }
   if(!data.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Пусто</td></tr>'; return; }
-
   tbody.innerHTML = data.map(r => `
     <tr>
       <td style="font-size:10px">${new Date(r.created_at).toLocaleString('ru-RU')}</td>
@@ -551,64 +611,86 @@ async function loadLogs(){
   `).join('');
 }
 
-// ========== АДМИН ==========
+// ============ АДМИН ============
+// Логика прав:
+// role 2 (Следящий): может выдавать/забирать role 1 (0 или 1)
+// role 3 (ЗГС): может выдавать/забирать role 1 и 2 (0, 1, 2)
+// role 4 (ГС): может выдавать/забирать role 1, 2, 3 (0, 1, 2, 3)
+function getAssignableRoles(myRole){
+  if(myRole >= 4) return [0, 1, 2, 3];   // ГС — до 3
+  if(myRole === 3) return [0, 1, 2];      // ЗГС — до 2
+  if(myRole === 2) return [0, 1];         // Следящий — только 0/1
+  return [];
+}
+function canManage(myRole, targetRole){
+  if(myRole < 2) return false;
+  if(myRole >= 4) return targetRole <= 3;
+  if(myRole === 3) return targetRole <= 2;
+  if(myRole === 2) return targetRole <= 1;
+  return false;
+}
+
 async function loadAdminTable(){
   const tbody = $('adminTbody');
-  const role = currentProfile.role;
-  tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Загрузка...</td></tr>';
+  const myRole = currentProfile.role;
 
+  if(myRole < 2){
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет прав.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Загрузка...</td></tr>';
   const { data, error } = await sb.from('profiles').select('*').order('role', { ascending: false });
-  if(error){ tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Ошибка: ${esc(error.message)}</td></tr>`; return; }
+  if(error){ tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${esc(error.message)}</td></tr>`; return; }
 
-  $('adminHint').textContent = role >= 4
-    ? 'Ты можешь выдавать/забирать доступ всем ролям ниже ГС.'
-    : 'Ты можешь снимать доступ только с Лидеров/Замов.';
+  const hints = {
+    2: 'Ты можешь выдавать/забирать доступ Лидеров/Замов (роль 1).',
+    3: 'Ты можешь выдавать/забирать доступ Следящих и Лидеров/Замов (роль 1-2).',
+    4: 'Ты можешь выдавать/забирать доступ ЗГС, Следящих, Лидеров/Замов (роль 1-3).'
+  };
+  $('adminHint').textContent = hints[myRole] || '';
+
+  const assignable = getAssignableRoles(myRole);
 
   tbody.innerHTML = data.map(p => {
-    const canChange = role >= 4 || (role === 3 && p.role <= 2) || (role === 2 && p.role <= 1);
-    const roleOpts = role >= 4
-      ? [0,1,2,3,4].map(r => `<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]||'Нет доступа'}</option>`).join('')
-      : null;
+    const canManageThis = canManage(myRole, p.role) && p.id !== currentProfile.id;
+    const roleOpts = assignable.map(r => `<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
 
     return `<tr>
       <td>${esc(p.discord_name || '—')}</td>
       <td>${esc(p.game_nick || '—')}</td>
-      <td style="font-size:10px;font-family:monospace">${esc(p.discord_id || '—')}</td>
       <td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td>
       <td>${p.active ? '✅' : '❌'}</td>
-      <td>${canChange ? `
-        ${roleOpts ? `<select data-role-for="${p.id}" style="background:var(--bg-input);color:#fff;border:1px solid var(--border-color);border-radius:6px;padding:3px 6px;font-size:11px">${roleOpts}</select>` : ''}
-        <button data-toggle="${p.id}" data-active="${p.active}" style="background:rgba(255,107,107,.2);border:1px solid rgba(255,107,107,.3);color:#ff6b6b;padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:4px">${p.active ? 'Откл.' : 'Вкл.'}</button>
-      ` : '—'}</td>
+      <td>${canManageThis ? `
+        <select class="admin-select" data-role-for="${p.id}">${roleOpts}</select>
+        <button class="admin-btn ${p.active?'danger':'success'}" data-toggle="${p.id}" data-active="${p.active}">${p.active ? 'Откл.' : 'Вкл.'}</button>
+      ` : (p.id === currentProfile.id ? '<span style="color:var(--text-dim);font-size:11px">Это ты</span>' : '—')}</td>
     </tr>`;
   }).join('');
 
-  // Обработчики изменения роли
   tbody.querySelectorAll('[data-role-for]').forEach(sel => sel.onchange = async () => {
-    const id = sel.dataset.roleFor;
-    const newRole = +sel.value;
-    const { error } = await sb.from('profiles').update({ role: newRole }).eq('id', id);
-    if(error){ alert('Ошибка: ' + error.message); sel.value = ''; return; }
-    alert('Роль обновлена!');
-    loadAdminTable();
+    const { error } = await sb.from('profiles').update({ role: +sel.value }).eq('id', sel.dataset.roleFor);
+    if(error){ alert(error.message); }
+    else { loadAdminTable(); }
   });
-
-  // Обработчики отключения
   tbody.querySelectorAll('[data-toggle]').forEach(b => b.onclick = async () => {
-    const id = b.dataset.toggle;
     const newActive = b.dataset.active !== 'true';
-    const { error } = await sb.from('profiles').update({ active: newActive }).eq('id', id);
-    if(error){ alert('Ошибка: ' + error.message); return; }
-    loadAdminTable();
+    const { error } = await sb.from('profiles').update({ active: newActive }).eq('id', b.dataset.toggle);
+    if(error){ alert(error.message); }
+    else { loadAdminTable(); }
   });
 }
 
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
+// ============ INIT ============
 async function initFullApp(){
-  const range = getWeekRange();
-  periodStart = range.start;
-  periodEnd = range.end;
+  const range = getWeekRange(0);
+  periodStart = range.start; periodEnd = range.end;
   updatePeriodDisplay();
+  renderWeekPicker();
+
+  $('periodTitle').onclick = () => {
+    $('periodWeekPicker').classList.toggle('open');
+  };
 
   $('menuToggle').onclick = function(){
     document.body.classList.toggle('menu-closed');
@@ -616,7 +698,6 @@ async function initFullApp(){
     const i = this.querySelector('i');
     i.classList.toggle('fa-bars'); i.classList.toggle('fa-times');
   };
-
   $('calcButton').onclick = calculate;
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -632,7 +713,7 @@ async function initFullApp(){
   });
 }
 
-// ========== ЧАСТИЦЫ ==========
+// Частицы
 (function(){
   const c = $('cosmicParticles');
   const colors = ['rgba(167,139,250,.9)','rgba(124,100,255,.9)','rgba(255,215,0,.7)','rgba(34,197,94,.7)'];
@@ -642,22 +723,17 @@ async function initFullApp(){
     const size = Math.random() * 3 + 1;
     p.style.width = p.style.height = size + 'px';
     p.style.left = Math.random() * 100 + '%';
-    p.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]} 0%, transparent 70%)`;
+    p.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]}, transparent 70%)`;
     p.style.animationDuration = (Math.random() * 15 + 12) + 's';
     p.style.animationDelay = (Math.random() * 20) + 's';
     c.appendChild(p);
   }
 })();
 
-// ========== ЗАПУСК ==========
-document.addEventListener('DOMContentLoaded', () => {
-  // Ждём, пока supabase-js загрузится
-  const tryInit = () => {
-    if(window.supabase) initAuth();
-    else setTimeout(tryInit, 100);
-  };
+(function(){
+  const tryInit = () => { if(window.supabase) initAuth(); else setTimeout(tryInit, 100); };
   tryInit();
-});
+})();
 </script>
 </body>
 </html>
