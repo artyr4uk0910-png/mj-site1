@@ -162,12 +162,12 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .progress-num{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;min-width:44px;text-align:right}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;font-size:10px;font-weight:800;white-space:nowrap;border:1px solid transparent}
 .badge.ok{background:rgba(76,219,140,.12);color:var(--green);border-color:rgba(76,219,140,.35)}
-.badge.warn{background:rgba(240,196,90,.12);color:var(--yellow);border-color:rgba(240,196,90,.35)}
+.badge.warn,.badge.pred{background:rgba(240,196,90,.12);color:var(--yellow);border-color:rgba(240,196,90,.35)}
 .badge.bad{background:rgba(255,107,107,.12);color:var(--red);border-color:rgba(255,107,107,.35)}
 .badge.reward{background:rgba(255,215,0,.12);color:var(--gold);border-color:rgba(255,215,0,.35)}
 .badge.mute{background:var(--bg-input);color:var(--text-3);border-color:var(--border)}
-.fac{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:9px;font-weight:800}
-.fac i{font-size:10px}
+.fac{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:800}
+.fac i{font-size:11px}
 .fac-LSPD{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
 .fac-SFPD{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
 .fac-RCSD{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
@@ -303,6 +303,36 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .tab-pane.active-pane{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.sidebar{position:fixed;left:0;top:0;z-index:300;transform:translateX(-100%);transition:transform .3s}.sidebar.open{transform:translateX(0)}.sidebar.compact{width:240px}.sidebar.compact .nav-text,.sidebar.compact .sidebar-logo-text,.sidebar.compact .sidebar-section{display:block}}
+
+/* Global tooltip */
+#globalTip{position:fixed;pointer-events:none;background:var(--bg-panel2);color:var(--text);border:1px solid var(--border-strong);padding:7px 12px;border-radius:10px;font-size:11px;font-weight:700;z-index:9999;opacity:0;transition:opacity .15s;box-shadow:var(--shadow-lg);white-space:nowrap;transform:translate(-50%,calc(-100% - 8px))}
+#globalTip.show{opacity:1}
+
+/* Calculator panel */
+.calc-panel{background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden}
+.calc-panel::before{content:'';position:absolute;top:-70px;right:-70px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 70%);opacity:.35;pointer-events:none}
+.calc-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;position:relative;z-index:1}
+.calc-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:10px}
+.calc-title i{color:var(--accent)}
+.calc-settings{display:flex;gap:10px;flex-wrap:wrap}
+.calc-settings label{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.calc-settings label i{color:var(--accent);font-size:11px}
+.calc-settings input{width:64px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 8px;font-family:inherit;font-size:13px;font-weight:800;outline:none;text-align:center}
+.calc-settings input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.calc-input-wrap{position:relative;z-index:1}
+.calc-input-wrap textarea{width:100%;min-height:72px;background:var(--bg-input);border:2px solid var(--border);border-radius:14px;color:var(--text);padding:12px 16px;font-family:ui-monospace,monospace;font-size:12px;outline:none;resize:vertical;line-height:1.5}
+.calc-input-wrap textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow)}
+.calc-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.calc-preview:empty{display:none}
+.calc-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-panel2);border:1px solid var(--border);border-radius:9px;font-size:11px;font-weight:700;color:var(--text-2)}
+.calc-chip b{color:var(--text);font-weight:900}
+.calc-chip.ok{border-color:rgba(76,219,140,.35)} .calc-chip.ok b{color:var(--green)} .calc-chip.ok i{color:var(--green)}
+.calc-chip.warn{border-color:rgba(240,196,90,.35)} .calc-chip.warn b{color:var(--yellow)} .calc-chip.warn i{color:var(--yellow)}
+.calc-chip.bad{border-color:rgba(255,107,107,.35)} .calc-chip.bad b{color:var(--red)} .calc-chip.bad i{color:var(--red)}
+.calc-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:1}
+.calc-actions .btn-primary{margin-left:auto}
+.btn-ghost{padding:0 16px;height:46px;border-radius:12px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-2);font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -376,8 +406,24 @@ table.tbl tbody tr:last-child td{border-bottom:none}
     </div>
 
     <div id="onlineTab" class="tab-pane">
-      <div class="input-area" id="inputArea"><textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea><button class="btn-primary" id="calcButton"><i class="fas fa-calculator"></i> Посчитать</button></div>
-      <div class="chips" id="chipsBar"></div>
+      <div class="calc-panel">
+        <div class="calc-header">
+          <div class="calc-title"><i class="fas fa-calculator"></i> Калькулятор онлайна</div>
+          <div class="calc-settings">
+            <label><i class="fas fa-bullseye"></i> Норма <input type="number" id="normInput" min="1" max="200" value="21"></label>
+            <label><i class="fas fa-triangle-exclamation"></i> Порог <input type="number" id="predInput" min="0" max="200" value="17"></label>
+          </div>
+        </div>
+        <div class="calc-input-wrap">
+          <textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea>
+          <div class="calc-preview" id="calcPreview"></div>
+        </div>
+        <div class="calc-actions">
+          <button class="btn-ghost" id="exampleBtn"><i class="fas fa-wand-magic-sparkles"></i> Пример</button>
+          <button class="btn-ghost" id="clearBtn"><i class="fas fa-trash"></i> Очистить</button>
+          <button class="btn-primary" id="calcButton"><i class="fas fa-calculator"></i> Посчитать и сохранить</button>
+        </div>
+      </div>
       <div class="period-btn" id="periodBtn"><i class="fas fa-calendar-alt picon"></i><span>Период: <b id="periodDatesText">— — —</b></span><i class="fas fa-chevron-down" style="color:var(--text-3);font-size:12px"></i></div>
       <div class="week-picker" id="weekPicker"></div>
       <div class="table-wrap">
@@ -389,7 +435,7 @@ table.tbl tbody tr:last-child td{border-bottom:none}
     <div id="topTab" class="tab-pane"><div class="podium" id="podiumGrid"></div></div>
 
     <div id="factionTab" class="tab-pane">
-      <div class="fac-banner"><i class="fas fa-shield-halved"></i><div><h3 id="factionTitle">Фракции</h3><p>Выбери фракцию, чтобы посмотреть состав и онлайн</p></div></div>
+      <div class="fac-banner"><i class="fas fa-shield"></i><div><h3 id="factionTitle">Фракции</h3><p>Выбери фракцию, чтобы посмотреть состав и онлайн</p></div></div>
       <div class="chips" id="factionChips" style="margin-bottom:16px"></div>
       <div class="table-wrap"><div class="table-scroll"><table class="tbl"><thead><tr><th style="width:60px;text-align:center">#</th><th>Игрок</th><th>Онлайн за неделю</th><th style="width:110px;text-align:center">Неактив</th><th style="width:140px;text-align:center">Статус</th></tr></thead><tbody id="factionTbody"></tbody></table></div></div>
     </div>
@@ -454,7 +500,7 @@ const SUPABASE_ANON_KEY='sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const ROLE_NAMES={0:'Нет доступа',1:'Лидер/Зам',2:'Следящий',3:'ЗГС МЮ',4:'ГС МЮ',5:'Owner'};
 const ROLE_COLORS={0:'#8a94c9',1:'#8a94c9',2:'#4cdb8c',3:'#f0c45a',4:'#a78bfa',5:'#ffd966'};
-const FAC_ICONS={LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
+const FAC_ICONS={LSPD:'fa-shield',SFPD:'fa-shield',RCSD:'fa-shield',LVPD:'fa-shield',FBI:'fa-user-secret'};
 const ACH_ICONS={top1:{i:'fa-crown',t:'🥇 Лидер недели'},top3:{i:'fa-medal',t:'🏆 Топ-3'},overwork:{i:'fa-fire',t:'🔥 Сверх нормы'},perfect:{i:'fa-gem',t:'💎 100% нормы'}};
 
 let currentUser=null,currentProfile=null;
@@ -472,7 +518,7 @@ const rewardPts=h=>{if(h<settings.norm+1)return 0;const e=Math.floor(h)-settings
 const barCol=h=>h>=settings.norm?'#22c55e':h>=settings.predThreshold?'#facc15':'#ef4444';
 const facClass=f=>f?'fac-'+f:'fac-none';
 const facIcon=f=>FAC_ICONS[f]?`<i class="fas ${FAC_ICONS[f]}"></i> `:'';
-function achBadges(u){if(!u||!u.achievements||!u.achievements.length)return'';const uniq=[...new Set(u.achievements)];return`<span class="ach-row">${uniq.slice(0,4).map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" title="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join('')}</span>`}
+function achBadges(u){if(!u||!u.achievements||!u.achievements.length)return'';const uniq=[...new Set(u.achievements)];return`<span class="ach-row">${uniq.slice(0,4).map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" data-tip="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join('')}</span>`}
 
 function showLoader(t){$('loadingText').textContent=t;$('loadingOverlay').classList.add('open')}
 function hideLoader(){$('loadingOverlay').classList.remove('open')}
@@ -552,7 +598,7 @@ function updateUserBadge(){const name=currentProfile.game_nick||currentProfile.d
 
 async function handleAvatar(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024)return toast('Ошибка','Максимум 2 МБ','err');showLoader('Загрузка...');try{const ext=f.name.split('.').pop();const path=`${currentUser.id}/avatar.${ext}`;const{error:up}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(up)throw up;const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);const url=publicUrl+'?t='+Date.now();const{error:db}=await sb.from('profiles').update({avatar_url:url}).eq('id',currentProfile.id);if(db)throw db;currentProfile.avatar_url=url;updateUserBadge();toast('Готово','Аватар обновлён','ok')}catch(err){toast('Ошибка',err.message,'err')}hideLoader();e.target.value=''}
 
-function applyRole(){const r=currentProfile.role;if(r<2)$('inputArea').style.display='none';if(r>=2){$('adminNavBtn').style.display='flex';$('logsNavBtn').style.display='flex'}if(r>=1)$('factionNavBtn').style.display='flex'}
+function applyRole(){const r=currentProfile.role;if(r<2)$('inputArea')?.style&&0;if(r>=2){$('adminNavBtn').style.display='flex';$('logsNavBtn').style.display='flex'}if(r>=1)$('factionNavBtn').style.display='flex'}
 
 document.querySelectorAll('.nav-btn').forEach(b=>{if(b.id==='myProfileBtn')return;b.addEventListener('click',async()=>{if(b.dataset.tab==='profileTab')return;await switchTab(b.dataset.tab,true)})});
 $('myProfileBtn').onclick=()=>{if(!currentProfile.game_nick){toast('Ник не указан','Попроси ГС/ЗГС МЮ указать твой игровой ник','err');return}openProfilePage(currentProfile.game_nick)};
@@ -602,7 +648,7 @@ async function renderProfilePage(nick){
   const avgPct=percents.length?percents.reduce((a,b)=>a+b,0)/percents.length:0;
   const{data:achData}=await sb.from('achievements').select('achievement').eq('player_nick',nick);
   const achList=[...new Set((achData||[]).map(a=>a.achievement))];
-  const achBadgesHtml=achList.length?achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" title="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join(''):'<span style="color:var(--text-3);font-size:12px">Нет достижений</span>';
+  const achBadgesHtml=achList.length?achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" data-tip="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join(''):'<span style="color:var(--text-3);font-size:12px">Нет достижений</span>';
   let posBlock='';
   if(role===1&&posStart){const start=new Date(posStart),now=new Date();const days=Math.floor((now-start)/(1000*60*60*24)),weeksOn=Math.floor(days/7);posBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><div class="progress-position-grid"><div class="progress-position-item"><div class="pp-label2">Дата назначения</div><div class="pp-value2 gold">${posStart}</div></div><div class="progress-position-item"><div class="pp-label2">Дней на посту</div><div class="pp-value2">${days}</div></div><div class="progress-position-item"><div class="pp-label2">Недель на посту</div><div class="pp-value2">${weeksOn}</div></div></div></div>`}
   else if(role===1&&!posStart){posBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><p style="color:var(--text-3);font-size:13px">Дата назначения не указана. Обратись к ГС МЮ.</p></div>`}
@@ -615,8 +661,6 @@ $('backFromProfile').onclick=()=>{if(previousTab==='myProfileBtn'){location.hash
 
 function handleHash(){const h=location.hash.slice(1);if(h.startsWith('profile=')){const nick=decodeURIComponent(h.slice(8));openProfilePage(nick);return}if(h.startsWith('tab=')){const tn=h.slice(4);const full=tn+'Tab';if($(full))switchTab(full,false)}}
 window.addEventListener('hashchange',handleHash);
-
-function renderChips(){const bar=$('chipsBar');const facs=['ALL','LSPD','SFPD','RCSD','LVPD','FBI'];const labels={ALL:'Все',LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};const icons={ALL:'fa-globe',LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};bar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionFilter?'active':''}" data-fac="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');bar.querySelectorAll('[data-fac]').forEach(b=>b.onclick=()=>{currentFactionFilter=b.dataset.fac;renderChips();render()})}
 
 function attachSort(){document.querySelectorAll('th.sortable').forEach(th=>{th.onclick=()=>{const s=th.dataset.sort;if(sortBy===s)sortDir=sortDir==='asc'?'desc':'asc';else{sortBy=s;sortDir='desc'};document.querySelectorAll('th.sortable').forEach(x=>x.classList.remove('sort-asc','sort-desc'));th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');render()}})}
 
@@ -726,12 +770,29 @@ async function loadWeekLogs(){
   render();
 }
 
+function parseInputText(text){
+  const data=[];
+  const re=/(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
+  let m;while((m=re.exec(text))!==null){const nick=m[2].trim();const hours=timeToHours(m[3]);if(isNaN(hours))continue;data.push({nick,hours,perDayHours:m[4]?parseFloat(m[4].replace(',','.')):null,activeDays:m[5]?parseInt(m[5]):null,bonusHours:0,inactiveDays:0})}
+  return data;
+}
+
+function updateCalcPreview(){
+  const prev=$('calcPreview');if(!prev)return;
+  const data=parseInputText($('input').value);
+  if(!data.length){prev.innerHTML='';return}
+  const total=data.reduce((s,u)=>s+u.hours,0);
+  const ok=data.filter(u=>u.hours>=settings.norm).length;
+  const warn=data.filter(u=>u.hours>=settings.predThreshold&&u.hours<settings.norm).length;
+  const bad=data.filter(u=>u.hours<settings.predThreshold).length;
+  prev.innerHTML=`<span class="calc-chip"><i class="fas fa-users"></i> Найдено: <b>${data.length}</b></span><span class="calc-chip"><i class="fas fa-clock"></i> Всего: <b>${total.toFixed(1)}ч</b></span><span class="calc-chip ok"><i class="fas fa-check"></i> Норма: <b>${ok}</b></span><span class="calc-chip warn"><i class="fas fa-exclamation"></i> Предупр.: <b>${warn}</b></span><span class="calc-chip bad"><i class="fas fa-times"></i> Выговор: <b>${bad}</b></span>`;
+}
+
 async function calculate(){
   if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
   const text=$('input').value;if(!text.trim())return toast('Пусто','Вставь данные','err');
   showLoader('Расчёт...');
-  const data=[];const re=/(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
-  let m;while((m=re.exec(text))!==null){const nick=m[2].trim(),hours=timeToHours(m[3]);if(isNaN(hours))continue;data.push({nick,hours,perDayHours:m[4]?parseFloat(m[4].replace(',','.')):null,activeDays:m[5]?parseInt(m[5]):null,bonusHours:0,inactiveDays:0})}
+  const data=parseInputText(text);
   if(!data.length){hideLoader();return toast('Ошибка','Не распарсилось','err')}
   const byNick={};data.forEach(u=>{byNick[u.nick]=u});const uniq=Object.values(byNick);const nicks=uniq.map(u=>u.nick);
   await sb.from('online_logs').delete().eq('period_start',periodStart).eq('period_end',periodEnd).in('player_nick',nicks);
@@ -741,6 +802,7 @@ async function calculate(){
   await checkAch(uniq);await loadWeekLogs();await renderDash();hideLoader();
   toast('Готово',`Сохранено ${uniq.length} игроков`,'ok');
 }
+
 async function checkAch(players){
   const s=[...players].sort((a,b)=>b.hours-a.hours);
   for(let i=0;i<Math.min(3,s.length);i++){const ach=i===0?'top1':'top3';const{data}=await sb.from('achievements').select('id').eq('player_nick',s[i].nick).eq('achievement',ach).maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:s[i].nick,achievement:ach})}
@@ -851,16 +913,34 @@ $('soundSwitch').onclick=function(){this.classList.toggle('on');const on=this.cl
 $('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 $('sidebarUser').onclick=e=>{if(!e.target.closest('button'))$('avatarFileInput').click()};
 
+function initGlobalTooltip(){
+  if($('globalTip'))return;
+  const tip=document.createElement('div');tip.id='globalTip';document.body.appendChild(tip);
+  let current=null;
+  const position=el=>{const r=el.getBoundingClientRect();tip.style.left=(r.left+r.width/2)+'px';tip.style.top=r.top+'px'};
+  document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]');if(t){current=t;tip.textContent=t.dataset.tip;tip.classList.add('show');position(t)}});
+  document.addEventListener('mouseout',e=>{const t=e.target.closest('[data-tip]');if(t&&t===current){tip.classList.remove('show');current=null}});
+  window.addEventListener('scroll',()=>{if(current)position(current)},true);
+}
+
 async function initFullApp(){
   const r=getWeekRange(0);periodStart=r.start;periodEnd=r.end;
-  updatePeriodDisplay();renderWeekPicker();renderChips();
+  updatePeriodDisplay();renderWeekPicker();
   startClock();
+  $('normInput').value=settings.norm;
+  $('predInput').value=settings.predThreshold;
+  $('normInput').oninput=e=>{settings.norm=Math.max(1,+e.target.value||21);render();updateCalcPreview()};
+  $('predInput').oninput=e=>{settings.predThreshold=Math.max(0,+e.target.value||17);render();updateCalcPreview()};
+  $('input').addEventListener('input',updateCalcPreview);
+  $('exampleBtn').onclick=()=>{$('input').value='Игрок: Nick_Reason\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)\n\nИгрок: Хуесос\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)';updateCalcPreview()};
+  $('clearBtn').onclick=()=>{$('input').value='';updateCalcPreview()};
   if(currentProfile.role>=1){await loadWeekLogs();await renderDash()}
   else render();
   $('periodBtn').onclick=()=>$('weekPicker').classList.toggle('open');
   $('calcButton').onclick=calculate;
   $('searchInput').oninput=e=>{currentSearch=e.target.value;render()};
   loadPrefs();
+  initGlobalTooltip();
 }
 (function(){const t=()=>{if(window.supabase)initAuth();else setTimeout(t,100)};t()})();
 </script>
