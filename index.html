@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -20,8 +20,16 @@
 [data-accent="orange"]{--accent:#fb923c;--accent-2:#f97316;--accent-glow:rgba(249,115,22,.35)}
 [data-accent="cyan"]{--accent:#22d3ee;--accent-2:#06b6d4;--accent-glow:rgba(6,182,212,.35)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg-body);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 10%,var(--accent-glow),transparent 45%),radial-gradient(circle at 85% 90%,rgba(255,215,0,.05),transparent 45%);opacity:.5;z-index:0}
+body{background:var(--bg-body);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;overflow-x:hidden;position:relative}
+/* ===== ФОНЫ ===== */
+[data-bg="grid"] body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(255,255,255,.02) 49px,rgba(255,255,255,.02) 50px),radial-gradient(circle at 15% 10%,var(--accent-glow),transparent 45%);opacity:.6;z-index:0}
+[data-bg="cosmos"] body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.8),transparent),radial-gradient(1px 1px at 60% 70%,rgba(167,139,250,.9),transparent),radial-gradient(2px 2px at 80% 20%,rgba(255,215,0,.7),transparent),radial-gradient(1px 1px at 30% 80%,rgba(96,165,250,.7),transparent),radial-gradient(1px 1px at 90% 60%,rgba(255,255,255,.6),transparent),radial-gradient(circle at 15% 10%,var(--accent-glow),transparent 45%),radial-gradient(circle at 85% 90%,rgba(255,215,0,.05),transparent 45%);background-size:200px 200px,300px 300px,400px 400px,250px 250px,350px 350px,auto,auto;z-index:0}
+[data-bg="gradient"] body::before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(135deg,var(--accent-glow) 0%,transparent 30%),linear-gradient(225deg,rgba(255,215,0,.08) 0%,transparent 40%),linear-gradient(45deg,rgba(76,219,140,.05) 0%,transparent 50%);z-index:0}
+[data-bg="plasma"] body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 20%,var(--accent-glow),transparent 40%),radial-gradient(circle at 80% 60%,rgba(236,72,153,.15),transparent 40%),radial-gradient(circle at 50% 90%,rgba(34,197,94,.12),transparent 40%),radial-gradient(circle at 80% 20%,rgba(255,215,0,.1),transparent 40%);z-index:0;animation:plasmaMove 20s ease-in-out infinite alternate}
+@keyframes plasmaMove{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(30deg)}}
+[data-bg="aurora"] body::before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 40%,rgba(76,219,140,.15) 50%,transparent 60%),linear-gradient(180deg,transparent 30%,var(--accent-glow) 45%,transparent 55%),linear-gradient(180deg,transparent 50%,rgba(96,165,250,.12) 60%,transparent 70%);z-index:0;animation:auroraShift 12s ease-in-out infinite alternate}
+@keyframes auroraShift{0%{transform:translateX(-20px)}100%{transform:translateX(20px)}}
+[data-bg="none"] body::before{display:none}
 .auth-overlay{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse at 50% 40%,#151233,#0a0c1c 60%,#05060e);display:none;align-items:center;justify-content:center;padding:20px}
 .auth-overlay.open{display:flex}
 .auth-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:28px;padding:44px 36px;width:100%;max-width:440px;box-shadow:var(--shadow-lg),0 0 120px var(--accent-glow)}
@@ -72,8 +80,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .topbar h1{font-size:24px;font-weight:800}
 .topbar h1 span{color:var(--accent)}
 .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-
-/* Личная статистика в шапке */
+/* Часы */
+.live-clock{display:flex;align-items:center;gap:8px;background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--text-2);font-family:monospace;letter-spacing:.5px}
+.live-clock i{color:var(--accent);font-size:12px}
+.live-clock #clockTime{color:var(--text);font-size:14px}
+.live-clock #clockDate{color:var(--text-3);font-size:11px}
+@media(max-width:700px){.live-clock #clockDate{display:none}}
+/* Личная статистика */
 .my-stats{display:flex;align-items:center;gap:8px;background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:6px;margin-right:6px}
 .my-stat{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;transition:.2s}
 .my-stat:hover{background:var(--bg-hover)}
@@ -85,9 +98,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .my-stat-value{font-size:14px;font-weight:900;color:var(--text)}
 .my-stat-value .u{font-size:10px;color:var(--text-3);font-weight:600;margin-left:1px}
 .my-stat-label{font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
-@media(max-width:1100px){.my-stat:nth-child(3){display:none}}
-@media(max-width:900px){.my-stats{display:none}}
-
+@media(max-width:1200px){.my-stat:nth-child(3){display:none}}
+@media(max-width:1000px){.my-stats{display:none}}
 .icon-btn{width:40px;height:40px;border-radius:12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s;font-family:inherit}
 .icon-btn:hover{background:var(--bg-hover);color:var(--accent);border-color:var(--border-strong)}
 .menu-burger{display:none}
@@ -147,7 +159,7 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .user-cell{display:flex;align-items:center;gap:11px}
 .u-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong)}
 .u-ava img{width:100%;height:100%;object-fit:cover}
-.u-nick{font-weight:700;color:var(--text);font-size:13px;display:flex;align-items:center;gap:6px}
+.u-nick{font-weight:700;color:var(--text);font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .u-sub{font-size:10px;color:var(--text-3);margin-top:2px}
 .progress{display:flex;align-items:center;gap:10px;min-width:180px}
 .progress-track{flex:1;height:6px;background:var(--bg-input);border-radius:99px;overflow:hidden;min-width:60px}
@@ -159,12 +171,21 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .badge.bad{background:rgba(255,107,107,.12);color:var(--red);border-color:rgba(255,107,107,.35)}
 .badge.reward{background:rgba(255,215,0,.12);color:var(--gold);border-color:rgba(255,215,0,.35)}
 .badge.mute{background:var(--bg-input);color:var(--text-3);border-color:var(--border)}
-.fac{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.5px}
+/* Иконки фракций */
+.fac{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.5px}
+.fac i{font-size:10px}
 .fac-LSPD{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
 .fac-SFPD{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
 .fac-RCSD{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
 .fac-LVPD{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
 .fac-FBI{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+/* Ачивки рядом с ником */
+.ach-row{display:inline-flex;align-items:center;gap:3px;margin-left:4px}
+.ach-mini{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;background:linear-gradient(135deg,rgba(255,215,0,.25),rgba(255,215,0,.1));border:1px solid rgba(255,215,0,.4);cursor:help;transition:.2s}
+.ach-mini:hover{transform:scale(1.15);box-shadow:0 0 10px rgba(255,215,0,.6)}
+.ach-mini.top1{background:linear-gradient(135deg,rgba(255,215,0,.35),rgba(240,165,0,.15));border-color:#ffd700}
+.ach-mini.overwork{background:linear-gradient(135deg,rgba(255,107,107,.25),rgba(255,107,107,.08));border-color:rgba(255,107,107,.5)}
+.ach-mini.perfect{background:linear-gradient(135deg,rgba(76,219,140,.25),rgba(76,219,140,.08));border-color:rgba(76,219,140,.5)}
 .podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
 @media(max-width:800px){.podium{grid-template-columns:1fr}}
 .pod-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:22px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;transition:.3s;cursor:pointer}
@@ -191,7 +212,7 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .profile-hero-ava{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:48px;color:#fff;overflow:hidden;border:4px solid var(--border-strong);box-shadow:0 0 50px var(--accent-glow);flex-shrink:0;position:relative;z-index:1}
 .profile-hero-ava img{width:100%;height:100%;object-fit:cover}
 .profile-hero-info{flex:1;min-width:200px;position:relative;z-index:1}
-.profile-hero-info h2{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;word-break:break-word}
+.profile-hero-info h2{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;word-break:break-word;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .profile-hero-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .profile-hero-stats{display:flex;gap:24px;flex-wrap:wrap}
 .profile-hero-stat{display:flex;flex-direction:column}
@@ -222,6 +243,18 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
 .color-dot:hover{transform:scale(1.1)}
 .color-dot.active{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+/* Превью фонов */
+.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;width:100%}
+.bg-preview{aspect-ratio:16/9;border-radius:12px;cursor:pointer;border:2px solid var(--border);position:relative;overflow:hidden;transition:.2s}
+.bg-preview:hover{transform:scale(1.03);border-color:var(--border-strong)}
+.bg-preview.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.bg-preview-label{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:rgba(0,0,0,.6);color:#fff;text-align:center}
+.bg-none{background:linear-gradient(135deg,#0a0c1c,#1a1d33)}
+.bg-grid-prev{background:#0a0c1c;background-image:repeating-linear-gradient(0deg,transparent,transparent 9px,rgba(255,255,255,.05) 9px,rgba(255,255,255,.05) 10px),repeating-linear-gradient(90deg,transparent,transparent 9px,rgba(255,255,255,.05) 9px,rgba(255,255,255,.05) 10px)}
+.bg-cosmos-prev{background:#0a0c1c;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 60% 70%,#a78bfa,transparent),radial-gradient(2px 2px at 80% 20%,#ffd966,transparent),radial-gradient(1px 1px at 30% 80%,#60a5fa,transparent)}
+.bg-gradient-prev{background:linear-gradient(135deg,#1a0b2e 0%,#0a0c1c 50%,#2e1a0b 100%)}
+.bg-plasma-prev{background:radial-gradient(circle at 30% 30%,#7c64ff 0%,transparent 50%),radial-gradient(circle at 70% 60%,#ec4899 0%,transparent 50%),#0a0c1c}
+.bg-aurora-prev{background:linear-gradient(180deg,#0a0c1c 30%,rgba(76,219,140,.4) 50%,rgba(96,165,250,.3) 60%,#0a0c1c 80%)}
 .switch{position:relative;width:48px;height:26px;background:var(--bg-input);border:1px solid var(--border);border-radius:99px;cursor:pointer;transition:.2s;flex-shrink:0}
 .switch::before{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--text-3);transition:.3s}
 .switch.on{background:var(--accent);border-color:var(--accent)}
@@ -289,37 +322,19 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-box"><div class="spinner"></div><div class="loading-text" id="loadingText">Загрузка...</div></div>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><div class="loading-text" id="loadingText">Загрузка...</div></div></div>
 <div class="toast-wrap" id="toastWrap"></div>
 
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-card">
     <h2>Space MJ</h2>
     <p class="auth-sub">Войди, чтобы продолжить</p>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabEmail"><i class="fas fa-envelope"></i> Email</button>
-      <button class="auth-tab" id="tabDiscord"><i class="fab fa-discord"></i> Discord</button>
-    </div>
+    <div class="auth-tabs"><button class="auth-tab active" id="tabEmail"><i class="fas fa-envelope"></i> Email</button><button class="auth-tab" id="tabDiscord"><i class="fab fa-discord"></i> Discord</button></div>
     <div id="emailForm">
-      <div id="step1">
-        <div class="auth-status" id="authStatus1"></div>
-        <input class="auth-input" id="authEmail" type="email" placeholder="твой@email.com">
-        <button class="auth-btn" id="sendCodeBtn"><i class="fas fa-paper-plane"></i> Отправить код</button>
-        <p class="auth-hint">Придёт письмо с кодом.</p>
-      </div>
-      <div id="step2" style="display:none">
-        <div class="auth-status" id="authStatus2"></div>
-        <input class="auth-input code" id="authCode" type="text" maxlength="10" inputmode="numeric" placeholder="00000000">
-        <button class="auth-btn" id="verifyCodeBtn"><i class="fas fa-check"></i> Войти</button>
-        <p class="auth-back" id="backBtn">← Ввести другой email</p>
-      </div>
+      <div id="step1"><div class="auth-status" id="authStatus1"></div><input class="auth-input" id="authEmail" type="email" placeholder="твой@email.com"><button class="auth-btn" id="sendCodeBtn"><i class="fas fa-paper-plane"></i> Отправить код</button><p class="auth-hint">Придёт письмо с кодом.</p></div>
+      <div id="step2" style="display:none"><div class="auth-status" id="authStatus2"></div><input class="auth-input code" id="authCode" type="text" maxlength="10" inputmode="numeric" placeholder="00000000"><button class="auth-btn" id="verifyCodeBtn"><i class="fas fa-check"></i> Войти</button><p class="auth-back" id="backBtn">← Ввести другой email</p></div>
     </div>
-    <div id="discordForm" style="display:none">
-      <button class="auth-btn discord" id="discordLoginBtn"><i class="fab fa-discord"></i> Войти через Discord</button>
-      <p class="auth-hint">Может не работать в РФ без VPN.</p>
-    </div>
+    <div id="discordForm" style="display:none"><button class="auth-btn discord" id="discordLoginBtn"><i class="fab fa-discord"></i> Войти через Discord</button><p class="auth-hint">Может не работать в РФ без VPN.</p></div>
   </div>
 </div>
 
@@ -340,13 +355,7 @@ table.tbl tbody tr:last-child td{border-bottom:none}
     <button class="nav-btn" data-tab="adminTab" id="adminNavBtn" style="display:none"><i class="fas fa-user-shield"></i><span class="nav-text">Управление</span></button>
     <div class="sidebar-section">Настройки</div>
     <button class="nav-btn" data-tab="settingsTab"><i class="fas fa-sliders"></i><span class="nav-text">Внешний вид</span></button>
-    <div class="sidebar-bottom">
-      <div class="sidebar-user" id="sidebarUser">
-        <div class="su-ava" id="suAva">?</div>
-        <div class="su-info"><div class="su-name" id="suName">...</div><div class="su-role" id="suRole">...</div></div>
-        <button class="icon-btn" onclick="event.stopPropagation();logout()" style="width:32px;height:32px;font-size:12px"><i class="fas fa-sign-out-alt"></i></button>
-      </div>
-    </div>
+    <div class="sidebar-bottom"><div class="sidebar-user" id="sidebarUser"><div class="su-ava" id="suAva">?</div><div class="su-info"><div class="su-name" id="suName">...</div><div class="su-role" id="suRole">...</div></div><button class="icon-btn" onclick="event.stopPropagation();logout()" style="width:32px;height:32px;font-size:12px"><i class="fas fa-sign-out-alt"></i></button></div></div>
   </aside>
 
   <main class="main">
@@ -357,28 +366,11 @@ table.tbl tbody tr:last-child td{border-bottom:none}
       </div>
       <div class="topbar-actions">
         <div class="my-stats" id="myStats" style="display:none">
-          <div class="my-stat">
-            <div class="my-stat-icon p"><i class="fas fa-clock"></i></div>
-            <div class="my-stat-info">
-              <span class="my-stat-value" id="msHours">0<span class="u">ч</span></span>
-              <span class="my-stat-label">за месяц</span>
-            </div>
-          </div>
-          <div class="my-stat">
-            <div class="my-stat-icon y"><i class="fas fa-trophy"></i></div>
-            <div class="my-stat-info">
-              <span class="my-stat-value" id="msRank">—</span>
-              <span class="my-stat-label">место</span>
-            </div>
-          </div>
-          <div class="my-stat">
-            <div class="my-stat-icon g"><i class="fas fa-percent"></i></div>
-            <div class="my-stat-info">
-              <span class="my-stat-value" id="msAvg">0<span class="u">%</span></span>
-              <span class="my-stat-label">средний</span>
-            </div>
-          </div>
+          <div class="my-stat"><div class="my-stat-icon p"><i class="fas fa-clock"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msHours">0<span class="u">ч</span></span><span class="my-stat-label">за месяц</span></div></div>
+          <div class="my-stat"><div class="my-stat-icon y"><i class="fas fa-trophy"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msRank">—</span><span class="my-stat-label">место</span></div></div>
+          <div class="my-stat"><div class="my-stat-icon g"><i class="fas fa-percent"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msAvg">0<span class="u">%</span></span><span class="my-stat-label">средний</span></div></div>
         </div>
+        <div class="live-clock" id="liveClock"><i class="fas fa-clock"></i><span id="clockTime">--:--:--</span><span id="clockDate">—</span></div>
         <button class="icon-btn" id="compactBtn" title="Компактно"><i class="fas fa-compress"></i></button>
         <button class="icon-btn" id="themeBtn" title="Тема"><i class="fas fa-moon"></i></button>
       </div>
@@ -393,43 +385,19 @@ table.tbl tbody tr:last-child td{border-bottom:none}
       </div>
       <div class="grid grid-2-1" style="margin-bottom:20px">
         <div class="card"><div class="card-title"><span><i class="fas fa-chart-area" style="margin-right:8px"></i>Динамика онлайна по неделям</span></div><div class="chart-wrap"><canvas id="chartDashWeeks"></canvas></div></div>
-        <div class="card"><div class="card-title"><span><i class="fas fa-circle-notch" style="margin-right:8px"></i>Общая активность</span></div>
-          <div class="ring-wrap"><div class="ring"><svg viewBox="0 0 200 200"><defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--gold)"/></linearGradient></defs><circle class="track" cx="100" cy="100" r="82"/><circle class="progress" id="ringProgress" cx="100" cy="100" r="82" stroke-dasharray="515" stroke-dashoffset="515"/></svg><div class="ring-center"><div class="ring-value" id="ringValue">0%</div><div class="ring-label">в норме</div></div></div></div>
-        </div>
+        <div class="card"><div class="card-title"><span><i class="fas fa-circle-notch" style="margin-right:8px"></i>Общая активность</span></div><div class="ring-wrap"><div class="ring"><svg viewBox="0 0 200 200"><defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--gold)"/></linearGradient></defs><circle class="track" cx="100" cy="100" r="82"/><circle class="progress" id="ringProgress" cx="100" cy="100" r="82" stroke-dasharray="515" stroke-dashoffset="515"/></svg><div class="ring-center"><div class="ring-value" id="ringValue">0%</div><div class="ring-label">в норме</div></div></div></div></div>
       </div>
-      <div class="card">
-        <div class="card-title"><span><i class="fas fa-bolt" style="margin-right:8px"></i>Топ-5 лидеров недели</span><span id="dashPeriodLabel" style="color:var(--text-3);font-size:10px"></span></div>
-        <div id="dashTop5"></div>
-      </div>
+      <div class="card"><div class="card-title"><span><i class="fas fa-bolt" style="margin-right:8px"></i>Топ-5 лидеров недели</span><span id="dashPeriodLabel" style="color:var(--text-3);font-size:10px"></span></div><div id="dashTop5"></div></div>
     </div>
 
     <div id="onlineTab" class="tab-pane">
-      <div class="input-area" id="inputArea">
-        <textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea>
-        <button class="btn-primary" id="calcButton"><i class="fas fa-calculator"></i> Посчитать</button>
-      </div>
+      <div class="input-area" id="inputArea"><textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea><button class="btn-primary" id="calcButton"><i class="fas fa-calculator"></i> Посчитать</button></div>
       <div class="chips" id="chipsBar"></div>
       <div class="period-btn" id="periodBtn"><i class="fas fa-calendar-alt picon"></i><span>Период: <b id="periodDatesText">— — —</b></span><i class="fas fa-chevron-down" style="color:var(--text-3);font-size:12px"></i></div>
       <div class="week-picker" id="weekPicker"></div>
       <div class="table-wrap">
-        <div class="table-head">
-          <h3><i class="fas fa-list" style="margin-right:8px;color:var(--accent)"></i>Таблица онлайна</h3>
-          <div class="table-search"><input id="searchInput" placeholder="Поиск по нику..."></div>
-        </div>
-        <div class="table-scroll">
-          <table class="tbl">
-            <thead><tr>
-              <th style="width:60px;text-align:center">#</th>
-              <th class="sortable" data-sort="nick">Игрок</th>
-              <th class="sortable" data-sort="hours">Онлайн / норма</th>
-              <th style="width:110px;text-align:center">Неактив</th>
-              <th style="width:140px;text-align:center">Статус</th>
-              <th style="width:130px;text-align:center">Поощрение</th>
-              <th style="width:110px;text-align:center">Действия</th>
-            </tr></thead>
-            <tbody id="result"></tbody>
-          </table>
-        </div>
+        <div class="table-head"><h3><i class="fas fa-list" style="margin-right:8px;color:var(--accent)"></i>Таблица онлайна</h3><div class="table-search"><input id="searchInput" placeholder="Поиск по нику..."></div></div>
+        <div class="table-scroll"><table class="tbl"><thead><tr><th style="width:60px;text-align:center">#</th><th class="sortable" data-sort="nick">Игрок</th><th class="sortable" data-sort="hours">Онлайн / норма</th><th style="width:110px;text-align:center">Неактив</th><th style="width:140px;text-align:center">Статус</th><th style="width:130px;text-align:center">Поощрение</th><th style="width:110px;text-align:center">Действия</th></tr></thead><tbody id="result"></tbody></table></div>
       </div>
     </div>
 
@@ -446,25 +414,20 @@ table.tbl tbody tr:last-child td{border-bottom:none}
       <div class="card"><div class="card-title"><span><i class="fas fa-chart-pie" style="margin-right:8px"></i>Распределение по фракциям</span></div><div class="chart-wrap"><canvas id="chartFactions"></canvas></div></div>
     </div>
 
-    <div id="logsTab" class="tab-pane">
-      <div class="table-wrap"><div class="table-head"><h3><i class="fas fa-history" style="margin-right:8px;color:var(--accent)"></i>История</h3></div><div class="table-scroll"><table class="tbl"><thead><tr><th>Дата</th><th>Игрок</th><th>Часы</th><th>ч/день</th><th>Акт.</th><th>Период</th><th>Кто внёс</th></tr></thead><tbody id="logsTbody"></tbody></table></div></div>
-    </div>
+    <div id="logsTab" class="tab-pane"><div class="table-wrap"><div class="table-head"><h3><i class="fas fa-history" style="margin-right:8px;color:var(--accent)"></i>История</h3></div><div class="table-scroll"><table class="tbl"><thead><tr><th>Дата</th><th>Игрок</th><th>Часы</th><th>ч/день</th><th>Акт.</th><th>Период</th><th>Кто внёс</th></tr></thead><tbody id="logsTbody"></tbody></table></div></div></div>
 
     <div id="adminTab" class="tab-pane">
       <div class="card" style="margin-bottom:16px;padding:14px 20px;background:var(--bg-input)"><div style="font-size:12px;color:var(--text-3)"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:8px"></i><span id="adminHint"></span></div></div>
       <div class="table-wrap"><div class="table-scroll"><table class="tbl"><thead><tr><th>Имя</th><th>Игровой ник</th><th>Фракция</th><th>Роль</th><th>Дата назначения</th><th style="text-align:center">Статус</th><th>Действия</th></tr></thead><tbody id="adminTbody"></tbody></table></div></div>
     </div>
 
-    <div id="profileTab" class="tab-pane">
-      <button class="back-btn" id="backFromProfile"><i class="fas fa-arrow-left"></i> Назад</button>
-      <div id="profileContent"></div>
-    </div>
+    <div id="profileTab" class="tab-pane"><button class="back-btn" id="backFromProfile"><i class="fas fa-arrow-left"></i> Назад</button><div id="profileContent"></div></div>
 
     <div id="settingsTab" class="tab-pane">
       <div class="grid grid-2">
         <div class="card">
           <div class="card-title"><span><i class="fas fa-palette" style="margin-right:8px"></i>Тема</span></div>
-          <div class="setting-row" style="border:none;padding-top:0"><div><div class="setting-label">Тёмная / светлая</div><div class="setting-desc">Оформление интерфейса</div></div><div class="theme-grid"><button class="theme-btn active" data-theme-val="dark"><i class="fas fa-moon"></i> Тёмная</button><button class="theme-btn" data-theme-val="light"><i class="fas fa-sun"></i> Светлая</button></div></div>
+          <div class="setting-row" style="border:none;padding-top:0"><div><div class="setting-label">Тёмная / светлая</div><div class="setting-desc">Автоматически по системе, если не выбрано</div></div><div class="theme-grid"><button class="theme-btn" data-theme-val="auto"><i class="fas fa-desktop"></i> Система</button><button class="theme-btn active" data-theme-val="dark"><i class="fas fa-moon"></i> Тёмная</button><button class="theme-btn" data-theme-val="light"><i class="fas fa-sun"></i> Светлая</button></div></div>
           <div class="setting-row"><div><div class="setting-label">Акцентный цвет</div><div class="setting-desc">Цвет кнопок</div></div><div class="color-grid" id="colorGrid">
             <div class="color-dot active" data-accent="purple" style="background:linear-gradient(135deg,#7c64ff,#a78bfa)"></div>
             <div class="color-dot" data-accent="blue" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></div>
@@ -477,9 +440,20 @@ table.tbl tbody tr:last-child td{border-bottom:none}
         <div class="card">
           <div class="card-title"><span><i class="fas fa-sliders" style="margin-right:8px"></i>Интерфейс</span></div>
           <div class="setting-row"><div><div class="setting-label">Компактное меню</div><div class="setting-desc">Скрыть названия в меню</div></div><div class="switch" id="compactSwitch"></div></div>
-          <div class="setting-row"><div><div class="setting-label">Звук при входе</div><div class="setting-desc">Приятный звук при загрузке сайта</div></div><div class="switch on" id="soundSwitch"></div></div>
-          <div class="setting-row"><div><div class="setting-label">Аватар</div><div class="setting-desc">Клик по своему аватару в меню</div></div><button class="theme-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fas fa-upload"></i> Загрузить</button></div>
+          <div class="setting-row"><div><div class="setting-label">Звук при входе</div><div class="setting-desc">Приятный звук при загрузке</div></div><div class="switch on" id="soundSwitch"></div></div>
+          <div class="setting-row"><div><div class="setting-label">Аватар</div><div class="setting-desc">Клик по аватару в меню</div></div><button class="theme-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fas fa-upload"></i> Загрузить</button></div>
           <div class="setting-row"><div><div class="setting-label">Проверить звук</div><div class="setting-desc">Проиграть звук приветствия</div></div><button class="theme-btn" onclick="playWelcomeSound()"><i class="fas fa-play"></i> Проиграть</button></div>
+        </div>
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-title"><span><i class="fas fa-image" style="margin-right:8px"></i>Фон</span></div>
+          <div class="bg-grid" id="bgGrid">
+            <div class="bg-preview bg-none" data-bg-prev="none"><div class="bg-preview-label">Обычный</div></div>
+            <div class="bg-preview bg-grid-prev" data-bg-prev="grid"><div class="bg-preview-label">Сетка</div></div>
+            <div class="bg-preview bg-cosmos-prev" data-bg-prev="cosmos"><div class="bg-preview-label">Космос</div></div>
+            <div class="bg-preview bg-gradient-prev" data-bg-prev="gradient"><div class="bg-preview-label">Градиент</div></div>
+            <div class="bg-preview bg-plasma-prev" data-bg-prev="plasma"><div class="bg-preview-label">Плазма</div></div>
+            <div class="bg-preview bg-aurora-prev" data-bg-prev="aurora"><div class="bg-preview-label">Сияние</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -495,6 +469,8 @@ const SUPABASE_ANON_KEY='sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const ROLE_NAMES={0:'Нет доступа',1:'Лидер/Зам',2:'Следящий',3:'ЗГС МЮ',4:'ГС МЮ',5:'Owner'};
 const ROLE_COLORS={0:'#8a94c9',1:'#8a94c9',2:'#4cdb8c',3:'#f0c45a',4:'#a78bfa',5:'#ffd966'};
+const FAC_ICONS={LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
+const ACH_ICONS={top1:{i:'fa-crown',t:'🥇 Лидер недели'},top3:{i:'fa-medal',t:'🏆 Топ-3'},overwork:{i:'fa-fire',t:'🔥 Сверх нормы'},perfect:{i:'fa-gem',t:'💎 100% нормы'}};
 
 let currentUser=null,currentProfile=null;
 let settings={norm:21,predThreshold:17,rewardPerHour:10,bonusHoursPerDay:3};
@@ -517,18 +493,29 @@ const effHours=u=>u.hours+(u.bonusHours||0);
 const rewardPts=h=>{if(h<settings.norm+1)return 0;const e=Math.floor(h)-settings.norm;return e>0?e*settings.rewardPerHour:0};
 const barCol=h=>h>=settings.norm?'#22c55e':h>=settings.predThreshold?'#facc15':'#ef4444';
 const facClass=f=>f?'fac-'+f:'fac-none';
+const facIcon=f=>FAC_ICONS[f]?`<i class="fas ${FAC_ICONS[f]}"></i> `:'';
+function achBadges(u){
+  if(!u.achievements||!u.achievements.length)return'';
+  const unique=[...new Set(u.achievements)];
+  return`<span class="ach-row">${unique.slice(0,4).map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" title="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join('')}</span>`;
+}
 
 function showLoader(t){$('loadingText').textContent=t;$('loadingOverlay').classList.add('open')}
 function hideLoader(){$('loadingOverlay').classList.remove('open')}
-function toast(title,text,type='info'){
-  const icons={ok:'fa-check',err:'fa-exclamation',info:'fa-info'};
-  const el=document.createElement('div');el.className='toast';
-  el.innerHTML=`<div class="toast-icon ${type}"><i class="fas ${icons[type]}"></i></div><div><div class="toast-title">${esc(title)}</div><div class="toast-text">${esc(text)}</div></div>`;
-  $('toastWrap').appendChild(el);
-  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4000);
+function toast(title,text,type='info'){const icons={ok:'fa-check',err:'fa-exclamation',info:'fa-info'};const el=document.createElement('div');el.className='toast';el.innerHTML=`<div class="toast-icon ${type}"><i class="fas ${icons[type]}"></i></div><div><div class="toast-title">${esc(title)}</div><div class="toast-text">${esc(text)}</div></div>`;$('toastWrap').appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4000)}
+
+/* ============ ЧАСЫ ============ */
+function startClock(){
+  const el=$('clockTime'),dt=$('clockDate');
+  function tick(){
+    const n=new Date();
+    el.textContent=n.toLocaleTimeString('ru-RU');
+    dt.textContent=n.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  tick();setInterval(tick,1000);
 }
 
-/* ============ ЗВУК ПРИ ВХОДЕ ============ */
+/* ============ ЗВУК ============ */
 let audioCtx=null;
 function playWelcomeSound(){
   if(localStorage.getItem('mj_sound')==='0')return;
@@ -536,123 +523,44 @@ function playWelcomeSound(){
     if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
     if(audioCtx.state==='suspended')audioCtx.resume();
     const now=audioCtx.currentTime;
-    // Приятный аккорд (C major add9: C E G D5)
-    const notes=[261.63,329.63,392.00,587.33];
-    notes.forEach((freq,i)=>{
-      const osc=audioCtx.createOscillator();
-      const gain=audioCtx.createGain();
-      osc.type='sine';
-      osc.frequency.value=freq;
-      // Небольшой сдвиг для "перелива"
-      const start=now+i*0.08;
-      const dur=1.6-i*0.15;
-      gain.gain.setValueAtTime(0,start);
-      gain.gain.linearRampToValueAtTime(0.08,start+0.08);
-      gain.gain.exponentialRampToValueAtTime(0.001,start+dur);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(start);
-      osc.stop(start+dur);
-    });
-    // Финальный "шлейф" — высокий тинкл
-    setTimeout(()=>{
-      const osc=audioCtx.createOscillator();
-      const gain=audioCtx.createGain();
-      osc.type='triangle';
-      osc.frequency.value=1046.5;
-      gain.gain.setValueAtTime(0,audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.05,audioCtx.currentTime+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+1.2);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime+1.2);
-    },400);
-  }catch(e){console.warn('Sound error:',e)}
+    [261.63,329.63,392.00,587.33].forEach((freq,i)=>{const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type='sine';osc.frequency.value=freq;const start=now+i*0.08;const dur=1.6-i*0.15;gain.gain.setValueAtTime(0,start);gain.gain.linearRampToValueAtTime(0.08,start+0.08);gain.gain.exponentialRampToValueAtTime(0.001,start+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(start);osc.stop(start+dur)});
+    setTimeout(()=>{const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type='triangle';osc.frequency.value=1046.5;gain.gain.setValueAtTime(0,audioCtx.currentTime);gain.gain.linearRampToValueAtTime(0.05,audioCtx.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+1.2);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+1.2)},400);
+  }catch(e){console.warn('Sound:',e)}
 }
 window.playWelcomeSound=playWelcomeSound;
 
 function getWeekRange(o=0){const n=new Date(),d=n.getDay(),off=d===0?-6:1-d;const mon=new Date(n);mon.setDate(n.getDate()+off-o*7);mon.setHours(0,0,0,0);const sun=new Date(mon);sun.setDate(mon.getDate()+6);const f=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;return{start:f(mon),end:f(sun),monday:mon,sunday:sun}}
 const fmtRu=d=>`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
 function updatePeriodDisplay(){const r=getWeekRange(currentWeekOffset);$('periodDatesText').textContent=`${r.start} — ${r.end}`;if($('dashPeriodLabel'))$('dashPeriodLabel').textContent=`${r.start} — ${r.end}`}
-function renderWeekPicker(){
-  const p=$('weekPicker');
-  const labels=['Текущая неделя','Прошлая неделя','2 недели назад','3 недели назад'];
-  p.innerHTML=labels.map((l,i)=>{const r=getWeekRange(i);return`<button data-week="${i}" class="${i===currentWeekOffset?'active':''}"><span>${l}</span><span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span></button>`}).join('');
-  p.querySelectorAll('button').forEach(b=>b.onclick=async()=>{
-    currentWeekOffset=+b.dataset.week;const r=getWeekRange(currentWeekOffset);
-    periodStart=r.start;periodEnd=r.end;
-    updatePeriodDisplay();renderWeekPicker();p.classList.remove('open');
-    if(currentProfile&&currentProfile.role>=1){await loadWeekLogs();await renderDash();renderTop3()}
-  });
-}
+function renderWeekPicker(){const p=$('weekPicker');const labels=['Текущая неделя','Прошлая неделя','2 недели назад','3 недели назад'];p.innerHTML=labels.map((l,i)=>{const r=getWeekRange(i);return`<button data-week="${i}" class="${i===currentWeekOffset?'active':''}"><span>${l}</span><span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span></button>`}).join('');p.querySelectorAll('button').forEach(b=>b.onclick=async()=>{currentWeekOffset=+b.dataset.week;const r=getWeekRange(currentWeekOffset);periodStart=r.start;periodEnd=r.end;updatePeriodDisplay();renderWeekPicker();p.classList.remove('open');if(currentProfile&&currentProfile.role>=1){await loadWeekLogs();await renderDash();renderTop3()}})}
 
-/* ============ ЛИЧНАЯ СТАТИСТИКА ============ */
 async function loadMyStats(){
   if(!currentProfile||!currentProfile.game_nick){$('myStats').style.display='none';return}
   const nick=currentProfile.game_nick;
-  // Онлайн за месяц = 4 последние недели
-  const weeks=[];
-  for(let i=0;i<4;i++){const r=getWeekRange(i);weeks.push(r.start)}
+  const weeks=[];for(let i=0;i<4;i++){const r=getWeekRange(i);weeks.push(r.start)}
   const{data}=await sb.from('online_logs').select('hours,period_start').eq('player_nick',nick).in('period_start',weeks);
   const monthHours=(data||[]).reduce((s,r)=>s+(+r.hours),0);
-  // Топ-место в текущей таблице
   const sorted=[...parsedData].sort((a,b)=>effHours(b)-effHours(a));
   const idx=sorted.findIndex(u=>u.nick===nick);
   const rank=idx>=0?'#'+(idx+1):'—';
-  // Средний % нормы по неделям
-  const percents=[];
-  for(const w of weeks){
-    const f=(data||[]).find(d=>d.period_start===w);
-    if(f)percents.push(Math.min((+f.hours/settings.norm)*100,150));
-  }
+  const percents=[];for(const w of weeks){const f=(data||[]).find(d=>d.period_start===w);if(f)percents.push(Math.min((+f.hours/settings.norm)*100,150))}
   const avgPct=percents.length?percents.reduce((a,b)=>a+b,0)/percents.length:0;
-
   myStatsData={monthHours,rank,avgPercent:avgPct};
   $('msHours').innerHTML=monthHours.toFixed(0)+'<span class="u">ч</span>';
   $('msRank').textContent=rank;
   $('msAvg').innerHTML=avgPct.toFixed(0)+'<span class="u">%</span>';
-  // Цвет в зависимости от процента
-  const avgEl=$('msAvg');
-  avgEl.style.color=avgPct>=100?'var(--green)':avgPct>=70?'var(--yellow)':'var(--red)';
+  $('msAvg').style.color=avgPct>=100?'var(--green)':avgPct>=70?'var(--yellow)':'var(--red)';
   $('myStats').style.display='flex';
 }
 
-/* AUTH */
 function setStatus(s,m,t){const e=$('authStatus'+s);if(!e)return;e.className='auth-status'+(t?' show '+t:'');e.textContent=m||''}
-async function sendCode(){
-  const email=$('authEmail').value.trim();
-  if(!email||!email.includes('@'))return setStatus(1,'Введи email','err');
-  const b=$('sendCodeBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i>...';
-  const{error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
-  b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Отправить код';
-  if(error)return setStatus(1,'Ошибка: '+error.message,'err');
-  setStatus(2,'✅ Код отправлен','ok');$('step1').style.display='none';$('step2').style.display='block';
-}
-async function verifyCode(){
-  const e=$('authEmail').value.trim(),c=$('authCode').value.trim();
-  if(c.length<6)return setStatus(2,'Введи код','err');
-  const b=$('verifyCodeBtn');b.disabled=true;
-  const{error}=await sb.auth.verifyOtp({email:e,token:c,type:'email'});
-  b.disabled=false;
-  if(error)return setStatus(2,'Ошибка: '+error.message,'err');
-  location.reload();
-}
-async function loginDiscord(){
-  const b=$('discordLoginBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i>...';
-  const{error}=await sb.auth.signInWithOAuth({provider:'discord',options:{redirectTo:window.location.origin}});
-  if(error){alert('Ошибка: '+error.message);b.disabled=false}
-}
+async function sendCode(){const email=$('authEmail').value.trim();if(!email||!email.includes('@'))return setStatus(1,'Введи email','err');const b=$('sendCodeBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i>...';const{error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Отправить код';if(error)return setStatus(1,'Ошибка: '+error.message,'err');setStatus(2,'✅ Код отправлен','ok');$('step1').style.display='none';$('step2').style.display='block'}
+async function verifyCode(){const e=$('authEmail').value.trim(),c=$('authCode').value.trim();if(c.length<6)return setStatus(2,'Введи код','err');const b=$('verifyCodeBtn');b.disabled=true;const{error}=await sb.auth.verifyOtp({email:e,token:c,type:'email'});b.disabled=false;if(error)return setStatus(2,'Ошибка: '+error.message,'err');location.reload()}
+async function loginDiscord(){const b=$('discordLoginBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i>...';const{error}=await sb.auth.signInWithOAuth({provider:'discord',options:{redirectTo:window.location.origin}});if(error){alert('Ошибка: '+error.message);b.disabled=false}}
 async function logout(){if(!confirm('Выйти?'))return;await sb.auth.signOut();location.reload()}
 window.logout=logout;
 
-async function loadProfile(uid,email,meta){
-  const{data}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();
-  if(data)return data;
-  const name=meta?.full_name||meta?.name||(email?email.split('@')[0]:'Игрок');
-  const{data:c}=await sb.from('profiles').insert({id:uid,discord_name:name,role:0,active:true}).select().single();
-  return c;
-}
+async function loadProfile(uid,email,meta){const{data}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(data)return data;const name=meta?.full_name||meta?.name||(email?email.split('@')[0]:'Игрок');const{data:c}=await sb.from('profiles').insert({id:uid,discord_name:name,role:0,active:true}).select().single();return c}
 
 async function initAuth(){
   $('tabEmail').onclick=()=>{$('tabEmail').classList.add('active');$('tabDiscord').classList.remove('active');$('emailForm').style.display='block';$('discordForm').style.display='none'};
@@ -662,7 +570,6 @@ async function initAuth(){
   $('authCode').addEventListener('keypress',e=>{if(e.key==='Enter')verifyCode()});
   $('authEmail').addEventListener('keypress',e=>{if(e.key==='Enter')sendCode()});
   $('avatarFileInput').addEventListener('change',handleAvatar);
-
   const{data:{session}}=await sb.auth.getSession();
   if(!session){$('authOverlay').classList.add('open');return}
   currentUser=session.user;
@@ -674,59 +581,18 @@ async function initAuth(){
   updateUserBadge();applyRole();
   await initFullApp();
   handleHash();
-  // Звук приветствия (только при новой сессии за 5 секунд)
   const loginTime=parseInt(localStorage.getItem('mj_login_time')||'0');
-  const isNew=Date.now()-loginTime<3000;
-  if(isNew)setTimeout(playWelcomeSound,600);
+  if(Date.now()-loginTime<3000)setTimeout(playWelcomeSound,600);
 }
 
-function updateUserBadge(){
-  const name=currentProfile.game_nick||currentProfile.discord_name||'Игрок';
-  $('suName').textContent=name;
-  $('suRole').textContent=ROLE_NAMES[currentProfile.role]||'Нет';
-  $('suRole').style.color=ROLE_COLORS[currentProfile.role]||'#8a94c9';
-  const a=$('suAva');
-  if(currentProfile.avatar_url)a.innerHTML=`<img src="${esc(currentProfile.avatar_url)}">`;else a.textContent=initials(name);
-}
+function updateUserBadge(){const name=currentProfile.game_nick||currentProfile.discord_name||'Игрок';$('suName').textContent=name;$('suRole').textContent=ROLE_NAMES[currentProfile.role]||'Нет';$('suRole').style.color=ROLE_COLORS[currentProfile.role]||'#8a94c9';const a=$('suAva');if(currentProfile.avatar_url)a.innerHTML=`<img src="${esc(currentProfile.avatar_url)}">`;else a.textContent=initials(name)}
 
-async function handleAvatar(e){
-  const f=e.target.files[0];if(!f)return;
-  if(f.size>2*1024*1024)return toast('Ошибка','Максимум 2 МБ','err');
-  showLoader('Загрузка...');
-  try{
-    const ext=f.name.split('.').pop();
-    const path=`${currentUser.id}/avatar.${ext}`;
-    const{error:up}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(up)throw up;
-    const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);
-    const url=publicUrl+'?t='+Date.now();
-    const{error:db}=await sb.from('profiles').update({avatar_url:url}).eq('id',currentProfile.id);if(db)throw db;
-    currentProfile.avatar_url=url;updateUserBadge();toast('Готово','Аватар обновлён','ok');
-  }catch(err){toast('Ошибка',err.message,'err')}
-  hideLoader();e.target.value='';
-}
+async function handleAvatar(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024)return toast('Ошибка','Максимум 2 МБ','err');showLoader('Загрузка...');try{const ext=f.name.split('.').pop();const path=`${currentUser.id}/avatar.${ext}`;const{error:up}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(up)throw up;const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);const url=publicUrl+'?t='+Date.now();const{error:db}=await sb.from('profiles').update({avatar_url:url}).eq('id',currentProfile.id);if(db)throw db;currentProfile.avatar_url=url;updateUserBadge();toast('Готово','Аватар обновлён','ok')}catch(err){toast('Ошибка',err.message,'err')}hideLoader();e.target.value=''}
 
-function applyRole(){
-  const r=currentProfile.role;
-  if(r<2)$('inputArea').style.display='none';
-  if(r>=2){$('adminNavBtn').style.display='flex';$('logsNavBtn').style.display='flex'}
-  if(r>=1)$('factionNavBtn').style.display='flex';
-}
+function applyRole(){const r=currentProfile.role;if(r<2)$('inputArea').style.display='none';if(r>=2){$('adminNavBtn').style.display='flex';$('logsNavBtn').style.display='flex'}if(r>=1)$('factionNavBtn').style.display='flex'}
 
-document.querySelectorAll('.nav-btn').forEach(b=>{
-  if(b.id==='myProfileBtn')return;
-  b.addEventListener('click',async()=>{
-    if(b.dataset.tab==='profileTab')return;
-    await switchTab(b.dataset.tab,true);
-  });
-});
-
-$('myProfileBtn').onclick=()=>{
-  if(!currentProfile.game_nick){
-    toast('Ник не указан','Попроси ГС/ЗГС МЮ указать твой игровой ник в разделе Управление','err');
-    return;
-  }
-  openProfilePage(currentProfile.game_nick);
-};
+document.querySelectorAll('.nav-btn').forEach(b=>{if(b.id==='myProfileBtn')return;b.addEventListener('click',async()=>{if(b.dataset.tab==='profileTab')return;await switchTab(b.dataset.tab,true)})});
+$('myProfileBtn').onclick=()=>{if(!currentProfile.game_nick){toast('Ник не указан','Попроси ГС/ЗГС МЮ указать твой игровой ник','err');return}openProfilePage(currentProfile.game_nick)};
 
 async function switchTab(tab,updateHash=false){
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
@@ -768,29 +634,30 @@ async function renderProfilePage(nick){
   const hours=u?effHours(u):0;
   const inactive=u?.inactiveDays||0;
   const avaHtml=avatar?`<img src="${esc(avatar)}">`:initials(nick);
-  const facHtml=faction?`<span class="fac ${facClass(faction)}" style="font-size:11px;padding:5px 12px">${faction}</span>`:'';
+  const facHtml=faction?`<span class="fac ${facClass(faction)}">${facIcon(faction)}${faction}</span>`:'';
   const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
   const{data:logs}=await sb.from('online_logs').select('hours,period_start').eq('player_nick',nick).in('period_start',weeks.map(w=>w.start));
   const vals=weeks.map(w=>{const f=(logs||[]).find(d=>d.period_start===w.start);return f?+f.hours:0});
   const totalHours=vals.reduce((s,v)=>s+v,0);
   const avgDay=hours/7;
-  // Средний % нормы
   const percents=vals.filter(v=>v>0).map(v=>(v/settings.norm)*100);
   const avgPct=percents.length?percents.reduce((a,b)=>a+b,0)/percents.length:0;
+  // Достижения
+  const{data:achData}=await sb.from('achievements').select('achievement').eq('player_nick',nick);
+  const achList=[...new Set((achData||[]).map(a=>a.achievement))];
+  const achBadgesHtml=achList.length
+    ? achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span class="ach-mini ${a}" title="${ic.t}"><i class="fas ${ic.i}"></i></span>`}).join('')
+    : '<span style="color:var(--text-3);font-size:12px">Нет достижений</span>';
+
   let positionBlock='';
-  if(role===1&&posStart){
-    const start=new Date(posStart),now=new Date();
-    const days=Math.floor((now-start)/(1000*60*60*24));
-    const weeksOn=Math.floor(days/7);
-    positionBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><div class="progress-position-grid"><div class="progress-position-item"><div class="pp-label2">Дата назначения</div><div class="pp-value2 gold">${posStart}</div></div><div class="progress-position-item"><div class="pp-label2">Дней на посту</div><div class="pp-value2">${days}</div></div><div class="progress-position-item"><div class="pp-label2">Недель на посту</div><div class="pp-value2">${weeksOn}</div></div></div></div>`;
-  } else if(role===1&&!posStart){
-    positionBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><p style="color:var(--text-3);font-size:13px">Дата назначения не указана. Обратись к ГС МЮ.</p></div>`;
-  }
+  if(role===1&&posStart){const start=new Date(posStart),now=new Date();const days=Math.floor((now-start)/(1000*60*60*24));const weeksOn=Math.floor(days/7);positionBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><div class="progress-position-grid"><div class="progress-position-item"><div class="pp-label2">Дата назначения</div><div class="pp-value2 gold">${posStart}</div></div><div class="progress-position-item"><div class="pp-label2">Дней на посту</div><div class="pp-value2">${days}</div></div><div class="progress-position-item"><div class="pp-label2">Недель на посту</div><div class="pp-value2">${weeksOn}</div></div></div></div>`}
+  else if(role===1&&!posStart){positionBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><p style="color:var(--text-3);font-size:13px">Дата назначения не указана. Обратись к ГС МЮ.</p></div>`}
+
   $('profileContent').innerHTML=`
     <div class="profile-hero">
       <div class="profile-hero-ava">${avaHtml}</div>
       <div class="profile-hero-info">
-        <h2>${esc(nick)}</h2>
+        <h2>${esc(nick)} <span class="ach-row">${achBadgesHtml}</span></h2>
         <div class="profile-hero-meta">${facHtml}<span class="badge mute" style="padding:6px 14px;font-size:11px">${ROLE_NAMES[role]}</span></div>
         <div class="profile-hero-stats">
           <div class="profile-hero-stat"><span class="ph-label">За неделю</span><span class="ph-value" style="color:var(--green)">${hours.toFixed(1)}ч</span></div>
@@ -808,65 +675,20 @@ async function renderProfilePage(nick){
     </div>
     <div class="profile-grid">
       <div class="card"><div class="card-title"><span><i class="fas fa-chart-line" style="margin-right:8px"></i>Динамика онлайна по неделям</span></div><div class="chart-wrap tall"><canvas id="profileWeekChart"></canvas></div></div>
-      <div class="card"><div class="card-title"><span><i class="fas fa-chart-pie" style="margin-right:8px"></i>Разбивка онлайна</span></div><div class="chart-wrap tall"><canvas id="profilePieChart"></canvas></div></div>
+      <div class="card"><div class="card-title"><span><i class="fas fa-medal" style="margin-right:8px"></i>Достижения</span></div><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px 0">${achList.length?achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span style="padding:10px 16px;border-radius:20px;font-size:12px;font-weight:800;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold);display:flex;align-items:center;gap:8px"><i class="fas ${ic.i}"></i> ${ic.t}</span>`}).join(''):'<span style="color:var(--text-3);font-size:13px">Нет достижений</span>'}</div></div>
     </div>`;
   if(window._pWeek)window._pWeek.destroy();
-  window._pWeek=new Chart($('profileWeekChart'),{
-    type:'line',
-    data:{labels:weeks.reverse().map(w=>w.label),datasets:[{label:'Часы',data:vals.reverse(),borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,320);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:6,pointHoverRadius:9,pointBorderColor:'#fff',pointBorderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}
-  });
-  const okH=hours>=settings.norm?hours:0;
-  const warnH=(hours>=settings.predThreshold&&hours<settings.norm)?hours:0;
-  const badH=hours<settings.predThreshold?hours:0;
-  const labels=[],data=[],colors=[];
-  if(okH>0){labels.push('В норме');data.push(okH.toFixed(1));colors.push('#4cdb8c')}
-  if(warnH>0){labels.push('Предупр.');data.push(warnH.toFixed(1));colors.push('#f0c45a')}
-  if(badH>0){labels.push('Выговор');data.push(badH.toFixed(1));colors.push('#ff6b6b')}
-  if(!data.length){labels.push('Нет данных');data.push(1);colors.push('#5a6390')}
-  if(window._pPie)window._pPie.destroy();
-  window._pPie=new Chart($('profilePieChart'),{
-    type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#b8c2f0',padding:16,font:{size:12}}}}}
-  });
+  window._pWeek=new Chart($('profileWeekChart'),{type:'line',data:{labels:weeks.reverse().map(w=>w.label),datasets:[{label:'Часы',data:vals.reverse(),borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,320);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:6,pointHoverRadius:9,pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
 }
 
-$('backFromProfile').onclick=()=>{
-  if(previousTab==='myProfileBtn'){
-    location.hash='';
-    switchTab('dashboardTab',false);
-    // Активируем кнопку
-    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
-    $('myProfileBtn').classList.add('active');
-    openProfilePage(currentProfile.game_nick);
-  } else {
-    location.hash='tab='+(previousTab.replace('Tab',''));
-    switchTab(previousTab,false);
-  }
-};
+$('backFromProfile').onclick=()=>{if(previousTab==='myProfileBtn'){location.hash='';switchTab('dashboardTab',false);document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));$('myProfileBtn').classList.add('active');openProfilePage(currentProfile.game_nick)}else{location.hash='tab='+(previousTab.replace('Tab',''));switchTab(previousTab,false)}};
 
-function handleHash(){
-  const h=location.hash.slice(1);
-  if(h.startsWith('profile=')){const nick=decodeURIComponent(h.slice(8));openProfilePage(nick);return}
-  if(h.startsWith('tab=')){const tn=h.slice(4);const full=tn+'Tab';if($(full))switchTab(full,false)}
-}
+function handleHash(){const h=location.hash.slice(1);if(h.startsWith('profile=')){const nick=decodeURIComponent(h.slice(8));openProfilePage(nick);return}if(h.startsWith('tab=')){const tn=h.slice(4);const full=tn+'Tab';if($(full))switchTab(full,false)}}
 window.addEventListener('hashchange',handleHash);
 
-function renderChips(){
-  const bar=$('chipsBar');
-  const facs=['ALL','LSPD','SFPD','RCSD','LVPD','FBI'];
-  const labels={ALL:'Все',LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};
-  const icons={ALL:'fa-globe',LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
-  bar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionFilter?'active':''}" data-fac="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');
-  bar.querySelectorAll('[data-fac]').forEach(b=>b.onclick=()=>{currentFactionFilter=b.dataset.fac;renderChips();render()});
-}
+function renderChips(){const bar=$('chipsBar');const facs=['ALL','LSPD','SFPD','RCSD','LVPD','FBI'];const labels={ALL:'Все',LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};const icons={ALL:'fa-globe',LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};bar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionFilter?'active':''}" data-fac="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');bar.querySelectorAll('[data-fac]').forEach(b=>b.onclick=()=>{currentFactionFilter=b.dataset.fac;renderChips();render()})}
 
-function attachSort(){
-  document.querySelectorAll('th.sortable').forEach(th=>{
-    th.onclick=()=>{const s=th.dataset.sort;if(sortBy===s)sortDir=sortDir==='asc'?'desc':'asc';else{sortBy=s;sortDir='desc'};document.querySelectorAll('th.sortable').forEach(x=>x.classList.remove('sort-asc','sort-desc'));th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');render()};
-  });
-}
+function attachSort(){document.querySelectorAll('th.sortable').forEach(th=>{th.onclick=()=>{const s=th.dataset.sort;if(sortBy===s)sortDir=sortDir==='asc'?'desc':'asc';else{sortBy=s;sortDir='desc'};document.querySelectorAll('th.sortable').forEach(x=>x.classList.remove('sort-asc','sort-desc'));th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');render()}})}
 
 function render(){
   const tb=$('result');
@@ -883,11 +705,11 @@ function render(){
     let sc='ok',st='Норма';if(eff<settings.predThreshold){sc='bad';st='Выговор'}else if(eff<settings.norm){sc='pred';st='Предупр.'}
     let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
     const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
-    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}">${u.faction}</span>`:'';
+    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}">${facIcon(u.faction)}${u.faction}</span>`:'';
     const isMe=u.nick===currentProfile.game_nick;
     return`<tr data-nick="${esc(u.nick)}" style="${isMe?'background:rgba(167,139,250,.06)':''}">
       <td style="text-align:center"><span class="rank-badge ${rc}">${i+1}</span></td>
-      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${facHtml} ${isMe?'<span class="badge reward" style="font-size:9px">Ты</span>':''}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td>
+      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${facHtml} ${achBadges(u)} ${isMe?'<span class="badge reward" style="font-size:9px">Ты</span>':''}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td>
       <td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span>${extra>=1?`<span class="badge ok" style="font-size:9px">+${extra.toFixed(1)}</span>`:''}</div></td>
       <td style="text-align:center"><span class="badge mute">${u.inactiveDays||0} дн</span></td>
       <td style="text-align:center"><span class="badge ${sc}">${st}</span></td>
@@ -909,7 +731,7 @@ function renderTop3(){
   g.innerHTML=sorted.map((u,i)=>{
     const idx=order[i],eff=effHours(u);
     const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
-    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}" style="margin-top:8px">${u.faction}</span>`:'';
+    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}" style="margin-top:8px">${facIcon(u.faction)}${u.faction}</span>`:'';
     return`<div class="pod-card ${cls[idx]}" onclick="openProfilePage('${esc(u.nick).replace(/'/g,"\\'")}')">
       <div class="pod-medal ${cls[idx]}"><i class="fas ${icons[idx]}"></i></div>
       <div class="pod-rank">${labels[idx]}</div>
@@ -937,11 +759,7 @@ async function renderDash(){
   const{data}=await sb.from('online_logs').select('hours,period_start').in('period_start',weeks.map(w=>w.start));
   const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
   if(charts.dash)charts.dash.destroy();
-  charts.dash=new Chart($('chartDashWeeks'),{
-    type:'line',
-    data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:5,pointBorderColor:'#fff',pointBorderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}
-  });
+  charts.dash=new Chart($('chartDashWeeks'),{type:'line',data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:5,pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
   const top5=[...parsedData].sort((a,b)=>effHours(b)-effHours(a)).slice(0,5);
   const d=$('dashTop5');
   if(!top5.length)d.innerHTML='<div class="empty"><i class="fas fa-users"></i>Нет данных</div>';
@@ -949,34 +767,27 @@ async function renderDash(){
     const eff=effHours(u),pct=Math.min((eff/settings.norm)*100,100),col=barCol(eff);
     const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
     let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
+    // НЕ показываем фракцию здесь — только ник и ачивки
     return`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openProfilePage('${esc(u.nick).replace(/'/g,"\\'")}')">
       <span class="rank-badge ${rc}">${i+1}</span>
       <div class="u-ava">${avaHtml}</div>
-      <div style="flex:1;min-width:0"><div class="u-nick">${esc(u.nick)}</div><div class="u-sub">${u.faction||'—'}</div></div>
+      <div style="flex:1;min-width:0"><div class="u-nick">${esc(u.nick)} ${achBadges(u)}</div><div class="u-sub">${eff.toFixed(1)}ч за неделю</div></div>
       <div class="progress" style="min-width:140px;max-width:200px"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div>
     </div>`;
   }).join('');
-  // Обновляем личную статистику
   await loadMyStats();
 }
-function animate(id,target,hasUnit){
-  const el=$(id);if(!el)return;
-  const cur=parseFloat(el.textContent.replace(/[^\d.]/g,''))||0;
-  const dur=800,start=performance.now();
-  const step=now=>{const p=Math.min((now-start)/dur,1);const v=cur+(target-cur)*p;el.innerHTML=hasUnit?v.toFixed(1)+'<span class="unit">ч</span>':Math.round(v);if(p<1)requestAnimationFrame(step)};
-  requestAnimationFrame(step);
-}
+function animate(id,target,hasUnit){const el=$(id);if(!el)return;const cur=parseFloat(el.textContent.replace(/[^\d.]/g,''))||0;const dur=800,start=performance.now();const step=now=>{const p=Math.min((now-start)/dur,1);const v=cur+(target-cur)*p;el.innerHTML=hasUnit?v.toFixed(1)+'<span class="unit">ч</span>':Math.round(v);if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
 
 async function renderFaction(){
   const tb=$('factionTbody');
   const facs=['LSPD','SFPD','RCSD','LVPD','FBI'];
   const labels={LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};
-  const icons={LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
   if(currentProfile.faction)currentFactionView=currentProfile.faction;
   const chipsBar=$('factionChips');
-  chipsBar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionView?'active':''}" data-fac-view="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');
+  chipsBar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionView?'active':''}" data-fac-view="${f}"><i class="fas ${FAC_ICONS[f]}"></i>${labels[f]}</button>`).join('');
   chipsBar.querySelectorAll('[data-fac-view]').forEach(b=>b.onclick=async()=>{currentFactionView=b.dataset.facView;await renderFaction()});
-  $('factionTitle').textContent=labels[currentFactionView]||currentFactionView;
+  $('factionTitle').innerHTML=`<i class="fas ${FAC_ICONS[currentFactionView]}" style="color:var(--accent)"></i> ${labels[currentFactionView]||currentFactionView}`;
   const{data:profs,error}=await sb.from('profiles').select('*').eq('faction',currentFactionView).eq('active',true).order('role',{ascending:false});
   if(error){tb.innerHTML=`<tr><td colspan="5" class="empty">${esc(error.message)}</td></tr>`;return}
   if(!profs?.length){tb.innerHTML=`<tr><td colspan="5" class="empty"><i class="fas fa-users-slash"></i>В этой фракции пока никого нет</td></tr>`;return}
@@ -990,7 +801,7 @@ async function renderFaction(){
     const nick=p.game_nick||p.discord_name||'—';
     return`<tr data-nick="${esc(p.game_nick||'')}" style="${p.game_nick?'cursor:pointer':''}">
       <td style="text-align:center"><span class="rank-badge">${i+1}</span></td>
-      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(nick)}</div><div class="u-sub">${ROLE_NAMES[p.role]||'—'}</div></div></div></td>
+      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(nick)} ${w?achBadges(w):''}</div><div class="u-sub">${ROLE_NAMES[p.role]||'—'}</div></div></div></td>
       <td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div></td>
       <td style="text-align:center"><span class="badge mute">${w?.inactiveDays||0} дн</span></td>
       <td style="text-align:center"><span class="badge ${sc}">${st}</span></td>
@@ -1009,7 +820,10 @@ async function loadWeekLogs(){
   const nicks=Object.keys(byNick);
   const{data:prof}=await sb.from('profiles').select('game_nick,avatar_url,faction,role').in('game_nick',nicks);
   const pm={};(prof||[]).forEach(p=>{if(p.game_nick)pm[p.game_nick]=p});
-  parsedData=Object.values(byNick).map(r=>({nick:r.player_nick,hours:+r.hours,perDayHours:r.per_day_hours?+r.per_day_hours:null,activeDays:r.active_days,bonusHours:0,inactiveDays:0,faction:pm[r.player_nick]?.faction||null,avatar_url:pm[r.player_nick]?.avatar_url||null,role:pm[r.player_nick]?.role||0})).sort((a,b)=>effHours(b)-effHours(a));
+  // Загружаем достижения для всех ников
+  const{data:achAll}=await sb.from('achievements').select('player_nick,achievement').in('player_nick',nicks);
+  const achMap={};(achAll||[]).forEach(a=>{if(!achMap[a.player_nick])achMap[a.player_nick]=[];achMap[a.player_nick].push(a.achievement)});
+  parsedData=Object.values(byNick).map(r=>({nick:r.player_nick,hours:+r.hours,perDayHours:r.per_day_hours?+r.per_day_hours:null,activeDays:r.active_days,bonusHours:0,inactiveDays:0,faction:pm[r.player_nick]?.faction||null,avatar_url:pm[r.player_nick]?.avatar_url||null,role:pm[r.player_nick]?.role||0,achievements:achMap[r.player_nick]||[]})).sort((a,b)=>effHours(b)-effHours(a));
   render();
 }
 
@@ -1030,10 +844,10 @@ async function calculate(){
 }
 async function checkAch(players){
   const s=[...players].sort((a,b)=>b.hours-a.hours);
-  for(let i=0;i<Math.min(3,s.length);i++){
-    const ach=i===0?'top1':'top3';
-    const{data}=await sb.from('achievements').select('id').eq('player_nick',s[i].nick).eq('achievement',ach).maybeSingle();
-    if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:s[i].nick,achievement:ach});
+  for(let i=0;i<Math.min(3,s.length);i++){const ach=i===0?'top1':'top3';const{data}=await sb.from('achievements').select('id').eq('player_nick',s[i].nick).eq('achievement',ach).maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:s[i].nick,achievement:ach})}
+  for(const u of players){
+    if(u.hours>=settings.norm+10){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','overwork').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'overwork'})}
+    if(u.hours>=settings.norm){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','perfect').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'perfect'})}
   }
 }
 
@@ -1042,19 +856,11 @@ async function loadCharts(){
   const{data}=await sb.from('online_logs').select('hours,period_start,faction').in('period_start',weeks.map(w=>w.start));
   const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
   if(charts.weeks)charts.weeks.destroy();
-  charts.weeks=new Chart($('chartWeeks'),{
-    type:'bar',
-    data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,backgroundColor:'rgba(167,139,250,.6)',borderColor:'#a78bfa',borderWidth:2,borderRadius:10}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}
-  });
+  charts.weeks=new Chart($('chartWeeks'),{type:'bar',data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,backgroundColor:'rgba(167,139,250,.6)',borderColor:'#a78bfa',borderWidth:2,borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
   const facCount={};(data||[]).forEach(r=>{if(r.faction)facCount[r.faction]=(facCount[r.faction]||0)+(+r.hours)});
   const facColors={LSPD:'#60a5fa',SFPD:'#4ade80',RCSD:'#fbbf24',LVPD:'#f87171',FBI:'#a78bfa'};
   if(charts.facs)charts.facs.destroy();
-  charts.facs=new Chart($('chartFactions'),{
-    type:'doughnut',
-    data:{labels:Object.keys(facCount),datasets:[{data:Object.values(facCount),backgroundColor:Object.keys(facCount).map(k=>facColors[k]||'#888'),borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#b8c2f0',font:{size:12}}}}}
-  });
+  charts.facs=new Chart($('chartFactions'),{type:'doughnut',data:{labels:Object.keys(facCount),datasets:[{data:Object.values(facCount),backgroundColor:Object.keys(facCount).map(k=>facColors[k]||'#888'),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#b8c2f0',font:{size:12}}}}}});
 }
 
 async function loadLogs(){
@@ -1080,91 +886,4 @@ async function loadAdminTable(){
   const assign=getAssign(my);
   const facs=['','LSPD','SFPD','RCSD','LVPD','FBI'];
   tb.innerHTML=data.map(p=>{
-    const cm=canManage(my,p.role)&&p.id!==currentProfile.id;
-    const roleOpts=assign.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
-    const facOpts=facs.map(f=>`<option value="${f}" ${(p.faction||'')===f?'selected':''}>${f||'—'}</option>`).join('');
-    const facDisplay=p.faction?`<span class="fac ${facClass(p.faction)}">${p.faction}</span>`:'—';
-    const isLeader=p.role===1;
-    const posField=isLeader&&cm?`<input type="date" class="admin-nick" data-pos="${p.id}" value="${p.position_start_date||''}">`:`<span style="color:var(--text-3);font-size:11px">—</span>`;
-    return`<tr>
-      <td>${esc(p.discord_name||p.discord_id||'—')}</td>
-      <td><input class="admin-nick" data-nick="${p.id}" value="${esc(p.game_nick||'')}" placeholder="ник"></td>
-      <td>${cm?`<select class="admin-select" data-fac="${p.id}">${facOpts}</select>`:facDisplay}</td>
-      <td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td>
-      <td>${posField}</td>
-      <td style="text-align:center">${p.active?'✅':'❌'}</td>
-      <td>${cm?`<select class="admin-select" data-role="${p.id}">${roleOpts}</select><button class="admin-btn ${p.active?'danger':'success'}" data-tog="${p.id}" data-act="${p.active}">${p.active?'Откл.':'Вкл.'}</button>`:(p.id===currentProfile.id?'<span style="color:var(--text-3);font-size:11px">Это ты</span>':'—')}</td>
-    </tr>`;
-  }).join('');
-  tb.querySelectorAll('[data-role]').forEach(s=>s.onchange=async()=>{
-    const{error}=await sb.from('profiles').update({role:+s.value}).eq('id',s.dataset.role);
-    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Роль обновлена','ok');loadAdminTable()}
-  });
-  tb.querySelectorAll('[data-fac]').forEach(s=>s.onchange=async()=>{
-    const{error}=await sb.from('profiles').update({faction:s.value||null}).eq('id',s.dataset.fac);
-    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Фракция обновлена','ok');loadAdminTable()}
-  });
-  tb.querySelectorAll('[data-pos]').forEach(inp=>inp.onchange=async()=>{
-    const{error}=await sb.from('profiles').update({position_start_date:inp.value||null}).eq('id',inp.dataset.pos);
-    if(error)toast('Ошибка',error.message,'err');else toast('Готово','Дата обновлена','ok');
-  });
-  tb.querySelectorAll('[data-tog]').forEach(b=>b.onclick=async()=>{
-    const{error}=await sb.from('profiles').update({active:b.dataset.act!=='true'}).eq('id',b.dataset.tog);
-    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Статус обновлён','ok');loadAdminTable()}
-  });
-  tb.querySelectorAll('[data-nick]').forEach(inp=>{
-    inp.onblur=async()=>{
-      const nick=inp.value.trim();
-      const{error}=await sb.from('profiles').update({game_nick:nick||null}).eq('id',inp.dataset.nick);
-      if(error)toast('Ошибка',error.message,'err');
-      else if(inp.dataset.nick===currentProfile.id){currentProfile.game_nick=nick;updateUserBadge();toast('Готово','Ник обновлён','ok')}
-    };
-    inp.onkeypress=e=>{if(e.key==='Enter')inp.blur()};
-  });
-}
-
-function loadPrefs(){
-  const t=localStorage.getItem('mj_theme')||'dark',a=localStorage.getItem('mj_accent')||'purple',c=localStorage.getItem('mj_compact')==='1',s=localStorage.getItem('mj_sound')!=='0';
-  document.documentElement.dataset.theme=t;document.documentElement.dataset.accent=a;
-  document.querySelectorAll('[data-theme-val]').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===t));
-  document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('active',b.dataset.accent===a));
-  if(c){$('sidebar').classList.add('compact');$('compactSwitch')?.classList.add('on')}
-  if(s)$('soundSwitch')?.classList.add('on');else $('soundSwitch')?.classList.remove('on');
-  $('themeBtn').innerHTML=t==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
-}
-document.querySelectorAll('[data-theme-val]').forEach(b=>b.onclick=()=>{
-  document.documentElement.dataset.theme=b.dataset.themeVal;localStorage.setItem('mj_theme',b.dataset.themeVal);
-  document.querySelectorAll('[data-theme-val]').forEach(x=>x.classList.toggle('active',x===b));
-  $('themeBtn').innerHTML=b.dataset.themeVal==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
-  if(parsedData.length){render();renderDash();renderTop3()}
-});
-document.querySelectorAll('[data-accent]').forEach(b=>b.onclick=()=>{
-  document.documentElement.dataset.accent=b.dataset.accent;localStorage.setItem('mj_accent',b.dataset.accent);
-  document.querySelectorAll('[data-accent]').forEach(x=>x.classList.toggle('active',x===b));
-});
-$('themeBtn').onclick=()=>{const cur=document.documentElement.dataset.theme;const nxt=cur==='dark'?'light':'dark';document.querySelector(`[data-theme-val="${nxt}"]`).click()};
-$('compactBtn').onclick=()=>{$('sidebar').classList.toggle('compact');localStorage.setItem('mj_compact',$('sidebar').classList.contains('compact')?'1':'0')};
-$('compactSwitch').onclick=function(){this.classList.toggle('on');$('compactBtn').click()};
-$('soundSwitch').onclick=function(){
-  this.classList.toggle('on');
-  const on=this.classList.contains('on');
-  localStorage.setItem('mj_sound',on?'1':'0');
-  if(on)playWelcomeSound();
-};
-$('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
-$('sidebarUser').onclick=e=>{if(!e.target.closest('button'))$('avatarFileInput').click()};
-
-async function initFullApp(){
-  const r=getWeekRange(0);periodStart=r.start;periodEnd=r.end;
-  updatePeriodDisplay();renderWeekPicker();renderChips();
-  if(currentProfile.role>=1){await loadWeekLogs();await renderDash()}
-  else render();
-  $('periodBtn').onclick=()=>$('weekPicker').classList.toggle('open');
-  $('calcButton').onclick=calculate;
-  $('searchInput').oninput=e=>{currentSearch=e.target.value;render()};
-  loadPrefs();
-}
-(function(){const t=()=>{if(window.supabase)initAuth();else setTimeout(t,100)};t()})();
-</script>
-</body>
-</html>
+    const
