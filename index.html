@@ -766,4 +766,239 @@ async function renderFaction(){
 async function loadWeekLogs(){
   const tb=$('result');
   tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const{data
+  const{data,error}=await sb.from('online_logs').select('*').eq('period_start',periodStart).eq('period_end',periodEnd).order('created_at',{ascending:false});
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){parsedData=[];render();return}
+  const byNick={};data.forEach(r=>{if(!byNick[r.player_nick])byNick[r.player_nick]=r});
+  const nicks=Object.keys(byNick);
+  const{data:prof}=await sb.from('profiles').select('game_nick,avatar_url,faction,role').in('game_nick',nicks);
+  const pm={};(prof||[]).forEach(p=>{if(p.game_nick)pm[p.game_nick]=p});
+  const{data:achAll}=await sb.from('achievements').select('player_nick,achievement').in('player_nick',nicks);
+  const achMap={};(achAll||[]).forEach(a=>{if(!achMap[a.player_nick])achMap[a.player_nick]=[];achMap[a.player_nick].push(a.achievement)});
+  parsedData=Object.values(byNick).map(r=>({nick:r.player_nick,hours:+r.hours,perDayHours:r.per_day_hours?+r.per_day_hours:null,activeDays:r.active_days,bonusHours:0,inactiveDays:0,faction:pm[r.player_nick]?.faction||null,avatar_url:pm[r.player_nick]?.avatar_url||null,role:pm[r.player_nick]?.role||0,achievements:achMap[r.player_nick]||[]})).sort((a,b)=>effHours(b)-effHours(a));
+  render();
+}
+
+function parseInputText(text){
+  const data=[];
+  const re=/(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
+  let m;while((m=re.exec(text))!==null){const nick=m[2].trim();const hours=timeToHours(m[3]);if(isNaN(hours))continue;data.push({nick,hours,perDayHours:m[4]?parseFloat(m[4].replace(',','.')):null,activeDays:m[5]?parseInt(m[5]):null,bonusHours:0,inactiveDays:0})}
+  return data;
+}
+
+function updateCalcPreview(){
+  const prev=$('calcPreview');if(!prev)return;
+  const data=parseInputText($('input').value);
+  if(!data.length){prev.innerHTML='';return}
+  const total=data.reduce((s,u)=>s+u.hours,0);
+  const ok=data.filter(u=>u.hours>=settings.norm).length;
+  const warn=data.filter(u=>u.hours>=settings.predThreshold&&u.hours<settings.norm).length;
+  const bad=data.filter(u=>u.hours<settings.predThreshold).length;
+  prev.innerHTML=`<span class="calc-chip"><i class="fas fa-users"></i> Найдено: <b>${data.length}</b></span><span class="calc-chip"><i class="fas fa-clock"></i> Всего: <b>${total.toFixed(1)}ч</b></span><span class="calc-chip ok"><i class="fas fa-check"></i> Норма: <b>${ok}</b></span><span class="calc-chip warn"><i class="fas fa-exclamation"></i> Предупр.: <b>${warn}</b></span><span class="calc-chip bad"><i class="fas fa-times"></i> Выговор: <b>${bad}</b></span>`;
+}
+
+async function calculate(){
+  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
+  const text=$('input').value;if(!text.trim())return toast('Пусто','Вставь данные','err');
+  showLoader('Расчёт...');
+  const data=parseInputText(text);
+  if(!data.length){hideLoader();return toast('Ошибка','Не распарсилось','err')}
+  const byNick={};data.forEach(u=>{byNick[u.nick]=u});const uniq=Object.values(byNick);const nicks=uniq.map(u=>u.nick);
+  await sb.from('online_logs').delete().eq('period_start',periodStart).eq('period_end',periodEnd).in('player_nick',nicks);
+  const rows=uniq.map(u=>({user_id:currentProfile.id,player_nick:u.nick,hours:u.hours,per_day_hours:u.perDayHours,active_days:u.activeDays,period_start:periodStart,period_end:periodEnd}));
+  const{error}=await sb.from('online_logs').insert(rows);
+  if(error){hideLoader();return toast('Ошибка',error.message,'err')}
+  await checkAch(uniq);await loadWeekLogs();await renderDash();hideLoader();
+  toast('Готово',`Сохранено ${uniq.length} игроков`,'ok');
+}
+
+async function checkAch(players){
+  const s=[...players].sort((a,b)=>b.hours-a.hours);
+  for(let i=0;i<Math.min(3,s.length);i++){const ach=i===0?'top1':'top3';const{data}=await sb.from('achievements').select('id').eq('player_nick',s[i].nick).eq('achievement',ach).maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:s[i].nick,achievement:ach})}
+  for(const u of players){
+    if(u.hours>=settings.norm+10){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','overwork').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'overwork'})}
+    if(u.hours>=settings.norm){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','perfect').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'perfect'})}
+  }
+}
+
+async function loadCharts(){
+  const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
+  const{data}=await sb.from('online_logs').select('hours,period_start,faction').in('period_start',weeks.map(w=>w.start));
+  const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
+  if(charts.weeks)charts.weeks.destroy();
+  charts.weeks=new Chart($('chartWeeks'),{type:'bar',data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,backgroundColor:'rgba(167,139,250,.6)',borderColor:'#a78bfa',borderWidth:2,borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
+  const facCount={};(data||[]).forEach(r=>{if(r.faction)facCount[r.faction]=(facCount[r.faction]||0)+(+r.hours)});
+  const facColors={LSPD:'#60a5fa',SFPD:'#4ade80',RCSD:'#fbbf24',LVPD:'#f87171',FBI:'#a78bfa'};
+  if(charts.facs)charts.facs.destroy();
+  charts.facs=new Chart($('chartFactions'),{type:'doughnut',data:{labels:Object.keys(facCount),datasets:[{data:Object.values(facCount),backgroundColor:Object.keys(facCount).map(k=>facColors[k]||'#888'),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#b8c2f0',font:{size:12}}}}}});
+}
+
+async function loadLogs(){
+  const tb=$('logsTbody');
+  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('online_logs').select('*,profiles(discord_name)').order('created_at',{ascending:false}).limit(100);
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){tb.innerHTML='<tr><td colspan="7" class="empty">Пусто</td></tr>';return}
+  tb.innerHTML=data.map(r=>`<tr><td style="font-size:11px">${new Date(r.created_at).toLocaleString('ru-RU')}</td><td><b>${esc(r.player_nick)}</b></td><td>${(+r.hours).toFixed(1)}ч</td><td>${r.per_day_hours?(+r.per_day_hours).toFixed(1):'—'}</td><td>${r.active_days||'—'}</td><td style="font-size:11px">${r.period_start||'—'} — ${r.period_end||'—'}</td><td>${esc(r.profiles?.discord_name||'—')}</td></tr>`).join('');
+}
+
+const getAssign=my=>my>=5?[0,1,2,3,4]:my===4?[0,1,2,3]:my===3?[0,1,2]:my===2?[0,1]:[];
+const canManage=(my,t)=>my<2?false:my>=5?true:my===4?t<=3:my===3?t<=2:my===2?t<=1:false;
+
+async function loadAdminTable(){
+  const tb=$('adminTbody'),my=currentProfile.role;
+  if(my<2){tb.innerHTML='<tr><td colspan="7" class="empty">Нет прав</td></tr>';return}
+  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('profiles').select('*').or('archived.is.null,archived.eq.false').order('role',{ascending:false});
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
+  const hints={2:'Можешь менять ники, фракции, роли 0-1, архивировать.',3:'Можешь менять ники, фракции, роли 0-2, архивировать.',4:'Можешь менять ники, фракции, роли 0-3, архивировать.',5:'Полный доступ.'};
+  $('adminHint').textContent=hints[Math.min(my,5)]||'';
+  const assign=getAssign(my);
+  const facs=['','LSPD','SFPD','RCSD','LVPD','FBI'];
+  tb.innerHTML=data.map(p=>{
+    const cm=canManage(my,p.role)&&p.id!==currentProfile.id;
+    const roleOpts=assign.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
+    const facOpts=facs.map(f=>`<option value="${f}" ${(p.faction||'')===f?'selected':''}>${f||'—'}</option>`).join('');
+    const facDisplay=p.faction?`<span class="fac ${facClass(p.faction)}">${facIcon(p.faction)}${p.faction}</span>`:'—';
+    const isLeader=p.role===1;
+    const posField=isLeader&&cm?`<input type="date" class="admin-nick" data-pos="${p.id}" value="${p.position_start_date||''}">`:`<span style="color:var(--text-3);font-size:11px">—</span>`;
+    return`<tr><td>${esc(p.discord_name||p.discord_id||'—')}</td><td><input class="admin-nick" data-nick="${p.id}" value="${esc(p.game_nick||'')}" placeholder="ник"></td><td>${cm?`<select class="admin-select" data-fac="${p.id}">${facOpts}</select>`:facDisplay}</td><td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td><td>${posField}</td><td style="text-align:center">${p.active?'✅':'❌'}</td><td><div class="admin-actions-cell">${cm?`<select class="admin-select" data-role="${p.id}">${roleOpts}</select><button class="admin-btn ${p.active?'danger':'success'}" data-tog="${p.id}" data-act="${p.active}">${p.active?'Откл.':'Вкл.'}</button><button class="admin-btn warn icon-only" onclick="archiveUser('${p.id}')" data-tip="Отправить в архив"><i class="fas fa-archive"></i></button>`:(p.id===currentProfile.id?'<span style="color:var(--text-3);font-size:11px">Это ты</span>':'—')}</div></td></tr>`;
+  }).join('');
+  tb.querySelectorAll('[data-role]').forEach(s=>s.onchange=async()=>{const{error}=await sb.from('profiles').update({role:+s.value}).eq('id',s.dataset.role);if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Роль обновлена','ok');loadAdminTable()}});
+  tb.querySelectorAll('[data-fac]').forEach(s=>s.onchange=async()=>{const{error}=await sb.from('profiles').update({faction:s.value||null}).eq('id',s.dataset.fac);if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Фракция обновлена','ok');loadAdminTable()}});
+  tb.querySelectorAll('[data-pos]').forEach(inp=>inp.onchange=async()=>{const{error}=await sb.from('profiles').update({position_start_date:inp.value||null}).eq('id',inp.dataset.pos);if(error)toast('Ошибка',error.message,'err');else toast('Готово','Дата обновлена','ok')});
+  tb.querySelectorAll('[data-tog]').forEach(b=>b.onclick=async()=>{const{error}=await sb.from('profiles').update({active:b.dataset.act!=='true'}).eq('id',b.dataset.tog);if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Статус обновлён','ok');loadAdminTable()}});
+  tb.querySelectorAll('[data-nick]').forEach(inp=>{inp.onblur=async()=>{const nick=inp.value.trim();const{error}=await sb.from('profiles').update({game_nick:nick||null}).eq('id',inp.dataset.nick);if(error)toast('Ошибка',error.message,'err');else if(inp.dataset.nick===currentProfile.id){currentProfile.game_nick=nick;updateUserBadge();toast('Готово','Ник обновлён','ok')}};inp.onkeypress=e=>{if(e.key==='Enter')inp.blur()}});
+}
+
+/* === АРХИВ === */
+async function loadArchiveTable(){
+  const tb=$('archiveTbody');
+  if(currentProfile.role<2){tb.innerHTML='<tr><td colspan="7" class="empty">Нет прав</td></tr>';return}
+  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('profiles').select('*').eq('archived',true).order('archived_at',{ascending:false});
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-archive"></i>Архив пуст</td></tr>';return}
+  const q=($('archiveSearch')?.value||'').toLowerCase().trim();
+  const filtered=data.filter(p=>!q||(p.game_nick||'').toLowerCase().includes(q)||(p.discord_name||'').toLowerCase().includes(q));
+  if(!filtered.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-search"></i>Ничего не найдено</td></tr>';return}
+  tb.innerHTML=filtered.map(p=>{
+    const avaHtml=p.avatar_url?`<img src="${esc(p.avatar_url)}">`:initials(p.game_nick||p.discord_name);
+    const facHtml=p.faction?`<span class="fac ${facClass(p.faction)}">${facIcon(p.faction)}${p.faction}</span>`:'—';
+    const date=p.archived_at?new Date(p.archived_at).toLocaleString('ru-RU'):'—';
+    return`<tr><td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(p.game_nick||p.discord_name||'—')}</div></div></div></td><td style="font-size:12px">${esc(p.discord_name||'—')}</td><td>${facHtml}</td><td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'—'}</td><td style="font-size:11px">${date}</td><td style="font-size:12px">${esc(p.archived_by_name||'—')}</td><td style="text-align:center"><button class="admin-btn success" onclick="restoreFromArchive('${p.id}')"><i class="fas fa-undo"></i> Восстановить</button></td></tr>`;
+  }).join('');
+}
+
+window.archiveUser=async id=>{
+  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
+  const{data:p}=await sb.from('profiles').select('*').eq('id',id).single();
+  if(!p)return toast('Ошибка','Профиль не найден','err');
+  if(p.id===currentProfile.id)return toast('Нельзя','Себя нельзя архивировать','err');
+  if(!confirm(`Отправить ${p.game_nick||p.discord_name||'игрока'} в архив?`))return;
+  const{error}=await sb.from('profiles').update({
+    archived:true,
+    archived_at:new Date().toISOString(),
+    archived_by:currentProfile.id,
+    archived_by_name:currentProfile.game_nick||currentProfile.discord_name||'—',
+    active:false
+  }).eq('id',id);
+  if(error)return toast('Ошибка',error.message,'err');
+  toast('Готово',`${p.game_nick||p.discord_name} в архиве`,'ok');
+  await loadAdminTable();
+};
+
+window.restoreFromArchive=async id=>{
+  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
+  if(!confirm('Восстановить из архива?'))return;
+  const{error}=await sb.from('profiles').update({archived:false,archived_at:null,archived_by:null,archived_by_name:null,active:true}).eq('id',id);
+  if(error)return toast('Ошибка',error.message,'err');
+  toast('Готово','Сотрудник восстановлен','ok');
+  await loadArchiveTable();
+};
+
+/* Настройки */
+function applyThemeBySystem(){
+  const saved=localStorage.getItem('mj_theme')||'dark';
+  if(saved==='auto'){
+    const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=isDark?'dark':'light';
+  } else {
+    document.documentElement.dataset.theme=saved;
+  }
+  const actual=document.documentElement.dataset.theme;
+  document.querySelectorAll('[data-theme-val]').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===saved));
+  $('themeBtn').innerHTML=actual==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if((localStorage.getItem('mj_theme')||'dark')==='auto')applyThemeBySystem()});
+
+function loadPrefs(){
+  const a=localStorage.getItem('mj_accent')||'purple',c=localStorage.getItem('mj_compact')==='1',s=localStorage.getItem('mj_sound')!=='0',bg=localStorage.getItem('mj_bg')||'none';
+  applyThemeBySystem();
+  document.documentElement.dataset.accent=a;
+  document.documentElement.dataset.bg=bg;
+  document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('active',b.dataset.accent===a));
+  document.querySelectorAll('[data-bg-prev]').forEach(b=>b.classList.toggle('active',b.dataset.bgPrev===bg));
+  if(c){$('sidebar').classList.add('compact');$('compactSwitch')?.classList.add('on')}
+  if(s)$('soundSwitch')?.classList.add('on');else $('soundSwitch')?.classList.remove('on');
+}
+document.querySelectorAll('[data-theme-val]').forEach(b=>b.onclick=()=>{
+  localStorage.setItem('mj_theme',b.dataset.themeVal);
+  applyThemeBySystem();
+  if(parsedData.length){render();renderDash();renderTop3()}
+});
+document.querySelectorAll('[data-accent]').forEach(b=>b.onclick=()=>{
+  document.documentElement.dataset.accent=b.dataset.accent;
+  localStorage.setItem('mj_accent',b.dataset.accent);
+  document.querySelectorAll('[data-accent]').forEach(x=>x.classList.toggle('active',x===b));
+});
+document.querySelectorAll('[data-bg-prev]').forEach(b=>b.onclick=()=>{
+  document.documentElement.dataset.bg=b.dataset.bgPrev;
+  localStorage.setItem('mj_bg',b.dataset.bgPrev);
+  document.querySelectorAll('[data-bg-prev]').forEach(x=>x.classList.toggle('active',x===b));
+});
+$('themeBtn').onclick=()=>{
+  const cur=localStorage.getItem('mj_theme')||'dark';
+  const nxt=cur==='dark'?'light':'dark';
+  document.querySelector(`[data-theme-val="${nxt}"]`).click();
+};
+$('compactBtn').onclick=()=>{$('sidebar').classList.toggle('compact');localStorage.setItem('mj_compact',$('sidebar').classList.contains('compact')?'1':'0')};
+$('compactSwitch').onclick=function(){this.classList.toggle('on');$('compactBtn').click()};
+$('soundSwitch').onclick=function(){this.classList.toggle('on');const on=this.classList.contains('on');localStorage.setItem('mj_sound',on?'1':'0');if(on)playWelcomeSound()};
+$('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+$('sidebarUser').onclick=e=>{if(!e.target.closest('button'))$('avatarFileInput').click()};
+
+function initGlobalTooltip(){
+  if($('globalTip'))return;
+  const tip=document.createElement('div');tip.id='globalTip';document.body.appendChild(tip);
+  let current=null;
+  const position=el=>{const r=el.getBoundingClientRect();tip.style.left=(r.left+r.width/2)+'px';tip.style.top=r.top+'px'};
+  document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]');if(t){current=t;tip.textContent=t.dataset.tip;tip.classList.add('show');position(t)}});
+  document.addEventListener('mouseout',e=>{const t=e.target.closest('[data-tip]');if(t&&t===current){tip.classList.remove('show');current=null}});
+  window.addEventListener('scroll',()=>{if(current)position(current)},true);
+}
+
+async function initFullApp(){
+  const r=getWeekRange(0);periodStart=r.start;periodEnd=r.end;
+  updatePeriodDisplay();renderWeekPicker();
+  startClock();
+  $('normInput').value=settings.norm;
+  $('predInput').value=settings.predThreshold;
+  $('normInput').oninput=e=>{settings.norm=Math.max(1,+e.target.value||21);render();updateCalcPreview()};
+  $('predInput').oninput=e=>{settings.predThreshold=Math.max(0,+e.target.value||17);render();updateCalcPreview()};
+  $('input').addEventListener('input',updateCalcPreview);
+  $('exampleBtn').onclick=()=>{$('input').value='Игрок: Nick_Reason\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)\n\nИгрок: Хуесос\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)';updateCalcPreview()};
+  $('clearBtn').onclick=()=>{$('input').value='';updateCalcPreview()};
+  $('archiveSearch')?.addEventListener('input',()=>{loadArchiveTable()});
+  if(currentProfile.role>=1){await loadWeekLogs();await renderDash()}
+  else render();
+  $('periodBtn').onclick=()=>$('weekPicker').classList.toggle('open');
+  $('calcButton').onclick=calculate;
+  $('searchInput').oninput=e=>{currentSearch=e.target.value;render()};
+  loadPrefs();
+  initGlobalTooltip();
+}
+(function(){const t=()=>{if(window.supabase)initAuth();else setTimeout(t,100)};t()})();
+</script>
+</body>
+</html>
