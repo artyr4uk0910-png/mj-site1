@@ -72,6 +72,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .topbar h1{font-size:24px;font-weight:800}
 .topbar h1 span{color:var(--accent)}
 .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* Личная статистика в шапке */
+.my-stats{display:flex;align-items:center;gap:8px;background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:6px;margin-right:6px}
+.my-stat{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;transition:.2s}
+.my-stat:hover{background:var(--bg-hover)}
+.my-stat-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.my-stat-icon.p{background:rgba(167,139,250,.15);color:#a78bfa}
+.my-stat-icon.g{background:rgba(76,219,140,.15);color:#4cdb8c}
+.my-stat-icon.y{background:rgba(255,215,0,.15);color:#ffd966}
+.my-stat-info{display:flex;flex-direction:column;line-height:1.15}
+.my-stat-value{font-size:14px;font-weight:900;color:var(--text)}
+.my-stat-value .u{font-size:10px;color:var(--text-3);font-weight:600;margin-left:1px}
+.my-stat-label{font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+@media(max-width:1100px){.my-stat:nth-child(3){display:none}}
+@media(max-width:900px){.my-stats{display:none}}
+
 .icon-btn{width:40px;height:40px;border-radius:12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s;font-family:inherit}
 .icon-btn:hover{background:var(--bg-hover);color:var(--accent);border-color:var(--border-strong)}
 .menu-burger{display:none}
@@ -107,7 +123,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .ring-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-top:6px}
 .chart-wrap{position:relative;height:220px}
 .chart-wrap.tall{height:320px}
-.chart-wrap.short{height:180px}
 .table-wrap{background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;overflow:hidden}
 .table-head{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
 .table-head h3{font-size:15px;font-weight:800}
@@ -163,7 +178,7 @@ table.tbl tbody tr:last-child td{border-bottom:none}
 .pod-medal.g2{background:radial-gradient(circle at 30% 30%,#fff,#c0c8d8 50%,#8890a0);color:#2a3040}
 .pod-medal.g3{background:radial-gradient(circle at 30% 30%,#ffd9b8,#cd7f32 50%,#8a5420);color:#fff}
 .pod-rank{font-size:10px;font-weight:900;letter-spacing:3px;color:var(--text-3);margin-bottom:10px}
-.pod-ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:32px;color:#fff;margin:0 auto 12px;overflow:hidden;border:3px solid var(--border-strong);box-shadow:0 0 24px var(--accent-glow);transition:.2s}
+.pod-ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:32px;color:#fff;margin:0 auto 12px;overflow:hidden;border:3px solid var(--border-strong);box-shadow:0 0 24px var(--accent-glow)}
 .pod-ava img{width:100%;height:100%;object-fit:cover}
 .pod-nick{font-size:20px;font-weight:900;margin-bottom:6px;word-break:break-word}
 .pod-card.g1 .pod-nick{background:linear-gradient(90deg,#ffd700,#fff6b0,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s infinite}
@@ -318,6 +333,8 @@ table.tbl tbody tr:last-child td{border-bottom:none}
     <button class="nav-btn" data-tab="topTab"><i class="fas fa-trophy"></i><span class="nav-text">Топ-3</span></button>
     <button class="nav-btn" data-tab="factionTab" id="factionNavBtn" style="display:none"><i class="fas fa-people-group"></i><span class="nav-text">Фракции</span></button>
     <button class="nav-btn" data-tab="chartTab"><i class="fas fa-chart-column"></i><span class="nav-text">Аналитика</span></button>
+    <div class="sidebar-section">Профиль</div>
+    <button class="nav-btn" id="myProfileBtn"><i class="fas fa-user"></i><span class="nav-text">Мой профиль</span></button>
     <div class="sidebar-section">Отчёты</div>
     <button class="nav-btn" data-tab="logsTab" id="logsNavBtn" style="display:none"><i class="fas fa-history"></i><span class="nav-text">Логи</span></button>
     <button class="nav-btn" data-tab="adminTab" id="adminNavBtn" style="display:none"><i class="fas fa-user-shield"></i><span class="nav-text">Управление</span></button>
@@ -339,6 +356,29 @@ table.tbl tbody tr:last-child td{border-bottom:none}
         <h1 id="pageTitle">Дашборд <span>MJ</span></h1>
       </div>
       <div class="topbar-actions">
+        <div class="my-stats" id="myStats" style="display:none">
+          <div class="my-stat">
+            <div class="my-stat-icon p"><i class="fas fa-clock"></i></div>
+            <div class="my-stat-info">
+              <span class="my-stat-value" id="msHours">0<span class="u">ч</span></span>
+              <span class="my-stat-label">за месяц</span>
+            </div>
+          </div>
+          <div class="my-stat">
+            <div class="my-stat-icon y"><i class="fas fa-trophy"></i></div>
+            <div class="my-stat-info">
+              <span class="my-stat-value" id="msRank">—</span>
+              <span class="my-stat-label">место</span>
+            </div>
+          </div>
+          <div class="my-stat">
+            <div class="my-stat-icon g"><i class="fas fa-percent"></i></div>
+            <div class="my-stat-info">
+              <span class="my-stat-value" id="msAvg">0<span class="u">%</span></span>
+              <span class="my-stat-label">средний</span>
+            </div>
+          </div>
+        </div>
         <button class="icon-btn" id="compactBtn" title="Компактно"><i class="fas fa-compress"></i></button>
         <button class="icon-btn" id="themeBtn" title="Тема"><i class="fas fa-moon"></i></button>
       </div>
@@ -437,7 +477,9 @@ table.tbl tbody tr:last-child td{border-bottom:none}
         <div class="card">
           <div class="card-title"><span><i class="fas fa-sliders" style="margin-right:8px"></i>Интерфейс</span></div>
           <div class="setting-row"><div><div class="setting-label">Компактное меню</div><div class="setting-desc">Скрыть названия в меню</div></div><div class="switch" id="compactSwitch"></div></div>
+          <div class="setting-row"><div><div class="setting-label">Звук при входе</div><div class="setting-desc">Приятный звук при загрузке сайта</div></div><div class="switch on" id="soundSwitch"></div></div>
           <div class="setting-row"><div><div class="setting-label">Аватар</div><div class="setting-desc">Клик по своему аватару в меню</div></div><button class="theme-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fas fa-upload"></i> Загрузить</button></div>
+          <div class="setting-row"><div><div class="setting-label">Проверить звук</div><div class="setting-desc">Проиграть звук приветствия</div></div><button class="theme-btn" onclick="playWelcomeSound()"><i class="fas fa-play"></i> Проиграть</button></div>
         </div>
       </div>
     </div>
@@ -465,6 +507,7 @@ let currentSearch='';
 let sortBy='hours',sortDir='desc';
 let charts={};
 let previousTab='dashboardTab';
+let myStatsData={monthHours:0,rank:'—',avgPercent:0};
 
 const $=id=>document.getElementById(id);
 const esc=s=>{if(!s)return'';return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m])};
@@ -485,6 +528,50 @@ function toast(title,text,type='info'){
   setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4000);
 }
 
+/* ============ ЗВУК ПРИ ВХОДЕ ============ */
+let audioCtx=null;
+function playWelcomeSound(){
+  if(localStorage.getItem('mj_sound')==='0')return;
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    const now=audioCtx.currentTime;
+    // Приятный аккорд (C major add9: C E G D5)
+    const notes=[261.63,329.63,392.00,587.33];
+    notes.forEach((freq,i)=>{
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.type='sine';
+      osc.frequency.value=freq;
+      // Небольшой сдвиг для "перелива"
+      const start=now+i*0.08;
+      const dur=1.6-i*0.15;
+      gain.gain.setValueAtTime(0,start);
+      gain.gain.linearRampToValueAtTime(0.08,start+0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001,start+dur);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(start);
+      osc.stop(start+dur);
+    });
+    // Финальный "шлейф" — высокий тинкл
+    setTimeout(()=>{
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.type='triangle';
+      osc.frequency.value=1046.5;
+      gain.gain.setValueAtTime(0,audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.05,audioCtx.currentTime+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+1.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime+1.2);
+    },400);
+  }catch(e){console.warn('Sound error:',e)}
+}
+window.playWelcomeSound=playWelcomeSound;
+
 function getWeekRange(o=0){const n=new Date(),d=n.getDay(),off=d===0?-6:1-d;const mon=new Date(n);mon.setDate(n.getDate()+off-o*7);mon.setHours(0,0,0,0);const sun=new Date(mon);sun.setDate(mon.getDate()+6);const f=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;return{start:f(mon),end:f(sun),monday:mon,sunday:sun}}
 const fmtRu=d=>`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
 function updatePeriodDisplay(){const r=getWeekRange(currentWeekOffset);$('periodDatesText').textContent=`${r.start} — ${r.end}`;if($('dashPeriodLabel'))$('dashPeriodLabel').textContent=`${r.start} — ${r.end}`}
@@ -500,6 +587,38 @@ function renderWeekPicker(){
   });
 }
 
+/* ============ ЛИЧНАЯ СТАТИСТИКА ============ */
+async function loadMyStats(){
+  if(!currentProfile||!currentProfile.game_nick){$('myStats').style.display='none';return}
+  const nick=currentProfile.game_nick;
+  // Онлайн за месяц = 4 последние недели
+  const weeks=[];
+  for(let i=0;i<4;i++){const r=getWeekRange(i);weeks.push(r.start)}
+  const{data}=await sb.from('online_logs').select('hours,period_start').eq('player_nick',nick).in('period_start',weeks);
+  const monthHours=(data||[]).reduce((s,r)=>s+(+r.hours),0);
+  // Топ-место в текущей таблице
+  const sorted=[...parsedData].sort((a,b)=>effHours(b)-effHours(a));
+  const idx=sorted.findIndex(u=>u.nick===nick);
+  const rank=idx>=0?'#'+(idx+1):'—';
+  // Средний % нормы по неделям
+  const percents=[];
+  for(const w of weeks){
+    const f=(data||[]).find(d=>d.period_start===w);
+    if(f)percents.push(Math.min((+f.hours/settings.norm)*100,150));
+  }
+  const avgPct=percents.length?percents.reduce((a,b)=>a+b,0)/percents.length:0;
+
+  myStatsData={monthHours,rank,avgPercent:avgPct};
+  $('msHours').innerHTML=monthHours.toFixed(0)+'<span class="u">ч</span>';
+  $('msRank').textContent=rank;
+  $('msAvg').innerHTML=avgPct.toFixed(0)+'<span class="u">%</span>';
+  // Цвет в зависимости от процента
+  const avgEl=$('msAvg');
+  avgEl.style.color=avgPct>=100?'var(--green)':avgPct>=70?'var(--yellow)':'var(--red)';
+  $('myStats').style.display='flex';
+}
+
+/* AUTH */
 function setStatus(s,m,t){const e=$('authStatus'+s);if(!e)return;e.className='auth-status'+(t?' show '+t:'');e.textContent=m||''}
 async function sendCode(){
   const email=$('authEmail').value.trim();
@@ -555,6 +674,10 @@ async function initAuth(){
   updateUserBadge();applyRole();
   await initFullApp();
   handleHash();
+  // Звук приветствия (только при новой сессии за 5 секунд)
+  const loginTime=parseInt(localStorage.getItem('mj_login_time')||'0');
+  const isNew=Date.now()-loginTime<3000;
+  if(isNew)setTimeout(playWelcomeSound,600);
 }
 
 function updateUserBadge(){
@@ -590,11 +713,20 @@ function applyRole(){
 }
 
 document.querySelectorAll('.nav-btn').forEach(b=>{
+  if(b.id==='myProfileBtn')return;
   b.addEventListener('click',async()=>{
     if(b.dataset.tab==='profileTab')return;
     await switchTab(b.dataset.tab,true);
   });
 });
+
+$('myProfileBtn').onclick=()=>{
+  if(!currentProfile.game_nick){
+    toast('Ник не указан','Попроси ГС/ЗГС МЮ указать твой игровой ник в разделе Управление','err');
+    return;
+  }
+  openProfilePage(currentProfile.game_nick);
+};
 
 async function switchTab(tab,updateHash=false){
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
@@ -616,7 +748,8 @@ async function switchTab(tab,updateHash=false){
 async function openProfilePage(nick){
   if(!nick)return;
   const activeNav=document.querySelector('.nav-btn.active');
-  if(activeNav&&activeNav.dataset.tab!=='profileTab')previousTab=activeNav.dataset.tab;
+  if(activeNav&&activeNav.dataset.tab&&activeNav.dataset.tab!=='profileTab')previousTab=activeNav.dataset.tab;
+  else if($('myProfileBtn').classList.contains('active'))previousTab='myProfileBtn';
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active-pane'));
   $('profileTab').classList.add('active-pane');
@@ -641,6 +774,9 @@ async function renderProfilePage(nick){
   const vals=weeks.map(w=>{const f=(logs||[]).find(d=>d.period_start===w.start);return f?+f.hours:0});
   const totalHours=vals.reduce((s,v)=>s+v,0);
   const avgDay=hours/7;
+  // Средний % нормы
+  const percents=vals.filter(v=>v>0).map(v=>(v/settings.norm)*100);
+  const avgPct=percents.length?percents.reduce((a,b)=>a+b,0)/percents.length:0;
   let positionBlock='';
   if(role===1&&posStart){
     const start=new Date(posStart),now=new Date();
@@ -659,6 +795,7 @@ async function renderProfilePage(nick){
         <div class="profile-hero-stats">
           <div class="profile-hero-stat"><span class="ph-label">За неделю</span><span class="ph-value" style="color:var(--green)">${hours.toFixed(1)}ч</span></div>
           <div class="profile-hero-stat"><span class="ph-label">Неактив</span><span class="ph-value">${inactive} дн</span></div>
+          <div class="profile-hero-stat"><span class="ph-label">Средний % нормы</span><span class="ph-value" style="color:${avgPct>=100?'var(--green)':avgPct>=70?'var(--yellow)':'var(--red)'}">${avgPct.toFixed(0)}%</span></div>
         </div>
       </div>
     </div>
@@ -695,7 +832,19 @@ async function renderProfilePage(nick){
   });
 }
 
-$('backFromProfile').onclick=()=>{location.hash='tab='+(previousTab.replace('Tab',''));switchTab(previousTab,false)};
+$('backFromProfile').onclick=()=>{
+  if(previousTab==='myProfileBtn'){
+    location.hash='';
+    switchTab('dashboardTab',false);
+    // Активируем кнопку
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    $('myProfileBtn').classList.add('active');
+    openProfilePage(currentProfile.game_nick);
+  } else {
+    location.hash='tab='+(previousTab.replace('Tab',''));
+    switchTab(previousTab,false);
+  }
+};
 
 function handleHash(){
   const h=location.hash.slice(1);
@@ -735,9 +884,10 @@ function render(){
     let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
     const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
     const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}">${u.faction}</span>`:'';
-    return`<tr data-nick="${esc(u.nick)}">
+    const isMe=u.nick===currentProfile.game_nick;
+    return`<tr data-nick="${esc(u.nick)}" style="${isMe?'background:rgba(167,139,250,.06)':''}">
       <td style="text-align:center"><span class="rank-badge ${rc}">${i+1}</span></td>
-      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${facHtml}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td>
+      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${facHtml} ${isMe?'<span class="badge reward" style="font-size:9px">Ты</span>':''}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td>
       <td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span>${extra>=1?`<span class="badge ok" style="font-size:9px">+${extra.toFixed(1)}</span>`:''}</div></td>
       <td style="text-align:center"><span class="badge mute">${u.inactiveDays||0} дн</span></td>
       <td style="text-align:center"><span class="badge ${sc}">${st}</span></td>
@@ -806,6 +956,8 @@ async function renderDash(){
       <div class="progress" style="min-width:140px;max-width:200px"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div>
     </div>`;
   }).join('');
+  // Обновляем личную статистику
+  await loadMyStats();
 }
 function animate(id,target,hasUnit){
   const el=$(id);if(!el)return;
@@ -815,13 +967,12 @@ function animate(id,target,hasUnit){
   requestAnimationFrame(step);
 }
 
-// ===== ФРАКЦИИ =====
 async function renderFaction(){
   const tb=$('factionTbody');
   const facs=['LSPD','SFPD','RCSD','LVPD','FBI'];
   const labels={LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};
   const icons={LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
-  if(currentProfile.faction&&!currentFactionView)currentFactionView=currentProfile.faction;
+  if(currentProfile.faction)currentFactionView=currentProfile.faction;
   const chipsBar=$('factionChips');
   chipsBar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionView?'active':''}" data-fac-view="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');
   chipsBar.querySelectorAll('[data-fac-view]').forEach(b=>b.onclick=async()=>{currentFactionView=b.dataset.facView;await renderFaction()});
@@ -973,11 +1124,12 @@ async function loadAdminTable(){
 }
 
 function loadPrefs(){
-  const t=localStorage.getItem('mj_theme')||'dark',a=localStorage.getItem('mj_accent')||'purple',c=localStorage.getItem('mj_compact')==='1';
+  const t=localStorage.getItem('mj_theme')||'dark',a=localStorage.getItem('mj_accent')||'purple',c=localStorage.getItem('mj_compact')==='1',s=localStorage.getItem('mj_sound')!=='0';
   document.documentElement.dataset.theme=t;document.documentElement.dataset.accent=a;
   document.querySelectorAll('[data-theme-val]').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===t));
   document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('active',b.dataset.accent===a));
   if(c){$('sidebar').classList.add('compact');$('compactSwitch')?.classList.add('on')}
+  if(s)$('soundSwitch')?.classList.add('on');else $('soundSwitch')?.classList.remove('on');
   $('themeBtn').innerHTML=t==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
 }
 document.querySelectorAll('[data-theme-val]').forEach(b=>b.onclick=()=>{
@@ -993,6 +1145,12 @@ document.querySelectorAll('[data-accent]').forEach(b=>b.onclick=()=>{
 $('themeBtn').onclick=()=>{const cur=document.documentElement.dataset.theme;const nxt=cur==='dark'?'light':'dark';document.querySelector(`[data-theme-val="${nxt}"]`).click()};
 $('compactBtn').onclick=()=>{$('sidebar').classList.toggle('compact');localStorage.setItem('mj_compact',$('sidebar').classList.contains('compact')?'1':'0')};
 $('compactSwitch').onclick=function(){this.classList.toggle('on');$('compactBtn').click()};
+$('soundSwitch').onclick=function(){
+  this.classList.toggle('on');
+  const on=this.classList.contains('on');
+  localStorage.setItem('mj_sound',on?'1':'0');
+  if(on)playWelcomeSound();
+};
 $('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 $('sidebarUser').onclick=e=>{if(!e.target.closest('button'))$('avatarFileInput').click()};
 
