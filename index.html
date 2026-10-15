@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-<title>Space MJ</title>
+<title>Space MJ — Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b0d1a'/%3E%3Ctext x='50' y='72' text-anchor='middle' fill='%23a78bfa' font-family='Arial' font-weight='900' font-size='60'%3EMJ%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,262 +12,376 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg-body:#0a0c1a;--bg-card:rgba(15,18,38,.85);--bg-header:rgba(12,15,30,.85);--bg-menu:rgba(8,10,24,.95);--bg-input:rgba(10,13,28,.85);--bg-row-odd:rgba(255,255,255,.015);--bg-row-even:rgba(255,255,255,.03);--border-color:rgba(200,150,255,.15);--text-primary:#eef3ff;--text-secondary:#b8c2f0;--text-muted:#8a94c9;--text-dim:#6a74b0;--accent:#a78bfa;--accent-dark:#7c64ff;--accent-glow:rgba(92,66,255,.35);--gold:#ffd966;--silver:#c0c8d8;--bronze:#cd7f32}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background-color:var(--bg-body);background-image:radial-gradient(circle at 20% 10%,rgba(92,66,255,.08),transparent 40%),radial-gradient(circle at 80% 90%,rgba(167,139,250,.06),transparent 40%),repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(255,255,255,.015) 49px,rgba(255,255,255,.015) 50px);color:var(--text-primary);font-family:'Inter',system-ui,sans-serif;padding:20px 16px;min-height:100vh}
+/* ============ THEME ============ */
+:root, [data-theme="dark"]{
+  --bg-body:#0a0c1c;
+  --bg-panel:#0f1226;
+  --bg-panel2:#141838;
+  --bg-sidebar:#0c0e20;
+  --bg-input:rgba(20,24,56,.6);
+  --bg-hover:rgba(167,139,250,.08);
+  --border:rgba(167,139,250,.12);
+  --border-strong:rgba(167,139,250,.25);
+  --text:#eef3ff;
+  --text-2:#b8c2f0;
+  --text-3:#7d87b8;
+  --text-dim:#5a6390;
+  --accent:#a78bfa;
+  --accent-2:#7c64ff;
+  --accent-glow:rgba(124,100,255,.35);
+  --green:#4cdb8c;
+  --yellow:#f0c45a;
+  --red:#ff6b6b;
+  --gold:#ffd966;
+  --silver:#c0c8d8;
+  --bronze:#cd7f32;
+  --shadow:0 8px 32px rgba(0,0,0,.35);
+  --shadow-lg:0 20px 60px rgba(0,0,0,.5);
+  --glow:0 0 24px rgba(124,100,255,.25);
+}
+[data-theme="light"]{
+  --bg-body:#f4f6fc;
+  --bg-panel:#ffffff;
+  --bg-panel2:#f8f9fe;
+  --bg-sidebar:#ffffff;
+  --bg-input:#f0f2f9;
+  --bg-hover:rgba(124,100,255,.06);
+  --border:rgba(124,100,255,.15);
+  --border-strong:rgba(124,100,255,.3);
+  --text:#1a1d33;
+  --text-2:#4a5080;
+  --text-3:#6a70a0;
+  --text-dim:#9aa0c0;
+  --accent:#7c64ff;
+  --accent-2:#5c44d9;
+  --accent-glow:rgba(124,100,255,.25);
+  --green:#16a34a;
+  --yellow:#ca8a04;
+  --red:#dc2626;
+  --gold:#d97706;
+  --shadow:0 4px 20px rgba(100,80,180,.08);
+  --shadow-lg:0 16px 48px rgba(100,80,180,.15);
+  --glow:0 0 24px rgba(124,100,255,.15);
+}
+[data-accent="blue"]{--accent:#60a5fa;--accent-2:#3b82f6;--accent-glow:rgba(59,130,246,.35)}
+[data-accent="green"]{--accent:#4cdb8c;--accent-2:#22c55e;--accent-glow:rgba(34,197,94,.35)}
+[data-accent="pink"]{--accent:#f472b6;--accent-2:#ec4899;--accent-glow:rgba(236,72,153,.35)}
+[data-accent="orange"]{--accent:#fb923c;--accent-2:#f97316;--accent-glow:rgba(249,115,22,.35)}
+[data-accent="cyan"]{--accent:#22d3ee;--accent-2:#06b6d4;--accent-glow:rgba(6,182,212,.35)}
 
-/* Auth */
-.auth-overlay{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse at 50% 40%,#151233,#0a0c1a 60%,#05060e);display:none;align-items:center;justify-content:center;padding:20px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg-body);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;overflow-x:hidden;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 10%,var(--accent-glow),transparent 45%),radial-gradient(circle at 85% 90%,rgba(255,215,0,.05),transparent 45%);opacity:.5;z-index:0}
+
+/* ============ AUTH ============ */
+.auth-overlay{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse at 50% 40%,#151233,#0a0c1c 60%,#05060e);display:none;align-items:center;justify-content:center;padding:20px}
 .auth-overlay.open{display:flex}
-.auth-card{background:rgba(12,15,30,.98);border:1px solid var(--border-color);border-radius:24px;padding:40px 32px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 100px rgba(92,66,255,.15);position:relative;overflow:hidden}
-.auth-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(167,139,250,.1),transparent,rgba(124,100,255,.1),transparent);animation:rotate 8s linear infinite;pointer-events:none}
-@keyframes rotate{to{transform:rotate(360deg)}}
-.auth-card>*{position:relative;z-index:1}
-.auth-card h2{font-size:26px;margin-bottom:8px;color:#fff;font-weight:800;text-align:center;background:linear-gradient(90deg,#a78bfa,#fff,#ffd966);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.auth-card .auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;text-align:center;line-height:1.5}
-.auth-tabs{display:flex;gap:8px;margin-bottom:20px;background:rgba(0,0,0,.4);padding:4px;border-radius:12px}
-.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--text-muted);font-weight:700;font-size:13px;cursor:pointer;border-radius:8px;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
-.auth-tab.active{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;box-shadow:0 4px 12px var(--accent-glow)}
-.auth-input{width:100%;background:var(--bg-input);border:2px solid var(--border-color);border-radius:12px;color:var(--text-primary);padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;transition:.2s;text-align:center}
+.auth-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:28px;padding:44px 36px;width:100%;max-width:440px;box-shadow:var(--shadow-lg),0 0 120px var(--accent-glow);position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;inset:-2px;border-radius:28px;padding:2px;background:linear-gradient(135deg,var(--accent),transparent 50%,var(--accent-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.5}
+.auth-card h2{font-size:28px;margin-bottom:6px;font-weight:800;text-align:center;background:linear-gradient(90deg,var(--accent),var(--text),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.auth-sub{font-size:13px;color:var(--text-3);margin-bottom:28px;text-align:center;line-height:1.5}
+.auth-tabs{display:flex;gap:6px;margin-bottom:22px;background:var(--bg-input);padding:5px;border-radius:14px}
+.auth-tab{flex:1;padding:11px;border:none;background:transparent;color:var(--text-3);font-weight:700;font-size:13px;cursor:pointer;border-radius:10px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.auth-tab.active{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;box-shadow:0 4px 16px var(--accent-glow)}
+.auth-input{width:100%;background:var(--bg-input);border:2px solid var(--border);border-radius:14px;color:var(--text);padding:15px 18px;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;transition:.2s;text-align:center}
 .auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow)}
-.auth-input.code{font-size:24px;letter-spacing:6px;font-weight:700;font-family:monospace}
-.auth-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:.25s}
-.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-input.code{font-size:26px;letter-spacing:8px;font-weight:800;font-family:monospace}
+.auth-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:.25s;letter-spacing:.3px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px var(--accent-glow)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
 .auth-btn.discord{background:linear-gradient(135deg,#5865F2,#4752C4)}
-.auth-btn.discord i{font-size:20px}
-.auth-status{font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:12px;text-align:center;display:none}
+.auth-btn i{font-size:18px}
+.auth-status{font-size:12px;padding:10px 14px;border-radius:10px;margin-bottom:12px;text-align:center;display:none}
 .auth-status.show{display:block}
-.auth-status.err{background:rgba(255,80,80,.15);color:#ff6b6b;border:1px solid rgba(255,80,80,.3)}
-.auth-status.ok{background:rgba(76,219,140,.15);color:#4cdb8c;border:1px solid rgba(76,219,140,.3)}
-.auth-back{font-size:12px;color:var(--accent);text-align:center;margin-top:14px;cursor:pointer;text-decoration:underline}
+.auth-status.err{background:rgba(255,80,80,.12);color:var(--red);border:1px solid rgba(255,80,80,.3)}
+.auth-status.ok{background:rgba(76,219,140,.12);color:var(--green);border:1px solid rgba(76,219,140,.3)}
+.auth-back{font-size:12px;color:var(--accent);text-align:center;margin-top:14px;cursor:pointer}
 .auth-hint{font-size:11px;color:var(--text-dim);margin-top:20px;text-align:center;line-height:1.5}
 
-/* Layout */
-.container{max-width:1400px;margin:0 auto;position:relative;z-index:2;padding-left:250px;transition:padding-left .3s}
-body.menu-closed .container{padding-left:0}
-.menu-toggle{position:fixed;left:12px;top:20px;z-index:200;background:var(--bg-header);border:1px solid var(--border-color);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--text-primary);font-size:20px;cursor:pointer;transition:.3s;backdrop-filter:blur(10px)}
-.menu-toggle:hover{background:var(--accent-glow);transform:scale(1.05)}
-.tabs-vertical{position:fixed;left:0;top:0;height:100%;width:240px;background:var(--bg-menu);backdrop-filter:blur(20px);border-right:1px solid var(--border-color);padding:80px 14px 24px;display:flex;flex-direction:column;gap:4px;z-index:100;overflow-y:auto;transition:transform .3s}
-body.menu-closed .tabs-vertical{transform:translateX(-250px)}
-.menu-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);padding:0 8px 14px;border-bottom:1px solid var(--border-color);margin-bottom:8px;font-weight:600;display:flex;align-items:center;gap:8px}
-.tab-btn{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:12px;border:none;background:transparent;color:var(--text-muted);font-weight:600;font-size:13px;cursor:pointer;transition:.25s;width:100%;text-align:left;font-family:'Inter',sans-serif;position:relative}
-.tab-btn:hover{color:var(--text-primary);background:rgba(255,255,255,.04);transform:translateX(3px)}
-.tab-btn.active{background:linear-gradient(135deg,var(--accent-glow),rgba(255,255,255,.03));color:var(--text-primary);box-shadow:0 4px 20px var(--accent-glow),inset 0 1px 0 rgba(255,255,255,.1)}
-.tab-btn.active i{color:var(--gold);filter:drop-shadow(0 0 8px rgba(255,215,0,.5))}
-.tab-btn i{width:18px;text-align:center;font-size:15px}
-.tab-pane{display:none;animation:fade .4s}
-.tab-pane.active-pane{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ============ LAYOUT ============ */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:240px;background:var(--bg-sidebar);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:6px;transition:width .3s,padding .3s;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar.compact{width:76px;padding:20px 12px}
+.sidebar.compact .nav-text,.sidebar.compact .sidebar-logo-text,.sidebar.compact .sidebar-section{display:none}
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:8px 12px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar-logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;box-shadow:0 4px 16px var(--accent-glow);flex-shrink:0}
+.sidebar-logo-text{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.sidebar-logo-text span{color:var(--accent)}
+.sidebar-section{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);padding:12px 14px 6px;font-weight:700}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;border:none;background:transparent;color:var(--text-3);font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;transition:.2s;position:relative;width:100%}
+.nav-btn:hover{background:var(--bg-hover);color:var(--text)}
+.nav-btn.active{background:linear-gradient(135deg,var(--accent-glow),transparent 80%);color:var(--text);box-shadow:inset 0 0 0 1px var(--border-strong)}
+.nav-btn.active i{color:var(--accent);filter:drop-shadow(0 0 8px var(--accent-glow))}
+.nav-btn i{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.nav-text{flex:1}
+.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border)}
+.sidebar-user{padding:10px 12px;border-radius:12px;background:var(--bg-input);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.2s;position:relative}
+.sidebar-user:hover{background:var(--bg-hover)}
+.sidebar-user .su-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;overflow:hidden;flex-shrink:0}
+.sidebar-user .su-ava img{width:100%;height:100%;object-fit:cover}
+.sidebar-user .su-info{flex:1;overflow:hidden}
+.sidebar-user .su-name{font-weight:700;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .su-role{font-size:10px;color:var(--text-3)}
 
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:14px 26px;margin-left:50px;background:var(--bg-header);border-radius:24px;border:1px solid var(--border-color);backdrop-filter:blur(14px);box-shadow:0 8px 32px rgba(0,0,0,.4);flex-wrap:wrap;gap:12px}
-.header-left{display:flex;align-items:center;gap:16px}
-.logo-icon{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#f0ecff 60%,#e0d8ff);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;animation:spin 8s linear infinite;border:2px solid rgba(124,100,255,.4);box-shadow:0 4px 20px rgba(124,100,255,.3)}
-@keyframes spin{to{transform:rotate(360deg)}}
-.header-title{font-size:24px;font-weight:800;letter-spacing:-.3px}
-.header-title span{background:linear-gradient(90deg,#a78bfa,#ffd966);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.header-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
-.user-badge{display:flex;align-items:center;gap:12px;padding:6px 16px 6px 6px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:30px;font-size:12px;transition:.2s}
-.user-badge:hover{border-color:var(--accent)}
-.user-badge .ub-ava{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;overflow:hidden;cursor:pointer;position:relative;border:2px solid rgba(255,255,255,.1)}
-.user-badge .ub-ava img{width:100%;height:100%;object-fit:cover}
-.user-badge .ub-ava::after{content:'\f030';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;inset:0;background:rgba(0,0,0,.7);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s}
-.user-badge .ub-ava:hover::after{opacity:1}
-.user-badge .ub-info{display:flex;flex-direction:column;line-height:1.25}
-.user-badge .ub-name{font-weight:700;color:#fff;font-size:13px}
-.user-badge .ub-source{font-size:10px;color:var(--text-muted)}
-.user-badge .ub-logout{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);color:#ff6b6b;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
-.user-badge .ub-logout:hover{background:rgba(255,80,80,.3);color:#fff}
+.main{flex:1;padding:24px 28px;min-width:0}
+@media(max-width:900px){.main{padding:16px}}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.topbar h1{font-size:24px;font-weight:800;letter-spacing:-.4px}
+.topbar h1 span{color:var(--accent)}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s}
+.icon-btn:hover{background:var(--bg-hover);color:var(--accent);border-color:var(--border-strong)}
+.menu-burger{display:none}
+@media(max-width:900px){.menu-burger{display:flex}}
+@media(min-width:901px){.menu-burger{display:none}}
 
-/* Input */
-.input-area{padding:12px 16px;background:var(--bg-header);border-radius:20px;border:1px solid var(--border-color);margin-bottom:16px;backdrop-filter:blur(10px)}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.input-wrapper{flex:1;min-width:200px;position:relative}
-.input-wrapper textarea{width:100%;height:46px;background:var(--bg-input);border:2px solid var(--border-color);border-radius:14px;color:var(--text-primary);padding:12px 40px;font-size:13px;font-family:'Inter',monospace;resize:none;outline:none;transition:.2s}
-.input-wrapper textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow)}
-.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--accent)}
-#calcButton{padding:0 32px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;transition:.25s}
-#calcButton:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-glow)}
+/* ============ CARDS ============ */
+.grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-2-1{grid-template-columns:2fr 1fr}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-2-1{grid-template-columns:1fr}}
+@media(max-width:700px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
 
-/* Filter bar */
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.filter-chip{padding:8px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:20px;color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;display:flex;align-items:center;gap:6px}
-.filter-chip:hover{border-color:var(--accent);color:#fff}
-.filter-chip.active{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;border-color:transparent;box-shadow:0 4px 12px var(--accent-glow)}
-.filter-chip i{font-size:11px}
-.search-input{flex:1;min-width:180px;padding:8px 14px 8px 36px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:20px;color:var(--text-primary);font-size:12px;outline:none;font-family:'Inter',sans-serif;position:relative}
-.search-wrap{flex:1;min-width:180px;position:relative}
-.search-wrap .search-input{width:100%}
-.search-wrap::before{content:'\f002';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:11px;pointer-events:none}
+.card{background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:20px;transition:.3s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border-strong);box-shadow:var(--glow)}
+.card-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title i{color:var(--accent)}
+.stat{padding:22px 20px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 70%);opacity:.5;pointer-events:none}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:6px}
+.stat-icon.purple{background:rgba(167,139,250,.15);color:#a78bfa}
+.stat-icon.green{background:rgba(76,219,140,.15);color:#4cdb8c}
+.stat-icon.blue{background:rgba(96,165,250,.15);color:#60a5fa}
+.stat-icon.gold{background:rgba(255,215,0,.15);color:#ffd966}
+.stat-label{font-size:12px;color:var(--text-3);font-weight:600}
+.stat-value{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--text)}
+.stat-value .unit{font-size:14px;color:var(--text-3);font-weight:600;letter-spacing:0}
+.stat-delta{font-size:11px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px}
+.stat-delta.neg{color:var(--red)}
 
-/* Period */
-.period-wrap{margin:0 auto 16px;width:100%;max-width:1000px}
-.period-title{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,rgba(26,21,51,.95),rgba(20,16,42,.95));border:1px solid rgba(167,139,250,.3);border-radius:16px;padding:14px 32px;cursor:pointer;user-select:none;transition:.25s;box-shadow:0 6px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.05)}
-.period-title:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 10px 32px rgba(92,66,255,.2)}
-.period-title-icon{color:var(--gold);font-size:18px}
-.period-title-text{font-size:15px;font-weight:600;color:var(--text-secondary)}
-.period-title-text span{color:#fff;font-weight:800;margin-left:6px}
-.period-week-picker{display:none;background:var(--bg-input);border:1px solid var(--border-color);border-radius:14px;padding:10px;margin-top:8px}
-.period-week-picker.open{display:block;animation:fade .3s}
-.period-week-picker button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:11px 14px;background:transparent;border:none;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;border-radius:10px;transition:.2s;margin-bottom:4px}
-.period-week-picker button:hover{background:rgba(167,139,250,.15)}
-.period-week-picker button.active{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;font-weight:700;box-shadow:0 4px 12px var(--accent-glow)}
-.period-week-picker button span:last-child{font-size:11px;color:var(--text-muted)}
-.period-week-picker button.active span:last-child{color:rgba(255,255,255,.85)}
-
-/* Top-3 */
-.top3-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
-@media(max-width:900px){.top3-grid{grid-template-columns:1fr}}
-.top-card{background:linear-gradient(180deg,rgba(20,22,40,.95),rgba(10,12,24,.95));border:1px solid var(--border-color);border-radius:22px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;transition:.3s}
-.top-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.top-card.gold{border-color:rgba(255,215,0,.4);box-shadow:0 0 40px rgba(255,215,0,.15)}
-.top-card.gold::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,215,0,.15),transparent 60%);animation:pulse 3s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
-.top-card.silver{border-color:rgba(192,200,216,.4)}
-.top-card.bronze{border-color:rgba(205,127,50,.4)}
-.top-medal{width:68px;height:68px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;z-index:1}
-.top-medal.gold{background:radial-gradient(circle at 30% 30%,#fff2a8,#ffd700 50%,#b8860b);color:#4a2e00;box-shadow:0 0 30px rgba(255,215,0,.7)}
-.top-medal.silver{background:radial-gradient(circle at 30% 30%,#fff,#c0c8d8 50%,#8890a0);color:#2a3040;box-shadow:0 0 25px rgba(192,200,216,.6)}
-.top-medal.bronze{background:radial-gradient(circle at 30% 30%,#ffd9b8,#cd7f32 50%,#8a5420);color:#3a1f08;box-shadow:0 0 25px rgba(205,127,50,.6)}
-.top-rank{font-size:11px;font-weight:800;letter-spacing:3px;opacity:.7;margin-bottom:8px}
-.top-ava{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:32px;color:#fff;overflow:hidden;border:3px solid rgba(255,255,255,.15);position:relative;z-index:1;cursor:pointer}
-.top-ava img{width:100%;height:100%;object-fit:cover}
-.top-nick{font-size:20px;font-weight:900;margin-bottom:4px;position:relative;z-index:1;word-break:break-word}
-.top-nick.gold{background:linear-gradient(90deg,#ffd700,#fff6b0,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s infinite}
-@keyframes shimmer{0%,100%{background-position:0% center}50%{background-position:200% center}}
-.top-faction{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:#c4b5fd;margin-bottom:12px;position:relative;z-index:1}
-.top-hours{font-size:30px;font-weight:900;color:#fff;line-height:1;position:relative;z-index:1}
-.top-hours span{font-size:14px;color:var(--text-muted);font-weight:600;margin-left:2px}
-.top-hours-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;position:relative;z-index:1}
-.top-extra{display:flex;gap:8px;justify-content:center;margin-top:12px;position:relative;z-index:1;flex-wrap:wrap}
-.top-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(76,219,140,.15);border:1px solid rgba(76,219,140,.3);color:#6ee7a7}
-
-/* Table */
-.table-wrapper{border-radius:16px;overflow:hidden;border:1px solid var(--border-color);background:var(--bg-card);box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.table{width:100%;border-collapse:collapse;font-size:12px}
-.table th{color:#7d87b8;font-size:10px;text-transform:uppercase;letter-spacing:.8px;padding:12px 10px;font-weight:700;border-bottom:1px solid var(--border-color);text-align:left;background:rgba(0,0,0,.25);cursor:pointer;user-select:none;transition:.2s;white-space:nowrap;position:sticky;top:0;z-index:5}
-.table th:hover{color:var(--accent)}
-.table th.sortable::after{content:' \f0dc';font-family:'Font Awesome 6 Free';font-weight:900;font-size:9px;opacity:.3;margin-left:4px}
-.table th.sort-asc::after{content:' \f0de';opacity:1;color:var(--accent)}
-.table th.sort-desc::after{content:' \f0dd';opacity:1;color:var(--accent)}
-.table td{padding:10px;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.03);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.table tbody tr:nth-child(odd){background:var(--bg-row-odd)}
-.table tbody tr:nth-child(even){background:var(--bg-row-even)}
-.table tbody tr:hover{background:rgba(92,66,255,.08);cursor:pointer}
-.rank-circle{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);color:var(--text-secondary);border:1px solid rgba(255,255,255,.1)}
-.rank-circle.gold{background:linear-gradient(135deg,#ffd700,#f0a500);color:#4a2e00;box-shadow:0 0 12px rgba(255,215,0,.4)}
-.rank-circle.silver{background:linear-gradient(135deg,#e0e8f0,#a0b0c0);color:#2a3040}
-.rank-circle.bronze{background:linear-gradient(135deg,#d09060,#a06030);color:#fff}
-.nick-cell{display:flex;align-items:center;gap:10px}
-.row-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.1)}
-.row-ava img{width:100%;height:100%;object-fit:cover}
-.nick{font-weight:700;color:#fff;font-size:12px;display:flex;align-items:center;gap:6px}
-.nick:hover{color:var(--accent)}
-.nick .fac-badge{font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;background:rgba(167,139,250,.15);color:#c4b5fd}
-.progress-line{display:flex;align-items:center;gap:10px}
-.progress-track{flex:1;min-width:60px;height:6px;background:rgba(0,0,0,.5);border-radius:999px;overflow:hidden}
-.progress-fill{height:100%;border-radius:999px;transition:width .7s;position:relative;box-shadow:0 0 8px currentColor}
-.p-hours{font-size:12px;font-weight:800;white-space:nowrap}
-.p-hours .unit{font-size:9px;color:var(--text-muted)}
-.p-percent{font-size:10px;font-weight:800;white-space:nowrap;opacity:.8}
-.inactive-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--text-secondary);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:3px 9px;border-radius:6px}
-.status-badge{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:10px;padding:4px 11px;border-radius:20px;border:1px solid transparent;letter-spacing:.3px}
-.status-badge.ok{color:#4cdb8c;background:rgba(76,219,140,.12);border-color:rgba(76,219,140,.4)}
-.status-badge.pred{color:#f0c45a;background:rgba(240,196,90,.12);border-color:rgba(240,196,90,.4)}
-.status-badge.bad{color:#ff6b6b;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
-.reward-badge{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:11px;padding:4px 11px;border-radius:20px;color:#ffd966;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3)}
-.reward-badge.no-reward{background:transparent;color:var(--text-dim);font-weight:500;border:1px dashed rgba(255,255,255,.1);font-size:10px}
-.over-norm-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(76,219,140,.15);border:1px solid rgba(76,219,140,.4);color:#6ee7a7}
-.empty-state{padding:60px 20px;text-align:center;color:var(--text-dim);font-size:14px}
-.empty-state i{font-size:40px;opacity:.3;display:block;margin-bottom:12px}
+/* Circular progress */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:10px}
+.ring{position:relative;width:200px;height:200px}
+.ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.ring .track{fill:none;stroke:var(--bg-input);stroke-width:14}
+.ring .progress{fill:none;stroke:url(#ringGrad);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 12px var(--accent-glow))}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-value{font-size:42px;font-weight:900;letter-spacing:-2px;line-height:1}
+.ring-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-top:6px}
 
 /* Chart */
-.chart-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:20px;padding:24px;margin-bottom:16px}
-.chart-container h3{margin-bottom:16px;color:var(--text-secondary);font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
-.chart-container h3 i{color:var(--accent)}
-.chart-wrapper{position:relative;height:320px}
+.chart-wrap{position:relative;height:220px}
+.chart-wrap.tall{height:300px}
+.chart-wrap.short{height:160px}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;z-index:4000;background:rgba(3,5,18,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex;animation:fade .3s}
-.modal{background:rgba(12,15,30,.98);border:1px solid var(--border-color);border-radius:24px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.8)}
-.modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border-color);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:.2s}
-.modal-close:hover{background:rgba(255,80,80,.2);color:#ff6b6b}
-.modal-header{padding:32px 28px 20px;text-align:center;background:linear-gradient(180deg,rgba(92,66,255,.15),transparent);border-bottom:1px solid var(--border-color);position:relative}
-.modal-ava{width:100px;height:100px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:40px;color:#fff;overflow:hidden;border:3px solid rgba(255,255,255,.15);box-shadow:0 0 40px rgba(92,66,255,.4)}
+/* ============ TABLE ============ */
+.table-wrap{background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.table-head{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.table-head h3{font-size:15px;font-weight:800}
+.table-search{position:relative;flex:1;max-width:280px;min-width:180px}
+.table-search input{width:100%;padding:10px 14px 10px 38px;background:var(--bg-input);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:.2s}
+.table-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.table-search::before{content:'\f002';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;pointer-events:none}
+.table-scroll{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th{text-align:left;padding:13px 16px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:800;background:var(--bg-panel2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;z-index:2}
+table.tbl th.sortable:hover{color:var(--accent)}
+table.tbl th.sort-asc::after{content:' \f0de';font-family:'Font Awesome 6 Free';font-weight:900;color:var(--accent);font-size:10px}
+table.tbl th.sort-desc::after{content:' \f0dd';font-family:'Font Awesome 6 Free';font-weight:900;color:var(--accent);font-size:10px}
+table.tbl td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text-2)}
+table.tbl tbody tr{transition:.15s;cursor:pointer}
+table.tbl tbody tr:hover{background:var(--bg-hover)}
+table.tbl tbody tr:last-child td{border-bottom:none}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;font-size:12px;font-weight:800;background:var(--bg-input);color:var(--text-3);border:1px solid var(--border)}
+.rank-badge.gold{background:linear-gradient(135deg,#ffd700,#f0a500);color:#4a2e00;border-color:#ffd966;box-shadow:0 0 14px rgba(255,215,0,.4)}
+.rank-badge.silver{background:linear-gradient(135deg,#e0e8f0,#a0b0c0);color:#2a3040;border-color:#e0e8f0}
+.rank-badge.bronze{background:linear-gradient(135deg,#d09060,#a06030);color:#fff;border-color:#d09060}
+.user-cell{display:flex;align-items:center;gap:11px}
+.u-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong)}
+.u-ava img{width:100%;height:100%;object-fit:cover}
+.u-nick{font-weight:700;color:var(--text);font-size:13px}
+.u-sub{font-size:10px;color:var(--text-3);margin-top:2px}
+.progress{display:flex;align-items:center;gap:10px;min-width:180px}
+.progress-track{flex:1;height:6px;background:var(--bg-input);border-radius:99px;overflow:hidden;min-width:60px}
+.progress-fill{height:100%;border-radius:99px;transition:width .8s ease;box-shadow:0 0 12px currentColor}
+.progress-num{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;min-width:44px;text-align:right}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.3px;white-space:nowrap;border:1px solid transparent}
+.badge.ok{background:rgba(76,219,140,.12);color:var(--green);border-color:rgba(76,219,140,.35)}
+.badge.warn{background:rgba(240,196,90,.12);color:var(--yellow);border-color:rgba(240,196,90,.35)}
+.badge.bad{background:rgba(255,107,107,.12);color:var(--red);border-color:rgba(255,107,107,.35)}
+.badge.reward{background:rgba(255,215,0,.12);color:var(--gold);border-color:rgba(255,215,0,.35)}
+.badge.mute{background:var(--bg-input);color:var(--text-3);border-color:var(--border)}
+.fac{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.5px}
+.fac-LSPD{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.fac-SFPD{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.fac-RCSD{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+.fac-LVPD{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.fac-FBI{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+
+/* ============ PODIUM ============ */
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
+@media(max-width:800px){.podium{grid-template-columns:1fr;align-items:stretch}}
+.pod-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:22px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;transition:.3s}
+.pod-card:hover{transform:translateY(-6px);box-shadow:var(--glow),var(--shadow)}
+.pod-card.g1{border-color:rgba(255,215,0,.4);box-shadow:0 0 40px rgba(255,215,0,.15);order:2;transform:scale(1.05)}
+.pod-card.g2{border-color:rgba(192,200,216,.3);order:1}
+.pod-card.g3{border-color:rgba(205,127,50,.3);order:3}
+.pod-card.g1:hover{transform:scale(1.05) translateY(-6px)}
+.pod-medal{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px;position:relative}
+.pod-medal.g1{background:radial-gradient(circle at 30% 30%,#fff2a8,#ffd700 50%,#b8860b);color:#4a2e00;box-shadow:0 0 30px rgba(255,215,0,.6)}
+.pod-medal.g2{background:radial-gradient(circle at 30% 30%,#fff,#c0c8d8 50%,#8890a0);color:#2a3040;box-shadow:0 0 24px rgba(192,200,216,.5)}
+.pod-medal.g3{background:radial-gradient(circle at 30% 30%,#ffd9b8,#cd7f32 50%,#8a5420);color:#fff;box-shadow:0 0 24px rgba(205,127,50,.5)}
+.pod-rank{font-size:10px;font-weight:900;letter-spacing:3px;color:var(--text-3);margin-bottom:10px}
+.pod-ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:32px;color:#fff;margin:0 auto 12px;overflow:hidden;border:3px solid var(--border-strong);box-shadow:0 0 24px var(--accent-glow);cursor:pointer;transition:.2s}
+.pod-ava:hover{transform:scale(1.08)}
+.pod-ava img{width:100%;height:100%;object-fit:cover}
+.pod-nick{font-size:20px;font-weight:900;margin-bottom:6px;word-break:break-word}
+.pod-card.g1 .pod-nick{background:linear-gradient(90deg,#ffd700,#fff6b0,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s infinite}
+@keyframes shimmer{0%,100%{background-position:0% center}50%{background-position:200% center}}
+.pod-hours{font-size:32px;font-weight:900;line-height:1;color:var(--text);margin-top:10px}
+.pod-hours span{font-size:14px;color:var(--text-3);font-weight:700;margin-left:2px}
+.pod-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px;font-weight:700}
+
+/* ============ MODAL ============ */
+.modal-overlay{position:fixed;inset:0;z-index:4000;background:rgba(5,7,18,.85);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg-panel);border:1px solid var(--border-strong);border-radius:24px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--bg-input);border:1px solid var(--border);color:var(--text-3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:10}
+.modal-close:hover{background:rgba(255,107,107,.2);color:var(--red)}
+.modal-head{padding:36px 28px 24px;text-align:center;background:radial-gradient(circle at 50% 0%,var(--accent-glow),transparent 70%)}
+.modal-ava{width:110px;height:110px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:44px;color:#fff;overflow:hidden;border:4px solid var(--border-strong);box-shadow:0 0 50px var(--accent-glow)}
 .modal-ava img{width:100%;height:100%;object-fit:cover}
-.modal-nick{font-size:26px;font-weight:900;color:#fff;margin-bottom:6px}
-.modal-fac{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:#c4b5fd;margin-bottom:8px}
-.modal-role{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;font-weight:700}
-.modal-body{padding:24px 28px 28px}
+.modal-nick{font-size:26px;font-weight:900;color:var(--text);margin-bottom:8px;word-break:break-word}
+.modal-fac{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:8px}
+.modal-role{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.modal-body{padding:0 28px 28px}
 .modal-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.modal-stat{background:var(--bg-input);border:1px solid var(--border-color);border-radius:14px;padding:14px 16px;text-align:center}
-.modal-stat-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.modal-stat-value{font-size:20px;font-weight:900;color:#fff}
-.modal-stat-value.green{color:#4cdb8c}
-.modal-stat-value.gold{color:var(--gold)}
-.modal-section-title{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.modal-section-title i{color:var(--accent)}
-.modal-chart{position:relative;height:200px;margin-bottom:20px}
-.achievements-list{display:flex;flex-wrap:wrap;gap:8px}
-.achievement-badge{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold);display:flex;align-items:center;gap:6px}
+.mstat{background:var(--bg-input);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.mstat-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700}
+.mstat-value{font-size:22px;font-weight:900;color:var(--text)}
+.mstat-value.green{color:var(--green)}
+.mstat-value.gold{color:var(--gold)}
+.msec{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;font-weight:800;margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.msec i{color:var(--accent)}
+.ach-list{display:flex;flex-wrap:wrap;gap:8px}
+.ach{padding:7px 13px;border-radius:20px;font-size:11px;font-weight:800;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold)}
 
-/* Admin */
-.admin-select{background:var(--bg-input);color:#fff;border:1px solid var(--border-color);border-radius:8px;padding:5px 8px;font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;outline:none}
-.admin-select:focus{border-color:var(--accent)}
-.admin-nick{width:100%;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;color:#fff;padding:5px 8px;font-size:11px;font-family:'Inter',sans-serif;outline:none}
-.admin-nick:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
-.admin-btn{padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer;border:1px solid;font-family:'Inter',sans-serif;font-weight:600;transition:.2s}
-.admin-btn.danger{background:rgba(255,107,107,.15);border-color:rgba(255,107,107,.3);color:#ff6b6b}
-.admin-btn.danger:hover{background:rgba(255,107,107,.3);color:#fff}
-.admin-btn.success{background:rgba(76,219,140,.15);border-color:rgba(76,219,140,.3);color:#4cdb8c}
-.admin-btn.success:hover{background:rgba(76,219,140,.3);color:#fff}
-.admin-grid-table{font-size:11px}
-.admin-role-combo{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+/* ============ SETTINGS ============ */
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);gap:16px;flex-wrap:wrap}
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:13px;font-weight:600;color:var(--text-2)}
+.setting-desc{font-size:11px;color:var(--text-3);margin-top:2px}
+.theme-grid{display:flex;gap:8px;flex-wrap:wrap}
+.theme-btn{padding:10px 16px;background:var(--bg-input);border:1px solid var(--border);border-radius:12px;color:var(--text-2);cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:.2s;display:flex;align-items:center;gap:8px}
+.theme-btn:hover{border-color:var(--accent)}
+.theme-btn.active{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;border-color:transparent;box-shadow:0 4px 16px var(--accent-glow)}
+.color-grid{display:flex;gap:8px}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s;position:relative}
+.color-dot:hover{transform:scale(1.1)}
+.color-dot.active{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.switch{position:relative;width:48px;height:26px;background:var(--bg-input);border:1px solid var(--border);border-radius:99px;cursor:pointer;transition:.2s;flex-shrink:0}
+.switch::before{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--text-3);transition:.3s}
+.switch.on{background:var(--accent);border-color:var(--accent)}
+.switch.on::before{background:#fff;transform:translateX(22px)}
 
-/* Faction chips */
-.faction-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.3px}
-.faction-LSPD{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.4)}
-.faction-SFPD{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.4)}
-.faction-RCSD{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.4)}
-.faction-LVPD{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.4)}
-.faction-FBI{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.4)}
-.faction-none{background:rgba(107,114,128,.15);color:#9ca3af;border:1px solid rgba(107,114,128,.4)}
+/* ============ TOAST ============ */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:7000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:var(--bg-panel);border:1px solid var(--border-strong);border-radius:14px;padding:14px 18px;min-width:280px;max-width:380px;display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow-lg);animation:slideIn .3s;pointer-events:auto}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.toast.out{animation:slideOut .3s forwards}
+@keyframes slideOut{to{opacity:0;transform:translateX(30px)}}
+.toast-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.toast-icon.ok{background:rgba(76,219,140,.15);color:var(--green)}
+.toast-icon.err{background:rgba(255,107,107,.15);color:var(--red)}
+.toast-icon.info{background:rgba(96,165,250,.15);color:#60a5fa}
+.toast-body{flex:1}
+.toast-title{font-weight:800;font-size:13px;color:var(--text);margin-bottom:2px}
+.toast-text{font-size:12px;color:var(--text-3);line-height:1.4}
 
-/* File upload */
-.upload-btn{position:absolute;bottom:-4px;right:-4px;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));border:2px solid var(--bg-header);color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
-.upload-btn:hover{transform:scale(1.1)}
+/* Skeleton */
+.skel{background:linear-gradient(90deg,var(--bg-input) 25%,var(--bg-hover) 50%,var(--bg-input) 75%);background-size:200% 100%;animation:skel 1.5s infinite;border-radius:8px}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* Loading */
+/* Filter chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:8px 14px;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--border-strong);color:var(--text)}
+.chip.active{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;border-color:transparent;box-shadow:0 4px 14px var(--accent-glow)}
+.chip i{font-size:11px}
+
+/* Loading overlay */
 .loading-overlay{position:fixed;inset:0;background:rgba(5,7,18,.9);backdrop-filter:blur(12px);z-index:6000;display:none;align-items:center;justify-content:center}
 .loading-overlay.open{display:flex}
-.loading-box{text-align:center;padding:40px;border-radius:24px}
-.loading-spinner{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;border:3px solid rgba(167,139,250,.15);border-top-color:#a78bfa;animation:spinLoader 1s linear infinite}
-@keyframes spinLoader{to{transform:rotate(360deg)}}
-.loading-text{color:#fff;font-size:14px;font-weight:700}
+.loading-box{text-align:center}
+.spinner{width:56px;height:56px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--text);font-size:14px;font-weight:700}
+
+/* Faction banner */
+.fac-banner{padding:20px 24px;border-radius:20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;border:1px solid var(--border-strong);background:linear-gradient(135deg,var(--accent-glow),transparent 80%)}
+.fac-banner i{font-size:28px;color:var(--accent)}
+.fac-banner h3{font-size:18px;font-weight:900}
+.fac-banner p{font-size:12px;color:var(--text-3);margin-top:2px}
+
+/* Period */
+.period-btn{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:14px 28px;cursor:pointer;user-select:none;transition:.2s;margin-bottom:16px;width:100%}
+.period-btn:hover{border-color:var(--accent)}
+.period-btn i.picon{color:var(--gold)}
+.period-btn span{font-size:14px;font-weight:700;color:var(--text-2)}
+.period-btn b{color:var(--text);margin-left:6px}
+.week-picker{display:none;background:var(--bg-panel);border:1px solid var(--border);border-radius:14px;padding:10px;margin-bottom:16px}
+.week-picker.open{display:block}
+.week-picker button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:12px 16px;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;border-radius:10px;transition:.2s;margin-bottom:4px;font-weight:600}
+.week-picker button:hover{background:var(--bg-hover)}
+.week-picker button.active{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;box-shadow:0 4px 14px var(--accent-glow)}
+.week-picker button span:last-child{font-size:11px;color:var(--text-3)}
+.week-picker button.active span:last-child{color:rgba(255,255,255,.85)}
+
+.input-area{padding:12px;background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap}
+.input-area textarea{flex:1;min-width:200px;background:var(--bg-input);border:2px solid var(--border);border-radius:12px;color:var(--text);padding:12px 16px;font-family:monospace;font-size:12px;outline:none;resize:none;height:46px;transition:.2s}
+.input-area textarea:focus{border-color:var(--accent)}
+.btn-primary{padding:0 28px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent));border:none;color:#fff;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;transition:.25s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+
+.admin-nick{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 10px;font-size:12px;font-family:inherit;outline:none}
+.admin-nick:focus{border-color:var(--accent)}
+.admin-select{background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;cursor:pointer;outline:none}
+.admin-btn{padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;border:1px solid;font-family:inherit;font-weight:700;transition:.2s;margin-left:6px}
+.admin-btn.danger{background:rgba(255,107,107,.15);border-color:rgba(255,107,107,.3);color:var(--red)}
+.admin-btn.success{background:rgba(76,219,140,.15);border-color:rgba(76,219,140,.3);color:var(--green)}
+
+.hidden{display:none !important}
+.empty{padding:50px 20px;text-align:center;color:var(--text-3)}
+.empty i{font-size:42px;opacity:.35;display:block;margin-bottom:14px}
 
 @media(max-width:900px){
-.container{padding-left:0 !important}
-.header{margin-left:0;padding:12px 16px}
-.header-title{font-size:18px}
-.tabs-vertical{width:220px;transform:translateX(-230px);padding-top:70px}
-body.menu-open .tabs-vertical{transform:translateX(0)}
-body.menu-open .menu-toggle{left:220px}
-.menu-toggle{left:8px;top:12px;width:40px;height:40px}
-.top3-grid{grid-template-columns:1fr}
-.modal-stats{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;z-index:300;transform:translateX(-100%);transition:transform .3s;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar.compact{width:240px}
+  .sidebar.compact .nav-text,.sidebar.compact .sidebar-logo-text,.sidebar.compact .sidebar-section{display:block}
+  .main{padding:16px}
 }
 </style>
 </head>
-<body class="menu-closed">
+<body>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-box">
-    <div class="loading-spinner"></div>
+    <div class="spinner"></div>
     <div class="loading-text" id="loadingText">Загрузка...</div>
   </div>
 </div>
 
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- AUTH -->
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-card">
     <h2>Space MJ</h2>
@@ -280,13 +394,13 @@ body.menu-open .menu-toggle{left:220px}
       <div id="step1">
         <div class="auth-status" id="authStatus1"></div>
         <input class="auth-input" id="authEmail" type="email" placeholder="твой@email.com">
-        <button class="auth-btn" id="sendCodeBtn">📧 Отправить код</button>
-        <p class="auth-hint">Придёт письмо с кодом.</p>
+        <button class="auth-btn" id="sendCodeBtn"><i class="fas fa-paper-plane"></i> Отправить код</button>
+        <p class="auth-hint">Придёт письмо с кодом. Проверь папку «Спам».</p>
       </div>
       <div id="step2" style="display:none">
         <div class="auth-status" id="authStatus2"></div>
         <input class="auth-input code" id="authCode" type="text" maxlength="10" inputmode="numeric" placeholder="00000000">
-        <button class="auth-btn" id="verifyCodeBtn">✅ Войти</button>
+        <button class="auth-btn" id="verifyCodeBtn"><i class="fas fa-check"></i> Войти</button>
         <p class="auth-back" id="backBtn">← Ввести другой email</p>
       </div>
     </div>
@@ -297,864 +411,965 @@ body.menu-open .menu-toggle{left:220px}
   </div>
 </div>
 
+<!-- MAIN -->
 <div id="mainInterface" style="display:none">
-  <div class="container">
-    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+<div class="app">
 
-    <div class="header">
-      <div class="header-left">
-        <div class="logo-icon">MJ</div>
-        <div>
-          <div class="header-title">Space <span>MJ</span></div>
-          <div class="header-sub">Работать в МЮ это успех</div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">MJ</div>
+      <div class="sidebar-logo-text">Space <span>MJ</span></div>
+    </div>
+
+    <div class="sidebar-section">Главное</div>
+    <button class="nav-btn active" data-tab="dashboardTab"><i class="fas fa-gauge-high"></i><span class="nav-text">Дашборд</span></button>
+    <button class="nav-btn" data-tab="onlineTab"><i class="fas fa-chart-line"></i><span class="nav-text">Онлайн</span></button>
+    <button class="nav-btn" data-tab="topTab"><i class="fas fa-trophy"></i><span class="nav-text">Топ-3</span></button>
+    <button class="nav-btn" data-tab="factionTab" id="factionNavBtn" style="display:none"><i class="fas fa-people-group"></i><span class="nav-text">Моя фракция</span></button>
+    <button class="nav-btn" data-tab="chartTab"><i class="fas fa-chart-column"></i><span class="nav-text">Аналитика</span></button>
+
+    <div class="sidebar-section">Отчёты</div>
+    <button class="nav-btn" data-tab="logsTab" id="logsNavBtn" style="display:none"><i class="fas fa-history"></i><span class="nav-text">Логи</span></button>
+    <button class="nav-btn" data-tab="adminTab" id="adminNavBtn" style="display:none"><i class="fas fa-user-shield"></i><span class="nav-text">Управление</span></button>
+
+    <div class="sidebar-section">Настройки</div>
+    <button class="nav-btn" data-tab="settingsTab"><i class="fas fa-sliders"></i><span class="nav-text">Внешний вид</span></button>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="su-ava" id="suAva">?</div>
+        <div class="su-info">
+          <div class="su-name" id="suName">...</div>
+          <div class="su-role" id="suRole">...</div>
         </div>
+        <button class="icon-btn" onclick="logout()" style="width:32px;height:32px;font-size:12px" title="Выйти"><i class="fas fa-sign-out-alt"></i></button>
       </div>
-      <div class="user-badge" id="userBadge">
-        <div class="ub-ava" id="ubAva" title="Загрузить аватар">?</div>
-        <div class="ub-info">
-          <span class="ub-name" id="ubName">...</span>
-          <span class="ub-source" id="ubRole">...</span>
-        </div>
-        <button class="ub-logout" onclick="logout()">Выйти</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-burger" id="menuBurger"><i class="fas fa-bars"></i></button>
+        <h1 id="pageTitle">Дашборд <span>MJ</span></h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="compactBtn" title="Компактный режим"><i class="fas fa-compress"></i></button>
+        <button class="icon-btn" id="themeBtn" title="Сменить тему"><i class="fas fa-moon"></i></button>
       </div>
     </div>
 
-    <div class="tabs-vertical" id="sideMenu">
-      <div class="menu-label"><i class="fas fa-bars"></i> Меню</div>
-      <button class="tab-btn active" data-tab="onlineTab"><i class="fas fa-chart-line"></i> Онлайн</button>
-      <button class="tab-btn" data-tab="factionTab" id="factionTabBtn" style="display:none"><i class="fas fa-people-group"></i> Моя фракция</button>
-      <button class="tab-btn" data-tab="topTab" id="topTabBtn"><i class="fas fa-trophy"></i> Топ-3</button>
-      <button class="tab-btn" data-tab="chartTab" id="chartTabBtn"><i class="fas fa-chart-column"></i> График</button>
-      <button class="tab-btn" data-tab="logsTab" id="logsTabBtn" style="display:none"><i class="fas fa-history"></i> Логи</button>
-      <button class="tab-btn" data-tab="adminTab" id="adminTabBtn" style="display:none"><i class="fas fa-user-shield"></i> Управление</button>
-    </div>
+    <!-- DASHBOARD -->
+    <div id="dashboardTab" class="tab-pane active-pane">
+      <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="card stat">
+          <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+          <div class="stat-label">Онлайн (текущая)</div>
+          <div class="stat-value" id="statOnline">0</div>
+          <div class="stat-delta" id="statOnlineDelta"></div>
+        </div>
+        <div class="card stat">
+          <div class="stat-icon green"><i class="fas fa-user-check"></i></div>
+          <div class="stat-label">В норме</div>
+          <div class="stat-value" id="statOk">0</div>
+          <div class="stat-delta" id="statOkDelta"></div>
+        </div>
+        <div class="card stat">
+          <div class="stat-icon gold"><i class="fas fa-clock"></i></div>
+          <div class="stat-label">Всего часов</div>
+          <div class="stat-value" id="statHours">0<span class="unit">ч</span></div>
+          <div class="stat-delta" id="statHoursDelta"></div>
+        </div>
+        <div class="card stat">
+          <div class="stat-icon blue"><i class="fas fa-medal"></i></div>
+          <div class="stat-label">Средний онлайн</div>
+          <div class="stat-value" id="statAvg">0<span class="unit">ч</span></div>
+          <div class="stat-delta" id="statAvgDelta"></div>
+        </div>
+      </div>
 
-    <div class="content-area">
-      <!-- ОНЛАЙН -->
-      <div id="onlineTab" class="tab-pane active-pane">
-        <div class="input-area" id="inputArea">
-          <div class="controls">
-            <div class="input-wrapper">
-              <i class="fas fa-paste input-icon"></i>
-              <textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea>
+      <div class="grid grid-2-1" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-title"><span><i class="fas fa-chart-area" style="margin-right:8px"></i>Динамика онлайна по неделям</span></div>
+          <div class="chart-wrap"><canvas id="chartDashWeeks"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span><i class="fas fa-circle-notch" style="margin-right:8px"></i>Общая активность</span></div>
+          <div class="ring-wrap">
+            <div class="ring">
+              <svg viewBox="0 0 200 200">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--accent)"/>
+                    <stop offset="100%" stop-color="var(--gold)"/>
+                  </linearGradient>
+                </defs>
+                <circle class="track" cx="100" cy="100" r="82"/>
+                <circle class="progress" id="ringProgress" cx="100" cy="100" r="82" stroke-dasharray="515" stroke-dashoffset="515"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-value" id="ringValue">0%</div>
+                <div class="ring-label">в норме</div>
+              </div>
             </div>
-            <button id="calcButton"><i class="fas fa-calculator"></i> Посчитать</button>
           </div>
         </div>
+      </div>
 
-        <div class="filter-bar" id="filterBar"></div>
+      <div class="card">
+        <div class="card-title"><span><i class="fas fa-bolt" style="margin-right:8px"></i>Топ-5 лидеров недели</span><span id="dashPeriodLabel" style="color:var(--text-3);font-size:10px;font-weight:600"></span></div>
+        <div id="dashTop5"></div>
+      </div>
+    </div>
 
-        <div class="period-wrap">
-          <div class="period-title" id="periodTitle">
-            <i class="fas fa-calendar-alt period-title-icon"></i>
-            <div class="period-title-text">Период: <span id="periodDatesText">— — —</span></div>
-            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px"></i>
+    <!-- ONLINE -->
+    <div id="onlineTab" class="tab-pane">
+      <div class="input-area" id="inputArea">
+        <textarea id="input" placeholder="Игрок: Nick  Онлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)"></textarea>
+        <button class="btn-primary" id="calcButton"><i class="fas fa-calculator"></i> Посчитать</button>
+      </div>
+
+      <div class="chips" id="chipsBar"></div>
+
+      <div class="period-btn" id="periodBtn">
+        <i class="fas fa-calendar-alt picon"></i>
+        <span>Период: <b id="periodDatesText">— — —</b></span>
+        <i class="fas fa-chevron-down" style="color:var(--text-3);font-size:12px"></i>
+      </div>
+      <div class="week-picker" id="weekPicker"></div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3><i class="fas fa-list" style="margin-right:8px;color:var(--accent)"></i>Таблица онлайна</h3>
+          <div class="table-search">
+            <input id="searchInput" placeholder="Поиск по нику...">
           </div>
-          <div class="period-week-picker" id="periodWeekPicker"></div>
         </div>
-
-        <div class="table-wrapper">
-          <table class="table">
+        <div class="table-scroll">
+          <table class="tbl">
             <thead><tr>
-              <th style="width:50px;text-align:center">#</th>
-              <th class="sortable" data-sort="nick">ИГРОК</th>
-              <th class="sortable" data-sort="hours">ОНЛАЙН / НОРМА</th>
-              <th style="width:90px;text-align:center">НЕАКТИВ</th>
-              <th class="sortable" style="width:120px;text-align:center" data-sort="status">СТАТУС</th>
-              <th style="width:110px;text-align:center">ПООЩРЕНИЕ</th>
-              <th style="width:100px;text-align:center">ДЕЙСТВИЯ</th>
+              <th style="width:60px;text-align:center">#</th>
+              <th class="sortable" data-sort="nick">Игрок</th>
+              <th class="sortable" data-sort="hours">Онлайн / норма</th>
+              <th style="width:110px;text-align:center">Неактив</th>
+              <th class="sortable" style="width:140px;text-align:center" data-sort="status">Статус</th>
+              <th style="width:130px;text-align:center">Поощрение</th>
+              <th style="width:110px;text-align:center">Действия</th>
             </tr></thead>
             <tbody id="result"></tbody>
           </table>
         </div>
       </div>
+    </div>
 
-      <!-- МОЯ ФРАКЦИЯ -->
-      <div id="factionTab" class="tab-pane">
-        <h3 style="margin-bottom:16px;color:var(--text-secondary);font-size:16px"><i class="fas fa-people-group" style="color:var(--accent);margin-right:8px"></i>Онлайн моей фракции: <span id="factionNameLabel"></span></h3>
-        <div class="table-wrapper">
-          <table class="table">
+    <!-- TOP-3 -->
+    <div id="topTab" class="tab-pane">
+      <div class="podium" id="podiumGrid"></div>
+    </div>
+
+    <!-- FACTION -->
+    <div id="factionTab" class="tab-pane">
+      <div class="fac-banner">
+        <i class="fas fa-shield-halved"></i>
+        <div>
+          <h3 id="factionTitle">Моя фракция</h3>
+          <p>Онлайн игроков вашей фракции за выбранный период</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="tbl">
             <thead><tr>
-              <th style="width:50px;text-align:center">#</th>
-              <th>ИГРОК</th>
-              <th>ОНЛАЙН</th>
-              <th style="width:100px;text-align:center">НЕАКТИВ</th>
-              <th style="width:130px;text-align:center">СТАТУС</th>
+              <th style="width:60px;text-align:center">#</th>
+              <th>Игрок</th>
+              <th>Онлайн</th>
+              <th style="width:110px;text-align:center">Неактив</th>
+              <th style="width:140px;text-align:center">Статус</th>
             </tr></thead>
             <tbody id="factionTbody"></tbody>
           </table>
         </div>
       </div>
+    </div>
 
-      <!-- ТОП-3 -->
-      <div id="topTab" class="tab-pane">
-        <h3 style="margin-bottom:20px;color:var(--text-secondary);font-size:16px"><i class="fas fa-trophy" style="color:var(--gold);margin-right:8px"></i>Топ-3 лидера недели</h3>
-        <div class="top3-grid" id="top3Grid"></div>
+    <!-- CHART -->
+    <div id="chartTab" class="tab-pane">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title"><span><i class="fas fa-chart-column" style="margin-right:8px"></i>Сумма часов по неделям</span></div>
+        <div class="chart-wrap tall"><canvas id="chartWeeks"></canvas></div>
       </div>
-
-      <!-- ГРАФИК -->
-      <div id="chartTab" class="tab-pane">
-        <div class="chart-container">
-          <h3><i class="fas fa-chart-column"></i> Общий онлайн по неделям</h3>
-          <div class="chart-wrapper"><canvas id="chartWeeks"></canvas></div>
-        </div>
+      <div class="card">
+        <div class="card-title"><span><i class="fas fa-chart-pie" style="margin-right:8px"></i>Распределение по фракциям</span></div>
+        <div class="chart-wrap"><canvas id="chartFactions"></canvas></div>
       </div>
+    </div>
 
-      <!-- ЛОГИ -->
-      <div id="logsTab" class="tab-pane">
-        <h3 style="margin-bottom:16px;color:var(--text-secondary);font-size:16px"><i class="fas fa-history" style="color:var(--accent);margin-right:8px"></i>История (последние 100)</h3>
-        <div class="table-wrapper">
-          <table class="table">
-            <thead><tr>
-              <th>Дата</th><th>Игрок</th><th>Часы</th><th>ч/день</th><th>Акт. дней</th><th>Период</th><th>Кто внёс</th>
-            </tr></thead>
+    <!-- LOGS -->
+    <div id="logsTab" class="tab-pane">
+      <div class="table-wrap">
+        <div class="table-head"><h3><i class="fas fa-history" style="margin-right:8px;color:var(--accent)"></i>История (100 записей)</h3></div>
+        <div class="table-scroll">
+          <table class="tbl">
+            <thead><tr><th>Дата</th><th>Игрок</th><th>Часы</th><th>ч/день</th><th>Акт.</th><th>Период</th><th>Кто внёс</th></tr></thead>
             <tbody id="logsTbody"></tbody>
           </table>
         </div>
       </div>
+    </div>
 
-      <!-- УПРАВЛЕНИЕ -->
-      <div id="adminTab" class="tab-pane">
-        <h3 style="margin-bottom:12px;color:var(--text-secondary);font-size:16px"><i class="fas fa-user-shield" style="color:var(--accent);margin-right:8px"></i>Управление доступом</h3>
-        <p id="adminHint" style="font-size:13px;color:var(--text-muted);margin-bottom:14px"></p>
-        <div class="table-wrapper">
-          <table class="table admin-grid-table">
+    <!-- ADMIN -->
+    <div id="adminTab" class="tab-pane">
+      <div class="card" style="margin-bottom:16px;padding:14px 20px;background:var(--bg-input)">
+        <div style="font-size:12px;color:var(--text-3)"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:8px"></i><span id="adminHint"></span></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="tbl">
             <thead><tr>
-              <th style="width:18%">Имя</th>
-              <th style="width:18%">Игровой ник</th>
-              <th style="width:14%">Фракция</th>
-              <th style="width:12%">Роль</th>
-              <th style="width:8%">Статус</th>
-              <th style="width:30%">Действия</th>
+              <th>Имя</th><th>Игровой ник</th><th>Фракция</th><th>Роль</th><th style="text-align:center">Статус</th><th>Действия</th>
             </tr></thead>
             <tbody id="adminTbody"></tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- SETTINGS -->
+    <div id="settingsTab" class="tab-pane">
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-title"><span><i class="fas fa-palette" style="margin-right:8px"></i>Тема</span></div>
+          <div class="setting-row" style="border:none;padding-top:0">
+            <div>
+              <div class="setting-label">Тёмная / светлая тема</div>
+              <div class="setting-desc">Выбери оформление интерфейса</div>
+            </div>
+            <div class="theme-grid">
+              <button class="theme-btn active" data-theme-val="dark"><i class="fas fa-moon"></i> Тёмная</button>
+              <button class="theme-btn" data-theme-val="light"><i class="fas fa-sun"></i> Светлая</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Акцентный цвет</div>
+              <div class="setting-desc">Цвет кнопок и подсветок</div>
+            </div>
+            <div class="color-grid" id="colorGrid">
+              <div class="color-dot active" data-accent="purple" style="background:linear-gradient(135deg,#7c64ff,#a78bfa)"></div>
+              <div class="color-dot" data-accent="blue" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></div>
+              <div class="color-dot" data-accent="green" style="background:linear-gradient(135deg,#22c55e,#4cdb8c)"></div>
+              <div class="color-dot" data-accent="pink" style="background:linear-gradient(135deg,#ec4899,#f472b6)"></div>
+              <div class="color-dot" data-accent="orange" style="background:linear-gradient(135deg,#f97316,#fb923c)"></div>
+              <div class="color-dot" data-accent="cyan" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span><i class="fas fa-sliders" style="margin-right:8px"></i>Интерфейс</span></div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Компактный режим</div>
+              <div class="setting-desc">Скрыть названия в боковом меню</div>
+            </div>
+            <div class="switch" id="compactSwitch"></div>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Анимации</div>
+              <div class="setting-desc">Плавные переходы и эффекты</div>
+            </div>
+            <div class="switch on" id="animSwitch"></div>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Загрузка аватара</div>
+              <div class="setting-desc">Клик по своему аватару в меню</div>
+            </div>
+            <button class="theme-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fas fa-upload"></i> Загрузить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
 </div>
 
-<!-- Модалка профиля -->
+<!-- MODAL -->
 <div class="modal-overlay" id="profileModal">
   <div class="modal">
     <button class="modal-close" onclick="closeProfile()"><i class="fas fa-times"></i></button>
-    <div class="modal-header" id="profileHeader"></div>
+    <div class="modal-head" id="profileHead"></div>
     <div class="modal-body" id="profileBody"></div>
   </div>
 </div>
 
-<!-- Скрытый input для аватаров -->
 <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
 
 <script>
-const SUPABASE_URL = 'https://ulnatwncazooeussorxf.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ================= CONFIG ================= */
+const SUPABASE_URL='https://ulnatwncazooeussorxf.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_LW4QQvLx5VJxBjLiKBkmkw_-2bQW0zM';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const ROLE_NAMES={0:'Нет доступа',1:'Лидер/Зам',2:'Следящий',3:'ЗГС МЮ',4:'ГС МЮ',5:'Owner'};
+const ROLE_COLORS={0:'#8a94c9',1:'#8a94c9',2:'#4cdb8c',3:'#f0c45a',4:'#a78bfa',5:'#ffd966'};
+const ACH_NAMES={top1:'🥇 Лидер недели',top3:'🏆 Топ-3',overwork:'🔥 Сверх нормы',perfect:'💎 100% нормы',active30:'⚡ 30+ часов'};
 
-const ROLE_NAMES = { 0:'Нет доступа', 1:'Лидер/Зам', 2:'Следящий', 3:'ЗГС МЮ', 4:'ГС МЮ', 5:'Owner' };
-const ROLE_COLORS = { 0:'#8a94c9', 1:'#8a94c9', 2:'#4cdb8c', 3:'#f0c45a', 4:'#a78bfa', 5:'#ffd966' };
-const ACH_NAMES = { top1:'🥇 Лидер недели', top3:'🏆 Топ-3', overwork:'🔥 Сверх нормы', perfect:'💎 100% нормы', active30:'⚡ 30+ часов' };
+/* ================= STATE ================= */
+let currentUser=null,currentProfile=null;
+let settings={norm:21,predThreshold:17,rewardPerHour:10,bonusHoursPerDay:3};
+let parsedData=[];
+let periodStart=null,periodEnd=null;
+let currentWeekOffset=0;
+let currentFactionFilter='ALL';
+let currentSearch='';
+let sortBy='hours',sortDir='desc';
+let charts={};
 
-let currentUser = null, currentProfile = null;
-let settings = { norm: 21, predThreshold: 17, rewardPerHour: 10, bonusHoursPerDay: 3 };
-let parsedData = [];
-let periodStart = null, periodEnd = null;
-let currentWeekOffset = 0;
-let currentFactionFilter = 'ALL';
-let currentSearch = '';
-let sortBy = 'hours';
-let sortDir = 'desc';
-let chartWeeks = null;
+/* ================= HELPERS ================= */
+const $=id=>document.getElementById(id);
+const esc=s=>{if(!s) return '';return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m])};
+const initials=n=>(n||'?')[0].toUpperCase();
+const timeToHours=t=>{const p=t.split(':');if(p.length!==3)return 0;return +p[0]+(+p[1])/60+(+p[2])/3600};
+const effHours=u=>u.hours+(u.bonusHours||0);
+const rewardPts=h=>{if(h<settings.norm+1)return 0;const e=Math.floor(h)-settings.norm;return e>0?e*settings.rewardPerHour:0};
+const barCol=h=>h>=settings.norm?'#22c55e':h>=settings.predThreshold?'#facc15':'#ef4444';
+const facClass=f=>f?'fac-'+f:'fac-none';
 
-function $(id){ return document.getElementById(id); }
-function esc(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
-function showLoader(text){ $('loadingText').textContent = text; $('loadingOverlay').classList.add('open'); }
-function hideLoader(){ $('loadingOverlay').classList.remove('open'); }
+function showLoader(t){$('loadingText').textContent=t;$('loadingOverlay').classList.add('open')}
+function hideLoader(){$('loadingOverlay').classList.remove('open')}
 
-function timeToHours(t){ const p = t.split(':'); if(p.length!==3) return 0; return +p[0] + (+p[1])/60 + (+p[2])/3600; }
-function effectiveHours(u){ return u.hours + (u.bonusHours||0); }
-function rewardPoints(h){ if(h < settings.norm + 1) return 0; const e = Math.floor(h) - settings.norm; return e > 0 ? e * settings.rewardPerHour : 0; }
-function barColor(h){ if(h >= settings.norm) return '#22c55e'; if(h >= settings.predThreshold) return '#facc15'; return '#ef4444'; }
-function getFactionClass(f){ return f ? 'faction-'+f : 'faction-none'; }
-function getInitials(name){ return (name||'?')[0].toUpperCase(); }
-
-// ПЕРИОДЫ
-function getWeekRange(offset = 0){
-  const now = new Date();
-  const day = now.getDay();
-  const offsetToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + offsetToMonday - offset * 7);
-  monday.setHours(0,0,0,0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  return { start: fmt(monday), end: fmt(sunday), monday, sunday };
+function toast(title,text,type='info'){
+  const icons={ok:'fa-check',err:'fa-exclamation',info:'fa-info'};
+  const el=document.createElement('div');
+  el.className='toast';
+  el.innerHTML=`<div class="toast-icon ${type}"><i class="fas ${icons[type]}"></i></div><div class="toast-body"><div class="toast-title">${esc(title)}</div><div class="toast-text">${esc(text)}</div></div>`;
+  $('toastWrap').appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4000);
 }
-function fmtRu(d){ return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`; }
+window.toast=toast;
+
+/* ================= PERIOD ================= */
+function getWeekRange(offset=0){
+  const now=new Date(),day=now.getDay(),off=day===0?-6:1-day;
+  const mon=new Date(now);mon.setDate(now.getDate()+off-offset*7);mon.setHours(0,0,0,0);
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  const f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return{start:f(mon),end:f(sun),monday:mon,sunday:sun};
+}
+const fmtRu=d=>`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+
 function updatePeriodDisplay(){
-  const r = getWeekRange(currentWeekOffset);
-  $('periodDatesText').textContent = `${r.start} — ${r.end}`;
+  const r=getWeekRange(currentWeekOffset);
+  $('periodDatesText').textContent=`${r.start} — ${r.end}`;
+  $('dashPeriodLabel').textContent=`${r.start} — ${r.end}`;
 }
 function renderWeekPicker(){
-  const picker = $('periodWeekPicker');
-  const labels = ['Текущая неделя', 'Прошлая неделя', '2 недели назад', '3 недели назад'];
-  picker.innerHTML = labels.map((l,i) => {
-    const r = getWeekRange(i);
-    return `<button data-week="${i}" class="${i===currentWeekOffset?'active':''}"><span>${l}</span><span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span></button>`;
+  const p=$('weekPicker');
+  const labels=['Текущая неделя','Прошлая неделя','2 недели назад','3 недели назад'];
+  p.innerHTML=labels.map((l,i)=>{
+    const r=getWeekRange(i);
+    return`<button data-week="${i}" class="${i===currentWeekOffset?'active':''}"><span>${l}</span><span>${fmtRu(r.monday)} — ${fmtRu(r.sunday)}</span></button>`;
   }).join('');
-  picker.querySelectorAll('button').forEach(b => b.onclick = async () => {
-    currentWeekOffset = +b.dataset.week;
-    const r = getWeekRange(currentWeekOffset);
-    periodStart = r.start; periodEnd = r.end;
-    updatePeriodDisplay(); renderWeekPicker();
-    picker.classList.remove('open');
-    if(currentProfile && currentProfile.role >= 1) await loadWeekLogs();
+  p.querySelectorAll('button').forEach(b=>b.onclick=async()=>{
+    currentWeekOffset=+b.dataset.week;
+    const r=getWeekRange(currentWeekOffset);
+    periodStart=r.start;periodEnd=r.end;
+    updatePeriodDisplay();renderWeekPicker();p.classList.remove('open');
+    if(currentProfile&&currentProfile.role>=1){await loadWeekLogs();renderTop3();renderDash();}
   });
 }
 
-// AUTH
-function setStatus(step, msg, type){ const el = $('authStatus'+step); if(!el) return; el.className = 'auth-status' + (type?' show '+type:''); el.textContent = msg||''; }
+/* ================= AUTH ================= */
+function setStatus(step,msg,type){const e=$('authStatus'+step);if(!e)return;e.className='auth-status'+(type?' show '+type:'');e.textContent=msg||''}
+
 async function sendCode(){
-  const email = $('authEmail').value.trim();
-  if(!email || !email.includes('@')) return setStatus(1, 'Введи email', 'err');
-  const btn = $('sendCodeBtn'); btn.disabled = true; btn.textContent = '⏳ Отправляем...';
-  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-  btn.disabled = false; btn.textContent = '📧 Отправить код';
-  if(error) return setStatus(1, 'Ошибка: '+error.message, 'err');
-  setStatus(2, '✅ Код отправлен на '+email, 'ok');
-  $('step1').style.display = 'none'; $('step2').style.display = 'block'; $('authCode').focus();
+  const email=$('authEmail').value.trim();
+  if(!email||!email.includes('@'))return setStatus(1,'Введи email','err');
+  const b=$('sendCodeBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Отправляем...';
+  const{error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Отправить код';
+  if(error)return setStatus(1,'Ошибка: '+error.message,'err');
+  setStatus(2,'✅ Код отправлен на '+email,'ok');
+  $('step1').style.display='none';$('step2').style.display='block';$('authCode').focus();
 }
 async function verifyCode(){
-  const email = $('authEmail').value.trim(), code = $('authCode').value.trim();
-  if(code.length < 6) return setStatus(2, 'Введи код', 'err');
-  const btn = $('verifyCodeBtn'); btn.disabled = true; btn.textContent = '⏳ Проверяем...';
-  const { error } = await sb.auth.verifyOtp({ email, token: code, type: 'email' });
-  btn.disabled = false; btn.textContent = '✅ Войти';
-  if(error) return setStatus(2, 'Ошибка: '+error.message, 'err');
+  const email=$('authEmail').value.trim(),code=$('authCode').value.trim();
+  if(code.length<6)return setStatus(2,'Введи код','err');
+  const b=$('verifyCodeBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Проверяем...';
+  const{error}=await sb.auth.verifyOtp({email,token:code,type:'email'});
+  b.disabled=false;b.innerHTML='<i class="fas fa-check"></i> Войти';
+  if(error)return setStatus(2,'Ошибка: '+error.message,'err');
   location.reload();
 }
 async function loginDiscord(){
-  const btn = $('discordLoginBtn'); btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Переход...';
-  const { error } = await sb.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
-  if(error){ alert('Ошибка: '+error.message); btn.disabled = false; }
+  const b=$('discordLoginBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Переход...';
+  const{error}=await sb.auth.signInWithOAuth({provider:'discord',options:{redirectTo:window.location.origin}});
+  if(error){alert('Ошибка: '+error.message);b.disabled=false}
 }
-async function logout(){ if(!confirm('Выйти?')) return; await sb.auth.signOut(); location.reload(); }
-window.logout = logout;
+async function logout(){if(!confirm('Выйти?'))return;await sb.auth.signOut();location.reload()}
+window.logout=logout;
 
-async function loadProfile(userId, email, meta){
-  const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(data) return data;
-  const name = meta?.full_name || meta?.name || (email ? email.split('@')[0] : 'Игрок');
-  const { data: created, error } = await sb.from('profiles').insert({ id: userId, discord_name: name, role: 0, active: true }).select().single();
-  if(error){ console.error(error); return null; }
-  return created;
+async function loadProfile(uid,email,meta){
+  const{data}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();
+  if(data)return data;
+  const name=meta?.full_name||meta?.name||(email?email.split('@')[0]:'Игрок');
+  const{data:cr,error}=await sb.from('profiles').insert({id:uid,discord_name:name,role:0,active:true}).select().single();
+  if(error){console.error(error);return null}
+  return cr;
 }
 
 async function initAuth(){
-  $('tabEmail').onclick = () => { $('tabEmail').classList.add('active'); $('tabDiscord').classList.remove('active'); $('emailForm').style.display='block'; $('discordForm').style.display='none'; };
-  $('tabDiscord').onclick = () => { $('tabDiscord').classList.add('active'); $('tabEmail').classList.remove('active'); $('discordForm').style.display='block'; $('emailForm').style.display='none'; };
-  $('sendCodeBtn').onclick = sendCode;
-  $('verifyCodeBtn').onclick = verifyCode;
-  $('discordLoginBtn').onclick = loginDiscord;
-  $('backBtn').onclick = () => { $('step1').style.display='block'; $('step2').style.display='none'; setStatus(1,'',''); };
-  $('authCode').addEventListener('keypress', e => { if(e.key === 'Enter') verifyCode(); });
-  $('authEmail').addEventListener('keypress', e => { if(e.key === 'Enter') sendCode(); });
-  $('avatarFileInput').addEventListener('change', handleAvatarUpload);
-  $('ubAva').onclick = () => $('avatarFileInput').click();
+  $('tabEmail').onclick=()=>{$('tabEmail').classList.add('active');$('tabDiscord').classList.remove('active');$('emailForm').style.display='block';$('discordForm').style.display='none'};
+  $('tabDiscord').onclick=()=>{$('tabDiscord').classList.add('active');$('tabEmail').classList.remove('active');$('discordForm').style.display='block';$('emailForm').style.display='none'};
+  $('sendCodeBtn').onclick=sendCode;
+  $('verifyCodeBtn').onclick=verifyCode;
+  $('discordLoginBtn').onclick=loginDiscord;
+  $('backBtn').onclick=()=>{$('step1').style.display='block';$('step2').style.display='none';setStatus(1,'','')};
+  $('authCode').addEventListener('keypress',e=>{if(e.key==='Enter')verifyCode()});
+  $('authEmail').addEventListener('keypress',e=>{if(e.key==='Enter')sendCode()});
+  $('avatarFileInput').addEventListener('change',handleAvatar);
 
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session){ $('authOverlay').classList.add('open'); return; }
-
-  currentUser = session.user;
-  currentProfile = await loadProfile(session.user.id, session.user.email, session.user.user_metadata);
-  if(!currentProfile){ setStatus(1, 'Ошибка профиля', 'err'); $('authOverlay').classList.add('open'); return; }
-
-  if(currentProfile.active === false){
-    alert('Доступ отключён.'); await sb.auth.signOut(); location.reload(); return;
-  }
-
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){$('authOverlay').classList.add('open');return}
+  currentUser=session.user;
+  currentProfile=await loadProfile(session.user.id,session.user.email,session.user.user_metadata);
+  if(!currentProfile){setStatus(1,'Ошибка профиля','err');$('authOverlay').classList.add('open');return}
+  if(currentProfile.active===false){alert('Доступ отключён.');await sb.auth.signOut();location.reload();return}
   $('authOverlay').classList.remove('open');
-  $('mainInterface').style.display = 'block';
+  $('mainInterface').style.display='block';
   updateUserBadge();
   applyRole();
   await initFullApp();
 }
 
 function updateUserBadge(){
-  const name = currentProfile.game_nick || currentProfile.discord_name || 'Игрок';
-  $('ubName').textContent = name;
-  $('ubRole').textContent = ROLE_NAMES[currentProfile.role] || 'Нет';
-  $('ubRole').style.color = ROLE_COLORS[currentProfile.role] || '#8a94c9';
-  const ava = $('ubAva');
-  if(currentProfile.avatar_url) ava.innerHTML = `<img src="${esc(currentProfile.avatar_url)}" alt="">`;
-  else ava.textContent = getInitials(name);
+  const name=currentProfile.game_nick||currentProfile.discord_name||'Игрок';
+  $('suName').textContent=name;
+  $('suRole').textContent=ROLE_NAMES[currentProfile.role]||'Нет';
+  $('suRole').style.color=ROLE_COLORS[currentProfile.role]||'#8a94c9';
+  const a=$('suAva');
+  if(currentProfile.avatar_url)a.innerHTML=`<img src="${esc(currentProfile.avatar_url)}" alt="">`;
+  else a.textContent=initials(name);
 }
 
-async function handleAvatarUpload(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  if(file.size > 2 * 1024 * 1024){ alert('Максимум 2 МБ'); return; }
+async function handleAvatar(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>2*1024*1024)return toast('Ошибка','Максимум 2 МБ','err');
   showLoader('Загрузка аватара...');
-  try {
-    const ext = file.name.split('.').pop();
-    const path = `${currentUser.id}/avatar.${ext}`;
-    const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
-    if(upErr) throw upErr;
-    const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
-    const url = publicUrl + '?t=' + Date.now();
-    const { error: dbErr } = await sb.from('profiles').update({ avatar_url: url }).eq('id', currentProfile.id);
-    if(dbErr) throw dbErr;
-    currentProfile.avatar_url = url;
+  try{
+    const ext=f.name.split('.').pop();
+    const path=`${currentUser.id}/avatar.${ext}`;
+    const{error:up}=await sb.storage.from('avatars').upload(path,f,{upsert:true});
+    if(up)throw up;
+    const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);
+    const url=publicUrl+'?t='+Date.now();
+    const{error:db}=await sb.from('profiles').update({avatar_url:url}).eq('id',currentProfile.id);
+    if(db)throw db;
+    currentProfile.avatar_url=url;
     updateUserBadge();
-  } catch(err){ alert('Ошибка: '+err.message); }
-  hideLoader();
-  e.target.value = '';
+    toast('Готово','Аватар обновлён','ok');
+  }catch(err){toast('Ошибка',err.message,'err')}
+  hideLoader();e.target.value='';
 }
 
 function applyRole(){
-  const role = currentProfile.role;
-  const canEdit = role >= 2;
-  if(!canEdit) $('inputArea').style.display = 'none';
-  if(role >= 2){ $('adminTabBtn').style.display = 'flex'; $('logsTabBtn').style.display = 'flex'; }
-  if(role >= 1 && currentProfile.faction){ $('factionTabBtn').style.display = 'flex'; $('factionNameLabel').textContent = currentProfile.faction; }
-  if(role === 0) $('result').innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-ban"></i>Нет активной роли</td></tr>';
+  const r=currentProfile.role;
+  if(r<2)$('inputArea').style.display='none';
+  if(r>=2){$('adminNavBtn').style.display='flex';$('logsNavBtn').style.display='flex'}
+  if(r>=1&&currentProfile.faction){$('factionNavBtn').style.display='flex'}
 }
 
-// ФИЛЬТРЫ
-function renderFilterBar(){
-  const bar = $('filterBar');
-  const factions = ['ALL', 'LSPD', 'SFPD', 'RCSD', 'LVPD', 'FBI'];
-  const labels = { ALL: 'Все', LSPD: 'ЛСПД', SFPD: 'СФПД', RCSD: 'РКШД', LVPD: 'ЛВПД', FBI: 'ФБР' };
-  const icons = { ALL: 'fa-globe', LSPD: 'fa-shield-halved', SFPD: 'fa-shield-halved', RCSD: 'fa-shield-halved', LVPD: 'fa-shield-halved', FBI: 'fa-user-secret' };
-  bar.innerHTML = factions.map(f => `<button class="filter-chip ${f===currentFactionFilter?'active':''}" data-fac="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('') +
-    `<div class="search-wrap"><input class="search-input" id="searchInput" placeholder="Поиск по нику..." value="${esc(currentSearch)}"></div>`;
-  bar.querySelectorAll('[data-fac]').forEach(b => b.onclick = () => { currentFactionFilter = b.dataset.fac; renderFilterBar(); render(); });
-  const si = $('searchInput');
-  si.oninput = () => { currentSearch = si.value; render(); };
+/* ================= TABS ================= */
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click',async()=>{
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active-pane'));
+    b.classList.add('active');
+    const t=$(b.dataset.tab);if(t)t.classList.add('active-pane');
+    const titles={dashboardTab:'Дашборд <span>MJ</span>',onlineTab:'Онлайн <span>таблица</span>',topTab:'Топ-<span>3</span>',factionTab:'Моя <span>фракция</span>',chartTab:'Аналитика <span>MJ</span>',logsTab:'История <span>логов</span>',adminTab:'Управление <span>доступом</span>',settingsTab:'Внешний <span>вид</span>'};
+    $('pageTitle').innerHTML=titles[b.dataset.tab]||'Space MJ';
+    if(window.innerWidth<=900)$('sidebar').classList.remove('open');
+    if(b.dataset.tab==='logsTab')await loadLogs();
+    if(b.dataset.tab==='adminTab')await loadAdminTable();
+    if(b.dataset.tab==='chartTab')await loadCharts();
+    if(b.dataset.tab==='topTab')renderTop3();
+    if(b.dataset.tab==='factionTab')await renderFaction();
+    if(b.dataset.tab==='dashboardTab')await renderDash();
+  });
+});
+
+/* ================= CHIPS ================= */
+function renderChips(){
+  const bar=$('chipsBar');
+  const facs=['ALL','LSPD','SFPD','RCSD','LVPD','FBI'];
+  const labels={ALL:'Все',LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};
+  const icons={ALL:'fa-globe',LSPD:'fa-shield-halved',SFPD:'fa-shield-halved',RCSD:'fa-shield-halved',LVPD:'fa-shield-halved',FBI:'fa-user-secret'};
+  bar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionFilter?'active':''}" data-fac="${f}"><i class="fas ${icons[f]}"></i>${labels[f]}</button>`).join('');
+  bar.querySelectorAll('[data-fac]').forEach(b=>b.onclick=()=>{currentFactionFilter=b.dataset.fac;renderChips();render()});
 }
 
-// СОРТИРОВКА
-function attachSortHandlers(){
-  document.querySelectorAll('th[data-sort]').forEach(th => {
-    th.onclick = () => {
-      const s = th.dataset.sort;
-      if(sortBy === s) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-      else { sortBy = s; sortDir = 'desc'; }
-      document.querySelectorAll('th[data-sort]').forEach(t => t.classList.remove('sort-asc','sort-desc'));
-      th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+/* ================= SORT ================= */
+function attachSort(){
+  document.querySelectorAll('th.sortable').forEach(th=>{
+    th.onclick=()=>{
+      const s=th.dataset.sort;
+      if(sortBy===s)sortDir=sortDir==='asc'?'desc':'asc';
+      else{sortBy=s;sortDir='desc'}
+      document.querySelectorAll('th.sortable').forEach(x=>x.classList.remove('sort-asc','sort-desc'));
+      th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');
       render();
     };
   });
 }
 
-// РЕНДЕР
-function attachRowHandlers(){
-  document.querySelectorAll('.plus').forEach(b => b.onclick = e => {
-    e.stopPropagation();
-    const idx = +b.closest('tr').dataset.index;
-    const u = parsedData[idx];
-    u.bonusHours = (u.bonusHours||0) + settings.bonusHoursPerDay;
-    u.inactiveDays = (u.inactiveDays||0) + 1;
-    render();
-  });
-  document.querySelectorAll('.minus').forEach(b => b.onclick = e => {
-    e.stopPropagation();
-    const idx = +b.closest('tr').dataset.index;
-    const u = parsedData[idx];
-    u.bonusHours = Math.max(0, (u.bonusHours||0) - settings.bonusHoursPerDay);
-    u.inactiveDays = Math.max(0, (u.inactiveDays||0) - 1);
-    render();
-  });
-  document.querySelectorAll('tr[data-index]').forEach(tr => {
-    tr.onclick = e => {
-      if(e.target.closest('.plus, .minus')) return;
-      openProfile(parsedData[+tr.dataset.index]);
-    };
-  });
-}
-
+/* ================= RENDER TABLE ================= */
 function render(){
-  const tbody = $('result');
-  if(!parsedData.length){
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i>Вставь данные и нажми «Посчитать»</td></tr>';
-    return;
-  }
-  const role = currentProfile.role;
-  const canEdit = role >= 2;
-
-  let list = [...parsedData];
-  if(role === 1 && currentProfile.game_nick){
-    list = list.filter(u => u.nick.toLowerCase() === currentProfile.game_nick.toLowerCase());
-  }
-  if(currentFactionFilter !== 'ALL'){
-    list = list.filter(u => (u.faction||'') === currentFactionFilter);
-  }
-  if(currentSearch){
-    const s = currentSearch.toLowerCase();
-    list = list.filter(u => u.nick.toLowerCase().includes(s));
-  }
-
-  list.sort((a, b) => {
-    let va, vb;
-    if(sortBy === 'nick'){ va = a.nick.toLowerCase(); vb = b.nick.toLowerCase(); return sortDir==='asc' ? (va>vb?1:-1) : (va<vb?1:-1); }
-    if(sortBy === 'hours'){ va = effectiveHours(a); vb = effectiveHours(b); }
-    if(sortBy === 'status'){ va = effectiveHours(a); vb = effectiveHours(b); }
-    return sortDir === 'asc' ? va - vb : vb - va;
+  const tb=$('result');
+  if(!parsedData.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-inbox"></i>Вставь данные и нажми «Посчитать»</td></tr>';return}
+  const canEdit=currentProfile.role>=2;
+  let list=[...parsedData];
+  if(currentProfile.role===1&&currentProfile.game_nick)list=list.filter(u=>u.nick.toLowerCase()===currentProfile.game_nick.toLowerCase());
+  if(currentFactionFilter!=='ALL')list=list.filter(u=>(u.faction||'')===currentFactionFilter);
+  if(currentSearch){const s=currentSearch.toLowerCase();list=list.filter(u=>u.nick.toLowerCase().includes(s))}
+  list.sort((a,b)=>{
+    let va,vb;
+    if(sortBy==='nick'){va=a.nick.toLowerCase();vb=b.nick.toLowerCase();return sortDir==='asc'?(va>vb?1:-1):(va<vb?1:-1)}
+    va=effHours(a);vb=effHours(b);
+    return sortDir==='asc'?va-vb:vb-va;
   });
-
-  if(!list.length){
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-search"></i>Ничего не найдено</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = list.map((u, idx) => {
-    const eff = effectiveHours(u);
-    const percent = Math.min((eff / settings.norm) * 100, 100);
-    const color = barColor(eff);
-    const reward = rewardPoints(eff);
-    const extra = eff - settings.norm;
-    let statusCls = 'ok', statusTxt = 'Норма';
-    if(eff < settings.predThreshold){ statusCls = 'bad'; statusTxt = 'Выговор'; }
-    else if(eff < settings.norm){ statusCls = 'pred'; statusTxt = 'Предупр.'; }
-
-    let rankCls = '';
-    if(idx === 0) rankCls = 'gold';
-    else if(idx === 1) rankCls = 'silver';
-    else if(idx === 2) rankCls = 'bronze';
-
-    const rowAva = u.avatar_url ? `<img src="${esc(u.avatar_url)}" alt="">` : getInitials(u.nick);
-    const facHtml = u.faction ? `<span class="nick-fac faction-chip ${getFactionClass(u.faction)}" style="font-size:9px;padding:2px 6px">${u.faction}</span>` : '';
-
-    return `<tr data-index="${parsedData.indexOf(u)}">
-      <td style="text-align:center"><span class="rank-circle ${rankCls}">${idx+1}</span></td>
-      <td>
-        <div class="nick-cell">
-          <div class="row-ava">${rowAva}</div>
-          <span class="nick">${esc(u.nick)}${facHtml}</span>
-        </div>
-      </td>
-      <td>
-        <div class="progress-line">
-          <div class="progress-track"><div class="progress-fill" style="width:${percent}%;background:${color};color:${color}"></div></div>
-          <span class="p-hours">${eff.toFixed(1)}<span class="unit">ч</span></span>
-          <span class="p-percent" style="color:${color}">${percent.toFixed(0)}%</span>
-          ${extra >= 1 ? `<span class="over-norm-badge">+${extra.toFixed(1)}</span>` : ''}
-        </div>
-      </td>
-      <td style="text-align:center"><span class="inactive-badge">${u.inactiveDays||0} дн</span></td>
-      <td style="text-align:center"><span class="status-badge ${statusCls}">${statusTxt}</span></td>
-      <td style="text-align:center">${reward > 0 ? `<span class="reward-badge"><i class="fas fa-gift"></i>+${reward}</span>` : '<span class="reward-badge no-reward">нет</span>'}</td>
-      <td>${canEdit ? '<div class="actions" style="display:flex;gap:4px;justify-content:center"><button class="plus">+1</button><button class="minus">-1</button></div>' : '—'}</td>
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-search"></i>Ничего не найдено</td></tr>';return}
+  tb.innerHTML=list.map((u,i)=>{
+    const eff=effHours(u);
+    const pct=Math.min((eff/settings.norm)*100,100);
+    const col=barCol(eff);
+    const rw=rewardPts(eff);
+    const extra=eff-settings.norm;
+    let sc='ok',st='Норма';
+    if(eff<settings.predThreshold){sc='bad';st='Выговор'}
+    else if(eff<settings.norm){sc='pred';st='Предупр.'}
+    let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
+    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
+    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}">${u.faction}</span>`:'';
+    return`<tr data-index="${parsedData.indexOf(u)}">
+      <td style="text-align:center"><span class="rank-badge ${rc}">${i+1}</span></td>
+      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${facHtml}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td>
+      <td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span>${extra>=1?`<span class="badge ok" style="font-size:9px">+${extra.toFixed(1)}</span>`:''}</div></td>
+      <td style="text-align:center"><span class="badge mute">${u.inactiveDays||0} дн</span></td>
+      <td style="text-align:center"><span class="badge ${sc}">${st}</span></td>
+      <td style="text-align:center">${rw>0?`<span class="badge reward"><i class="fas fa-gift"></i>+${rw}</span>`:'<span class="badge mute" style="font-size:10px">нет</span>'}</td>
+      <td style="text-align:center">${canEdit?`<div style="display:flex;gap:5px;justify-content:center"><button class="icon-btn" style="width:28px;height:28px;font-size:11px" onclick="event.stopPropagation();rowPlus(${parsedData.indexOf(u)})">+1</button><button class="icon-btn" style="width:28px;height:28px;font-size:11px;color:var(--red)" onclick="event.stopPropagation();rowMinus(${parsedData.indexOf(u)})">-1</button></div>`:'—'}</td>
     </tr>`;
   }).join('');
-
-  if(canEdit) attachRowHandlers();
-  attachSortHandlers();
+  tb.querySelectorAll('tr[data-index]').forEach(tr=>{tr.onclick=()=>openProfile(parsedData[+tr.dataset.index])});
+  attachSort();
 }
 
-// ТОП-3
+window.rowPlus=idx=>{const u=parsedData[idx];u.bonusHours=(u.bonusHours||0)+settings.bonusHoursPerDay;u.inactiveDays=(u.inactiveDays||0)+1;render()};
+window.rowMinus=idx=>{const u=parsedData[idx];u.bonusHours=Math.max(0,(u.bonusHours||0)-settings.bonusHoursPerDay);u.inactiveDays=Math.max(0,(u.inactiveDays||0)-1);render()};
+
+/* ================= TOP-3 PODIUM ================= */
 function renderTop3(){
-  const grid = $('top3Grid');
-  const sorted = [...parsedData].sort((a,b) => effectiveHours(b) - effectiveHours(a)).slice(0, 3);
-  if(!sorted.length){ grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-trophy"></i>Нет данных</div>'; return; }
-  const medals = [
-    { cls: 'gold', icon: 'fa-crown', label: 'TOP #1' },
-    { cls: 'silver', icon: 'fa-medal', label: 'TOP #2' },
-    { cls: 'bronze', icon: 'fa-medal', label: 'TOP #3' }
-  ];
-  grid.innerHTML = sorted.map((u, i) => {
-    const m = medals[i];
-    const eff = effectiveHours(u);
-    const extra = eff - settings.norm;
-    const avaHtml = u.avatar_url ? `<img src="${esc(u.avatar_url)}" alt="">` : getInitials(u.nick);
-    return `<div class="top-card ${m.cls}">
-      <div class="top-medal ${m.cls}"><i class="fas ${m.icon}"></i></div>
-      <div class="top-rank">${m.label}</div>
-      <div class="top-ava" onclick="openProfileFromList('${esc(u.nick).replace(/'/g,"\\'")}')">${avaHtml}</div>
-      <div class="top-nick ${i===0?'gold':''}">${esc(u.nick)}</div>
-      ${u.faction ? `<div class="top-faction"><i class="fas fa-shield"></i> ${u.faction}</div>` : ''}
-      <div class="top-hours">${eff.toFixed(1)}<span>ч</span></div>
-      <div class="top-hours-label">онлайн за неделю</div>
-      ${extra >= 1 ? `<div class="top-extra"><span class="top-badge">+${extra.toFixed(1)}ч сверх нормы</span></div>` : ''}
+  const g=$('podiumGrid');
+  const sorted=[...parsedData].sort((a,b)=>effHours(b)-effHours(a)).slice(0,3);
+  if(!sorted.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-trophy"></i>Нет данных</div>';return}
+  const order=[1,0,2];
+  const cls=['g1','g2','g3'];
+  const icons=['fa-crown','fa-medal','fa-medal'];
+  const labels=['TOP #1','TOP #2','TOP #3'];
+  g.innerHTML=sorted.map((u,i)=>{
+    const idx=order[i];
+    const eff=effHours(u);
+    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
+    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}" style="margin-top:8px">${u.faction}</span>`:'';
+    return`<div class="pod-card ${cls[idx]}">
+      <div class="pod-medal ${cls[idx]}"><i class="fas ${icons[idx]}"></i></div>
+      <div class="pod-rank">${labels[idx]}</div>
+      <div class="pod-ava" onclick="openProfileFromList('${esc(u.nick).replace(/'/g,"\\'")}')">${avaHtml}</div>
+      <div class="pod-nick">${esc(u.nick)}</div>
+      ${facHtml}
+      <div class="pod-hours">${eff.toFixed(1)}<span>ч</span></div>
+      <div class="pod-label">онлайн за неделю</div>
+    </div>`;
+  }).join('');
+}
+window.openProfileFromList=nick=>{const u=parsedData.find(x=>x.nick===nick);if(u)openProfile(u)};
+
+/* ================= DASHBOARD ================= */
+async function renderDash(){
+  const list=parsedData.length?parsedData:[];
+  const okCount=list.filter(u=>effHours(u)>=settings.norm).length;
+  const totalHours=list.reduce((s,u)=>s+effHours(u),0);
+  const avg=list.length?totalHours/list.length:0;
+  const total=list.length;
+  const okPct=total?Math.round((okCount/total)*100):0;
+
+  animateNumber('statOnline',total);
+  animateNumber('statOk',okCount);
+  animateNumber('statHours',Math.round(totalHours));
+  animateNumber('statAvg',avg.toFixed(1));
+
+  $('ringValue').textContent=okPct+'%';
+  const circ=2*Math.PI*82;
+  $('ringProgress').setAttribute('stroke-dasharray',circ);
+  $('ringProgress').setAttribute('stroke-dashoffset',circ*(1-okPct/100));
+
+  // Dashboard weekly chart
+  const weeks=[];
+  for(let i=3;i>=0;i--){
+    const r=getWeekRange(i);
+    weeks.push({start:r.start,label:fmtRu(r.monday)});
+  }
+  const{data}=await sb.from('online_logs').select('hours, period_start').in('period_start',weeks.map(w=>w.start));
+  const vals=weeks.map(w=>{
+    const found=(data||[]).filter(d=>d.period_start===w.start);
+    return found.reduce((s,r)=>s+(+r.hours),0);
+  });
+  const ctx=$('chartDashWeeks');
+  if(charts.dash){charts.dash.destroy()}
+  charts.dash=new Chart(ctx,{
+    type:'line',
+    data:{labels:weeks.map(w=>w.label),datasets:[{
+      label:'Часы',
+      data:vals,
+      borderColor:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#a78bfa',
+      backgroundColor:(ctx)=>{
+        const c=ctx.chart.ctx;
+        const g=c.createLinearGradient(0,0,0,220);
+        g.addColorStop(0,'rgba(167,139,250,.4)');
+        g.addColorStop(1,'rgba(167,139,250,0)');
+        return g;
+      },
+      fill:true,tension:.4,
+      pointBackgroundColor:'#a78bfa',
+      pointRadius:5,pointHoverRadius:8,
+      pointBorderColor:'#fff',pointBorderWidth:2
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,18,38,.95)',borderColor:'rgba(167,139,250,.4)',borderWidth:1,padding:12,titleColor:'#fff',bodyColor:'#b8c2f0'}},
+      scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}
+    }
+  });
+
+  // Top-5
+  const top5=[...parsedData].sort((a,b)=>effHours(b)-effHours(a)).slice(0,5);
+  const d=$('dashTop5');
+  if(!top5.length)d.innerHTML='<div class="empty"><i class="fas fa-users"></i>Нет данных</div>';
+  else d.innerHTML=top5.map((u,i)=>{
+    const eff=effHours(u);
+    const pct=Math.min((eff/settings.norm)*100,100);
+    const col=barCol(eff);
+    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
+    let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
+    return`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openProfileFromList('${esc(u.nick).replace(/'/g,"\\'")}')">
+      <span class="rank-badge ${rc}">${i+1}</span>
+      <div class="u-ava">${avaHtml}</div>
+      <div style="flex:1;min-width:0"><div class="u-nick">${esc(u.nick)}</div><div class="u-sub">${u.faction||'—'}</div></div>
+      <div class="progress" style="min-width:140px;max-width:200px"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div>
     </div>`;
   }).join('');
 }
 
-// ПРОФИЛЬ ИГРОКА
-async function openProfile(u){
-  if(!u) return;
-  const overlay = $('profileModal');
-  const avaHtml = u.avatar_url ? `<img src="${esc(u.avatar_url)}" alt="">` : getInitials(u.nick);
-  const eff = effectiveHours(u);
-
-  $('profileHeader').innerHTML = `
-    <div class="modal-ava">${avaHtml}</div>
-    <div class="modal-nick">${esc(u.nick)}</div>
-    ${u.faction ? `<div class="modal-fac"><i class="fas fa-shield"></i> ${u.faction}</div>` : ''}
-    <div class="modal-role">${ROLE_NAMES[u.role] || 'Игрок'}</div>
-  `;
-
-  $('profileBody').innerHTML = `
-    <div class="modal-stats">
-      <div class="modal-stat"><div class="modal-stat-label">Онлайн текущий</div><div class="modal-stat-value green">${eff.toFixed(1)}ч</div></div>
-      <div class="modal-stat"><div class="modal-stat-label">Неактив</div><div class="modal-stat-value">${u.inactiveDays||0} дн</div></div>
-    </div>
-    <div class="modal-section-title"><i class="fas fa-chart-line"></i> История за 4 недели</div>
-    <div class="modal-chart"><canvas id="profileChart"></canvas></div>
-    <div class="modal-section-title"><i class="fas fa-medal"></i> Достижения</div>
-    <div class="achievements-list" id="profileAchievements">Загрузка...</div>
-  `;
-  overlay.classList.add('open');
-
-  await loadProfileHistory(u.nick);
+function animateNumber(id,target){
+  const el=$(id);if(!el)return;
+  const current=parseFloat(el.textContent.replace(/[^\d.]/g,''))||0;
+  const dur=800,start=performance.now();
+  const step=now=>{
+    const p=Math.min((now-start)/dur,1);
+    const v=current+(target-current)*p;
+    const hasUnit=id==='statHours'||id==='statAvg';
+    el.innerHTML=hasUnit?v.toFixed(1)+'<span class="unit">ч</span>':Math.round(v);
+    if(p<1)requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
-async function loadProfileHistory(nick){
-  const weeks = [];
-  for(let i = 0; i < 4; i++){
-    const r = getWeekRange(i);
-    weeks.push({ start: r.start, end: r.end, label: fmtRu(r.monday) });
-  }
-  const { data, error } = await sb.from('online_logs')
-    .select('hours, period_start')
-    .eq('player_nick', nick)
-    .in('period_start', weeks.map(w => w.start));
-
-  const ctx = document.getElementById('profileChart');
-  if(!ctx) return;
-  if(window._profileChart) window._profileChart.destroy();
-
-  const values = weeks.map(w => {
-    const found = data?.find(d => d.period_start === w.start);
-    return found ? +found.hours : 0;
-  });
-
-  window._profileChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: weeks.reverse().map(w => w.label),
-      datasets: [{
-        label: 'Часы',
-        data: values.reverse(),
-        borderColor: '#a78bfa',
-        backgroundColor: 'rgba(167,139,250,.15)',
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#a78bfa',
-        pointRadius: 5,
-        pointHoverRadius: 7
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8a94c9' } },
-        x: { grid: { display: false }, ticks: { color: '#8a94c9' } }
-      }
-    }
-  });
-
-  // Достижения
-  const { data: achs } = await sb.from('achievements').select('achievement').eq('player_nick', nick);
-  const el = $('profileAchievements');
-  if(el){
-    if(!achs || !achs.length) el.innerHTML = '<span style="color:var(--text-dim);font-size:12px">Нет достижений</span>';
-    else el.innerHTML = [...new Set(achs.map(a => a.achievement))].map(a => `<span class="achievement-badge">${ACH_NAMES[a] || a}</span>`).join('');
-  }
+/* ================= FACTION ================= */
+async function renderFaction(){
+  const tb=$('factionTbody');
+  const fac=currentProfile.faction;
+  if(!fac){tb.innerHTML='<tr><td colspan="5" class="empty">У тебя нет фракции</td></tr>';return}
+  $('factionTitle').textContent=fac;
+  const{data}=await sb.from('profiles').select('*').eq('faction',fac);
+  if(!data?.length){tb.innerHTML='<tr><td colspan="5" class="empty">Пусто</td></tr>';return}
+  const map={};parsedData.forEach(u=>map[u.nick.toLowerCase()]=u);
+  tb.innerHTML=data.map((p,i)=>{
+    const w=map[(p.game_nick||'').toLowerCase()];
+    const eff=w?effHours(w):0;
+    const pct=Math.min((eff/settings.norm)*100,100);
+    const col=barCol(eff);
+    let sc='ok',st='Норма';
+    if(eff<settings.predThreshold){sc='bad';st='Выговор'}else if(eff<settings.norm){sc='pred';st='Предупр.'}
+    const avaHtml=p.avatar_url?`<img src="${esc(p.avatar_url)}">`:initials(p.game_nick||p.discord_name);
+    return`<tr>
+      <td style="text-align:center"><span class="rank-badge">${i+1}</span></td>
+      <td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(p.game_nick||p.discord_name)}</div><div class="u-sub">${ROLE_NAMES[p.role]||'—'}</div></div></div></td>
+      <td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div></td>
+      <td style="text-align:center"><span class="badge mute">${w?.inactiveDays||0} дн</span></td>
+      <td style="text-align:center"><span class="badge ${sc}">${st}</span></td>
+    </tr>`;
+  }).join('');
 }
 
-window.openProfileFromList = (nick) => {
-  const u = parsedData.find(x => x.nick === nick);
-  if(u) openProfile(u);
-};
-
-function closeProfile(){ $('profileModal').classList.remove('open'); if(window._profileChart){ window._profileChart.destroy(); window._profileChart = null; } }
-window.closeProfile = closeProfile;
-$('profileModal')?.addEventListener('click', e => { if(e.target.id === 'profileModal') closeProfile(); });
-
-// ЗАГРУЗКА ЛОГОВ НЕДЕЛИ
+/* ================= LOAD WEEK LOGS ================= */
 async function loadWeekLogs(){
-  const tbody = $('result');
-  tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const { data, error } = await sb.from('online_logs')
-    .select('*').eq('period_start', periodStart).eq('period_end', periodEnd)
-    .order('created_at', { ascending: false });
-  if(error){ tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Ошибка: ${esc(error.message)}</td></tr>`; return; }
-  if(!data?.length){ parsedData = []; render(); return; }
-
-  const byNick = {};
-  data.forEach(r => { if(!byNick[r.player_nick]) byNick[r.player_nick] = r; });
-
-  // Подтянем аватары и фракции из profiles
-  const nicks = Object.keys(byNick);
-  const { data: profiles } = await sb.from('profiles').select('game_nick, avatar_url, faction, role').in('game_nick', nicks);
-  const profMap = {};
-  profiles?.forEach(p => { if(p.game_nick) profMap[p.game_nick] = p; });
-
-  parsedData = Object.values(byNick).map(r => ({
-    nick: r.player_nick,
-    hours: +r.hours,
-    perDayHours: r.per_day_hours ? +r.per_day_hours : null,
-    activeDays: r.active_days,
-    bonusHours: 0, inactiveDays: 0,
-    faction: profMap[r.player_nick]?.faction || r.faction || null,
-    avatar_url: profMap[r.player_nick]?.avatar_url || null,
-    role: profMap[r.player_nick]?.role || 0
-  })).sort((a,b) => effectiveHours(b) - effectiveHours(a));
+  const tb=$('result');
+  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('online_logs').select('*').eq('period_start',periodStart).eq('period_end',periodEnd).order('created_at',{ascending:false});
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">Ошибка: ${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){parsedData=[];render();return}
+  const byNick={};data.forEach(r=>{if(!byNick[r.player_nick])byNick[r.player_nick]=r});
+  const nicks=Object.keys(byNick);
+  const{data:prof}=await sb.from('profiles').select('game_nick,avatar_url,faction,role').in('game_nick',nicks);
+  const pm={};(prof||[]).forEach(p=>{if(p.game_nick)pm[p.game_nick]=p});
+  parsedData=Object.values(byNick).map(r=>({
+    nick:r.player_nick,hours:+r.hours,
+    perDayHours:r.per_day_hours?+r.per_day_hours:null,
+    activeDays:r.active_days,bonusHours:0,inactiveDays:0,
+    faction:pm[r.player_nick]?.faction||null,
+    avatar_url:pm[r.player_nick]?.avatar_url||null,
+    role:pm[r.player_nick]?.role||0
+  })).sort((a,b)=>effHours(b)-effHours(a));
   render();
 }
 
-// РАСЧЁТ
+/* ================= CALCULATE ================= */
 async function calculate(){
-  if(currentProfile.role < 2){ alert('Нет прав.'); return; }
-  const text = $('input').value;
-  if(!text.trim()){ alert('Вставь данные!'); return; }
+  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
+  const text=$('input').value;
+  if(!text.trim())return toast('Пусто','Вставь данные','err');
   showLoader('Расчёт...');
-  const data = [];
-  const regex = /(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
+  const data=[];
+  const re=/(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
   let m;
-  while((m = regex.exec(text)) !== null){
-    const nick = m[2].trim();
-    const hours = timeToHours(m[3]);
-    if(isNaN(hours)) continue;
-    data.push({ nick, hours, perDayHours: m[4] ? parseFloat(m[4].replace(',', '.')) : null, activeDays: m[5] ? parseInt(m[5]) : null, bonusHours: 0, inactiveDays: 0 });
+  while((m=re.exec(text))!==null){
+    const nick=m[2].trim(),hours=timeToHours(m[3]);
+    if(isNaN(hours))continue;
+    data.push({nick,hours,perDayHours:m[4]?parseFloat(m[4].replace(',','.')):null,activeDays:m[5]?parseInt(m[5]):null,bonusHours:0,inactiveDays:0});
   }
-  if(!data.length){ hideLoader(); alert('Не удалось распарсить'); return; }
-
-  const byNick = {};
-  data.forEach(u => { byNick[u.nick] = u; });
-  const unique = Object.values(byNick);
-  const nicks = unique.map(u => u.nick);
-
-  await sb.from('online_logs').delete().eq('period_start', periodStart).eq('period_end', periodEnd).in('player_nick', nicks);
-  const rows = unique.map(u => ({ user_id: currentProfile.id, player_nick: u.nick, hours: u.hours, per_day_hours: u.perDayHours, active_days: u.activeDays, period_start: periodStart, period_end: periodEnd }));
-  const { error } = await sb.from('online_logs').insert(rows);
-  if(error){ hideLoader(); alert('Ошибка: '+error.message); return; }
-
-  // Проверка достижений
-  await checkAchievements(unique);
+  if(!data.length){hideLoader();return toast('Ошибка','Не удалось распарсить','err')}
+  const byNick={};data.forEach(u=>{byNick[u.nick]=u});
+  const uniq=Object.values(byNick);
+  const nicks=uniq.map(u=>u.nick);
+  await sb.from('online_logs').delete().eq('period_start',periodStart).eq('period_end',periodEnd).in('player_nick',nicks);
+  const rows=uniq.map(u=>({user_id:currentProfile.id,player_nick:u.nick,hours:u.hours,per_day_hours:u.perDayHours,active_days:u.activeDays,period_start:periodStart,period_end:periodEnd}));
+  const{error}=await sb.from('online_logs').insert(rows);
+  if(error){hideLoader();return toast('Ошибка',error.message,'err')}
+  await checkAchievements(uniq);
   await loadWeekLogs();
+  await renderDash();
   hideLoader();
-  alert(`✅ Сохранено ${unique.length} игроков за неделю ${periodStart}`);
+  toast('Готово',`Сохранено ${uniq.length} игроков`,'ok');
 }
 
 async function checkAchievements(players){
-  const sorted = [...players].sort((a,b) => b.hours - a.hours);
-  for(let i = 0; i < Math.min(3, sorted.length); i++){
-    const u = sorted[i];
-    const ach = i === 0 ? 'top1' : 'top3';
-    const { data } = await sb.from('achievements').select('id').eq('player_nick', u.nick).eq('achievement', ach).maybeSingle();
-    if(!data) await sb.from('achievements').insert({ user_id: currentProfile.id, player_nick: u.nick, achievement: ach });
+  const sorted=[...players].sort((a,b)=>b.hours-a.hours);
+  for(let i=0;i<Math.min(3,sorted.length);i++){
+    const ach=i===0?'top1':'top3';
+    const{data}=await sb.from('achievements').select('id').eq('player_nick',sorted[i].nick).eq('achievement',ach).maybeSingle();
+    if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:sorted[i].nick,achievement:ach});
   }
   for(const u of players){
-    if(u.hours >= settings.norm + 10){
-      const { data } = await sb.from('achievements').select('id').eq('player_nick', u.nick).eq('achievement','overwork').maybeSingle();
-      if(!data) await sb.from('achievements').insert({ user_id: currentProfile.id, player_nick: u.nick, achievement:'overwork' });
+    if(u.hours>=settings.norm+10){
+      const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','overwork').maybeSingle();
+      if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'overwork'});
     }
-    if(u.hours >= settings.norm){
-      const { data } = await sb.from('achievements').select('id').eq('player_nick', u.nick).eq('achievement','perfect').maybeSingle();
-      if(!data) await sb.from('achievements').insert({ user_id: currentProfile.id, player_nick: u.nick, achievement:'perfect' });
+    if(u.hours>=settings.norm){
+      const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','perfect').maybeSingle();
+      if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'perfect'});
     }
   }
 }
 
-// ГРАФИК ОБЩИЙ
-async function loadChart(){
-  showLoader('Загрузка графика...');
-  const weeks = [];
-  for(let i = 3; i >= 0; i--){
-    const r = getWeekRange(i);
-    weeks.push({ start: r.start, end: r.end, label: fmtRu(r.monday) });
-  }
-  const { data } = await sb.from('online_logs').select('hours, period_start').in('period_start', weeks.map(w => w.start));
-  const values = weeks.map(w => {
-    const found = data?.filter(d => d.period_start === w.start) || [];
-    return found.reduce((sum, r) => sum + (+r.hours), 0);
+/* ================= CHARTS ================= */
+async function loadCharts(){
+  const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
+  const{data}=await sb.from('online_logs').select('hours,period_start,faction').in('period_start',weeks.map(w=>w.start));
+  const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
+  const c1=$('chartWeeks');
+  if(charts.weeks)charts.weeks.destroy();
+  charts.weeks=new Chart(c1,{
+    type:'bar',
+    data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,backgroundColor:'rgba(167,139,250,.6)',borderColor:'#a78bfa',borderWidth:2,borderRadius:10,hoverBackgroundColor:'rgba(167,139,250,.9)'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}
   });
-  const ctx = document.getElementById('chartWeeks');
-  if(window._chartWeeks) window._chartWeeks.destroy();
-  window._chartWeeks = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: weeks.map(w => w.label),
-      datasets: [{
-        label: 'Сумма часов',
-        data: values,
-        backgroundColor: 'rgba(167,139,250,.6)',
-        borderColor: '#a78bfa',
-        borderWidth: 2,
-        borderRadius: 8,
-        hoverBackgroundColor: 'rgba(167,139,250,.9)'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8a94c9' } },
-        x: { grid: { display: false }, ticks: { color: '#8a94c9' } }
-      }
-    }
+  const facCount={};
+  (data||[]).forEach(r=>{if(r.faction)facCount[r.faction]=(facCount[r.faction]||0)+(+r.hours)});
+  const c2=$('chartFactions');
+  if(charts.facs)charts.facs.destroy();
+  const facColors={LSPD:'#60a5fa',SFPD:'#4ade80',RCSD:'#fbbf24',LVPD:'#f87171',FBI:'#a78bfa'};
+  charts.facs=new Chart(c2,{
+    type:'doughnut',
+    data:{labels:Object.keys(facCount),datasets:[{data:Object.values(facCount),backgroundColor:Object.keys(facCount).map(k=>facColors[k]||'#888'),borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#b8c2f0',font:{size:12}}}},cutout:'65%'}
   });
-  hideLoader();
 }
 
-// ЛОГИ
+/* ================= LOGS ================= */
 async function loadLogs(){
-  const tbody = $('logsTbody');
-  tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Загрузка...</td></tr>';
-  const { data, error } = await sb.from('online_logs').select('*, profiles(discord_name)').order('created_at',{ascending:false}).limit(100);
-  if(error){ tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${esc(error.message)}</td></tr>`; return; }
-  if(!data?.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Пусто</td></tr>'; return; }
-  tbody.innerHTML = data.map(r => `<tr>
-    <td style="font-size:10px">${new Date(r.created_at).toLocaleString('ru-RU')}</td>
-    <td>${esc(r.player_nick)}</td>
+  const tb=$('logsTbody');
+  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('online_logs').select('*,profiles(discord_name)').order('created_at',{ascending:false}).limit(100);
+  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){tb.innerHTML='<tr><td colspan="7" class="empty">Пусто</td></tr>';return}
+  tb.innerHTML=data.map(r=>`<tr>
+    <td style="font-size:11px">${new Date(r.created_at).toLocaleString('ru-RU')}</td>
+    <td><b>${esc(r.player_nick)}</b></td>
     <td>${(+r.hours).toFixed(1)} ч</td>
-    <td>${r.per_day_hours ? (+r.per_day_hours).toFixed(1) : '—'}</td>
-    <td>${r.active_days || '—'}</td>
-    <td style="font-size:10px">${r.period_start || '—'} — ${r.period_end || '—'}</td>
-    <td>${esc(r.profiles?.discord_name || '—')}</td>
+    <td>${r.per_day_hours?(+r.per_day_hours).toFixed(1):'—'}</td>
+    <td>${r.active_days||'—'}</td>
+    <td style="font-size:11px">${r.period_start||'—'} — ${r.period_end||'—'}</td>
+    <td>${esc(r.profiles?.discord_name||'—')}</td>
   </tr>`).join('');
 }
 
-// АДМИН
-function getAssignableRoles(myRole){
-  if(myRole >= 5) return [0,1,2,3,4];
-  if(myRole === 4) return [0,1,2,3];
-  if(myRole === 3) return [0,1,2];
-  if(myRole === 2) return [0,1];
-  return [];
-}
-function canManage(myRole, targetRole){
-  if(myRole < 2) return false;
-  if(myRole >= 5) return true;
-  if(myRole === 4) return targetRole <= 3;
-  if(myRole === 3) return targetRole <= 2;
-  if(myRole === 2) return targetRole <= 1;
-  return false;
-}
+/* ================= ADMIN ================= */
+const getAssign=my=>my>=5?[0,1,2,3,4]:my===4?[0,1,2,3]:my===3?[0,1,2]:my===2?[0,1]:[];
+const canManage=(my,t)=>my<2?false:my>=5?true:my===4?t<=3:my===3?t<=2:my===2?t<=1:false;
 
 async function loadAdminTable(){
-  const tbody = $('adminTbody');
-  const myRole = currentProfile.role;
-  if(myRole < 2){ tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет прав</td></tr>'; return; }
-  tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Загрузка...</td></tr>';
-  const { data, error } = await sb.from('profiles').select('*').order('role',{ascending:false});
-  if(error){ tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${esc(error.message)}</td></tr>`; return; }
-
-  const hints = { 2: 'Можешь менять ники, фракцию, роль 0-1.', 3: 'Можешь менять ники, фракцию, роль 0-2.', 4: 'Можешь менять ники, фракцию, роль 0-3.', 5: 'Полный доступ.' };
-  $('adminHint').textContent = hints[Math.min(myRole,5)] || '';
-
-  const assignable = getAssignableRoles(myRole);
-  const factions = ['', 'LSPD', 'SFPD', 'RCSD', 'LVPD', 'FBI'];
-
-  tbody.innerHTML = data.map(p => {
-    const canManageThis = canManage(myRole, p.role) && p.id !== currentProfile.id;
-    const roleOpts = assignable.map(r => `<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
-    const facOpts = factions.map(f => `<option value="${f}" ${(p.faction||'')===f?'selected':''}>${f || '—'}</option>`).join('');
-    return `<tr>
-      <td>${esc(p.discord_name || p.discord_id || '—')}</td>
-      <td><input class="admin-nick" data-nick-for="${p.id}" value="${esc(p.game_nick||'')}" placeholder="ник"/></td>
-      <td>${canManageThis ? `<select class="admin-select" data-fac-for="${p.id}">${facOpts}</select>` : (p.faction ? `<span class="faction-chip ${getFactionClass(p.faction)}">${p.faction}</span>` : '—')}</td>
+  const tb=$('adminTbody');
+  const my=currentProfile.role;
+  if(my<2){tb.innerHTML='<tr><td colspan="6" class="empty">Нет прав</td></tr>';return}
+  tb.innerHTML='<tr><td colspan="6" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('profiles').select('*').order('role',{ascending:false});
+  if(error){tb.innerHTML=`<tr><td colspan="6" class="empty">${esc(error.message)}</td></tr>`;return}
+  const hints={2:'Можешь менять ники, фракции, роли 0-1.',3:'Можешь менять ники, фракции, роли 0-2.',4:'Можешь менять ники, фракции, роли 0-3.',5:'Полный доступ.'};
+  $('adminHint').textContent=hints[Math.min(my,5)]||'';
+  const assign=getAssign(my);
+  const facs=['','LSPD','SFPD','RCSD','LVPD','FBI'];
+  tb.innerHTML=data.map(p=>{
+    const cm=canManage(my,p.role)&&p.id!==currentProfile.id;
+    const roleOpts=assign.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
+    const facOpts=facs.map(f=>`<option value="${f}" ${(p.faction||'')===f?'selected':''}>${f||'—'}</option>`).join('');
+    const facDisplay=p.faction?`<span class="fac ${facClass(p.faction)}">${p.faction}</span>`:'—';
+    return`<tr>
+      <td>${esc(p.discord_name||p.discord_id||'—')}</td>
+      <td><input class="admin-nick" data-nick="${p.id}" value="${esc(p.game_nick||'')}" placeholder="ник"></td>
+      <td>${cm?`<select class="admin-select" data-fac="${p.id}">${facOpts}</select>`:facDisplay}</td>
       <td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td>
-      <td>${p.active?'✅':'❌'}</td>
-      <td>${canManageThis ? `<div class="admin-role-combo"><select class="admin-select" data-role-for="${p.id}">${roleOpts}</select><button class="admin-btn ${p.active?'danger':'success'}" data-toggle="${p.id}" data-active="${p.active}">${p.active?'Откл.':'Вкл.'}</button></div>` : (p.id===currentProfile.id?'<span style="color:var(--text-dim);font-size:11px">Это ты</span>':'—')}</td>
+      <td style="text-align:center">${p.active?'✅':'❌'}</td>
+      <td>${cm?`<select class="admin-select" data-role="${p.id}">${roleOpts}</select><button class="admin-btn ${p.active?'danger':'success'}" data-tog="${p.id}" data-act="${p.active}">${p.active?'Откл.':'Вкл.'}</button>`:(p.id===currentProfile.id?'<span style="color:var(--text-3);font-size:11px">Это ты</span>':'—')}</td>
     </tr>`;
   }).join('');
-
-  tbody.querySelectorAll('[data-role-for]').forEach(sel => sel.onchange = async () => {
-    const { error } = await sb.from('profiles').update({ role: +sel.value }).eq('id', sel.dataset.roleFor);
-    if(error) alert(error.message); else loadAdminTable();
+  tb.querySelectorAll('[data-role]').forEach(s=>s.onchange=async()=>{
+    const{error}=await sb.from('profiles').update({role:+s.value}).eq('id',s.dataset.role);
+    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Роль обновлена','ok');loadAdminTable()}
   });
-  tbody.querySelectorAll('[data-fac-for]').forEach(sel => sel.onchange = async () => {
-    const { error } = await sb.from('profiles').update({ faction: sel.value || null }).eq('id', sel.dataset.facFor);
-    if(error) alert(error.message); else loadAdminTable();
+  tb.querySelectorAll('[data-fac]').forEach(s=>s.onchange=async()=>{
+    const{error}=await sb.from('profiles').update({faction:s.value||null}).eq('id',s.dataset.fac);
+    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Фракция обновлена','ok');loadAdminTable()}
   });
-  tbody.querySelectorAll('[data-toggle]').forEach(b => b.onclick = async () => {
-    const newActive = b.dataset.active !== 'true';
-    const { error } = await sb.from('profiles').update({ active: newActive }).eq('id', b.dataset.toggle);
-    if(error) alert(error.message); else loadAdminTable();
+  tb.querySelectorAll('[data-tog]').forEach(b=>b.onclick=async()=>{
+    const{error}=await sb.from('profiles').update({active:b.dataset.act!=='true'}).eq('id',b.dataset.tog);
+    if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Статус обновлён','ok');loadAdminTable()}
   });
-  tbody.querySelectorAll('[data-nick-for]').forEach(inp => {
-    inp.onblur = async () => {
-      const nick = inp.value.trim();
-      const { error } = await sb.from('profiles').update({ game_nick: nick || null }).eq('id', inp.dataset.nickFor);
-      if(error) alert(error.message);
-      else if(inp.dataset.nickFor === currentProfile.id){ currentProfile.game_nick = nick; updateUserBadge(); }
+  tb.querySelectorAll('[data-nick]').forEach(inp=>{
+    inp.onblur=async()=>{
+      const nick=inp.value.trim();
+      const{error}=await sb.from('profiles').update({game_nick:nick||null}).eq('id',inp.dataset.nick);
+      if(error)toast('Ошибка',error.message,'err');
+      else if(inp.dataset.nick===currentProfile.id){currentProfile.game_nick=nick;updateUserBadge();toast('Готово','Ник обновлён','ok')}
     };
-    inp.onkeypress = e => { if(e.key === 'Enter') inp.blur(); };
+    inp.onkeypress=e=>{if(e.key==='Enter')inp.blur()};
   });
 }
 
-// INIT
+/* ================= PROFILE MODAL ================= */
+async function openProfile(u){
+  if(!u)return;
+  const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
+  const eff=effHours(u);
+  const facHtml=u.faction?`<div class="modal-fac fac ${facClass(u.faction)}">${u.faction}</div>`:'';
+  $('profileHead').innerHTML=`
+    <div class="modal-ava">${avaHtml}</div>
+    <div class="modal-nick">${esc(u.nick)}</div>
+    ${facHtml}
+    <div class="modal-role">${ROLE_NAMES[u.role]||'Игрок'}</div>
+  `;
+  $('profileBody').innerHTML=`
+    <div class="modal-stats">
+      <div class="mstat"><div class="mstat-label">Онлайн за неделю</div><div class="mstat-value green">${eff.toFixed(1)}ч</div></div>
+      <div class="mstat"><div class="mstat-label">Неактив</div><div class="mstat-value">${u.inactiveDays||0} дн</div></div>
+    </div>
+    <div class="msec"><i class="fas fa-chart-line"></i> История за 4 недели</div>
+    <div class="chart-wrap short"><canvas id="profileChart"></canvas></div>
+    <div class="msec" style="margin-top:20px"><i class="fas fa-medal"></i> Достижения</div>
+    <div class="ach-list" id="profileAch">Загрузка...</div>
+  `;
+  $('profileModal').classList.add('open');
+
+  const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
+  const{data}=await sb.from('online_logs').select('hours,period_start').eq('player_nick',u.nick).in('period_start',weeks.map(w=>w.start));
+  const vals=weeks.map(w=>{const f=(data||[]).find(d=>d.period_start===w.start);return f?+f.hours:0});
+  const ctx=$('profileChart');
+  if(window._pChart)window._pChart.destroy();
+  window._pChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:weeks.reverse().map(w=>w.label),datasets:[{label:'Часы',data:vals.reverse(),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.15)',fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:5,pointBorderColor:'#fff',pointBorderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}
+  });
+
+  const{data:ach}=await sb.from('achievements').select('achievement').eq('player_nick',u.nick);
+  const el=$('profileAch');
+  if(!ach?.length)el.innerHTML='<span style="color:var(--text-3);font-size:12px">Нет достижений</span>';
+  else el.innerHTML=[...new Set(ach.map(a=>a.achievement))].map(a=>`<span class="ach">${ACH_NAMES[a]||a}</span>`).join('');
+}
+function closeProfile(){$('profileModal').classList.remove('open');if(window._pChart){window._pChart.destroy();window._pChart=null}}
+window.closeProfile=closeProfile;
+$('profileModal').addEventListener('click',e=>{if(e.target.id==='profileModal')closeProfile()});
+
+/* ================= THEME & SETTINGS ================= */
+function loadPrefs(){
+  const t=localStorage.getItem('mj_theme')||'dark';
+  const a=localStorage.getItem('mj_accent')||'purple';
+  const c=localStorage.getItem('mj_compact')==='1';
+  document.documentElement.dataset.theme=t;
+  document.documentElement.dataset.accent=a;
+  document.querySelectorAll('[data-theme-val]').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===t));
+  document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('active',b.dataset.accent===a));
+  if(c){$('sidebar').classList.add('compact');$('compactSwitch')?.classList.add('on')}
+  $('themeBtn').innerHTML=t==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+}
+document.querySelectorAll('[data-theme-val]').forEach(b=>b.onclick=()=>{
+  document.documentElement.dataset.theme=b.dataset.themeVal;
+  localStorage.setItem('mj_theme',b.dataset.themeVal);
+  document.querySelectorAll('[data-theme-val]').forEach(x=>x.classList.toggle('active',x===b));
+  $('themeBtn').innerHTML=b.dataset.themeVal==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+  if(parsedData.length){render();renderDash()}
+});
+document.querySelectorAll('[data-accent]').forEach(b=>b.onclick=()=>{
+  document.documentElement.dataset.accent=b.dataset.accent;
+  localStorage.setItem('mj_accent',b.dataset.accent);
+  document.querySelectorAll('[data-accent]').forEach(x=>x.classList.toggle('active',x===b));
+});
+$('themeBtn').onclick=()=>{const cur=document.documentElement.dataset.theme;const nxt=cur==='dark'?'light':'dark';document.querySelector(`[data-theme-val="${nxt}"]`).click()};
+$('compactBtn').onclick=()=>{$('sidebar').classList.toggle('compact');localStorage.setItem('mj_compact',$('sidebar').classList.contains('compact')?'1':'0')};
+$('compactSwitch').onclick=function(){this.classList.toggle('on');$('compactBtn').click()};
+$('animSwitch').onclick=function(){this.classList.toggle('on')};
+$('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+$('sidebarUser').onclick=e=>{if(!e.target.closest('.icon-btn'))$('avatarFileInput').click()};
+
+/* ================= INIT ================= */
 async function initFullApp(){
-  const range = getWeekRange(0);
-  periodStart = range.start; periodEnd = range.end;
-  updatePeriodDisplay();
-  renderWeekPicker();
-  renderFilterBar();
+  const r=getWeekRange(0);
+  periodStart=r.start;periodEnd=r.end;
+  updatePeriodDisplay();renderWeekPicker();renderChips();
 
-  if(currentProfile && currentProfile.role >= 1) await loadWeekLogs();
-  renderTop3();
+  if(currentProfile.role>=1){await loadWeekLogs();await renderDash()}
+  else render();
 
-  $('periodTitle').onclick = () => $('periodWeekPicker').classList.toggle('open');
-  $('menuToggle').onclick = function(){
-    document.body.classList.toggle('menu-closed');
-    document.body.classList.toggle('menu-open');
-    const i = this.querySelector('i');
-    i.classList.toggle('fa-bars'); i.classList.toggle('fa-times');
-  };
-  $('calcButton').onclick = calculate;
+  $('periodBtn').onclick=()=>$('weekPicker').classList.toggle('open');
+  $('calcButton').onclick=calculate;
+  $('searchInput').oninput=e=>{currentSearch=e.target.value;render()};
 
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.onclick = async () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active-pane'));
-      btn.classList.add('active');
-      const pane = $(btn.dataset.tab); if(pane) pane.classList.add('active-pane');
-      if(btn.dataset.tab === 'logsTab') await loadLogs();
-      if(btn.dataset.tab === 'adminTab') await loadAdminTable();
-      if(btn.dataset.tab === 'chartTab') await loadChart();
-      if(btn.dataset.tab === 'topTab') renderTop3();
-      if(btn.dataset.tab === 'factionTab') renderFactionView();
-    };
-  });
-}
-
-async function renderFactionView(){
-  const tbody = $('factionTbody');
-  const myFac = currentProfile.faction;
-  if(!myFac){ tbody.innerHTML = '<tr><td colspan="5" class="empty-state">У тебя нет фракции</td></tr>'; return; }
-  $('factionNameLabel').textContent = myFac;
-  const { data } = await sb.from('profiles').select('*').eq('faction', myFac);
-  if(!data?.length){ tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Пусто</td></tr>'; return; }
-
-  const weekRows = parsedData.reduce((acc, u) => { acc[u.nick.toLowerCase()] = u; return acc; }, {});
-  tbody.innerHTML = data.map((p, idx) => {
-    const week = weekRows[(p.game_nick||'').toLowerCase()];
-    const eff = week ? effectiveHours(week) : 0;
-    const percent = Math.min((eff/settings.norm)*100, 100);
-    const color = barColor(eff);
-    let cls = 'ok', txt = 'Норма';
-    if(eff < settings.predThreshold){ cls = 'bad'; txt = 'Выговор'; }
-    else if(eff < settings.norm){ cls = 'pred'; txt = 'Предупр.'; }
-    const avaHtml = p.avatar_url ? `<img src="${esc(p.avatar_url)}">` : getInitials(p.game_nick || p.discord_name);
-    return `<tr>
-      <td style="text-align:center"><span class="rank-circle">${idx+1}</span></td>
-      <td><div class="nick-cell"><div class="row-ava">${avaHtml}</div><span class="nick">${esc(p.game_nick || p.discord_name)}</span></div></td>
-      <td><div class="progress-line"><div class="progress-track"><div class="progress-fill" style="width:${percent}%;background:${color}"></div></div><span class="p-hours">${eff.toFixed(1)}<span class="unit">ч</span></span></div></td>
-      <td style="text-align:center"><span class="inactive-badge">${week?.inactiveDays||0} дн</span></td>
-      <td style="text-align:center"><span class="status-badge ${cls}">${txt}</span></td>
-    </tr>`;
-  }).join('');
+  loadPrefs();
 }
 
 (function(){
-  const tryInit = () => { if(window.supabase) initAuth(); else setTimeout(tryInit, 100); };
+  const tryInit=()=>{if(window.supabase)initAuth();else setTimeout(tryInit,100)};
   tryInit();
 })();
 </script>
