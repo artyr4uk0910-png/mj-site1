@@ -104,7 +104,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;tra
 .grid-4{grid-template-columns:repeat(4,1fr)}
 .grid-2-1{grid-template-columns:2fr 1fr}
 .grid-2{grid-template-columns:1fr 1fr}
-@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-2-1{grid-template-columns:1fr}}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-2-1,.grid-3{grid-template-columns:1fr}}
 @media(max-width:700px){.grid-4,.grid-2{grid-template-columns:1fr}}
 .card{background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:20px;transition:.3s;position:relative;overflow:hidden}
 .card:hover{border-color:var(--border-strong);box-shadow:var(--glow)}
@@ -175,6 +176,12 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
 .badge.mute.clickable:hover{border-color:var(--accent);color:var(--accent)}
 .badge.candidate{background:rgba(255,107,107,.15);color:var(--red);border-color:rgba(255,107,107,.4);cursor:help}
 .badge.norm-lowered{background:rgba(240,196,90,.15);color:var(--yellow);border-color:rgba(240,196,90,.4);cursor:help}
+/* Custom Badges (Points 1 & 3) */
+.c-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.3px}
+.c-badge.tester{background:linear-gradient(135deg,#3b82f6,#60a5fa);color:#fff;box-shadow:0 2px 10px rgba(59,130,246,.4)}
+.c-badge.boss{background:linear-gradient(135deg,#ffd700,#f0a500);color:#4a2e00;box-shadow:0 2px 10px rgba(255,215,0,.4)}
+.c-badge.unique{background:linear-gradient(135deg,#22c55e,#4ade80);color:#fff;box-shadow:0 2px 10px rgba(34,197,94,.4)}
+.c-badge.bibi{background:linear-gradient(135deg,#facc15,#fef08a);color:#4a2e00;box-shadow:0 2px 10px rgba(250,204,21,.4)}
 .fac{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:800}
 .fac i{font-size:11px}
 .fac-LSPD{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
@@ -341,6 +348,18 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
 .btn-ghost{padding:0 16px;height:46px;border-radius:12px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-2);font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 .admin-actions-cell{display:flex;gap:4px;justify-content:flex-start;flex-wrap:wrap;align-items:center}
+
+/* Welcome Banner & Console */
+.welcome-banner{background:linear-gradient(135deg,var(--bg-panel),var(--bg-panel2));border:1px solid var(--border);border-radius:20px;padding:24px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;position:relative;overflow:hidden}
+.welcome-banner::before{content:'';position:absolute;top:-50px;right:100px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 60%);opacity:.4;pointer-events:none}
+.welcome-left h2{font-size:26px;font-weight:900;margin-bottom:8px}
+.welcome-left h2 span{color:var(--accent-2)}
+.welcome-badges{display:flex;gap:8px;flex-wrap:wrap}
+.console-wrap{background:#000;border:1px solid var(--border-strong);border-radius:14px;padding:16px;font-family:monospace;margin-bottom:16px;box-shadow:inset 0 0 20px rgba(0,0,0,.8)}
+.console-output{color:#4ade80;font-size:12px;min-height:100px;max-height:200px;overflow-y:auto;margin-bottom:10px;white-space:pre-wrap}
+.console-input-wrap{display:flex;align-items:center;gap:10px;border-top:1px solid #333;padding-top:10px}
+.console-input-wrap span{color:#60a5fa;font-weight:bold;font-size:14px}
+.console-input-wrap input{flex:1;background:transparent;border:none;color:#fff;font-family:monospace;font-size:14px;outline:none}
 </style>
 </head>
 <body>
@@ -368,8 +387,10 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
     <div class="sidebar-section">Главное</div>
     <button class="nav-btn active" data-tab="dashboardTab"><i class="fas fa-tachometer-alt"></i><span class="nav-text">Дашборд</span></button>
     <button class="nav-btn" data-tab="onlineTab"><i class="fas fa-chart-line"></i><span class="nav-text">Онлайн</span></button>
+    <button class="nav-btn" data-tab="staffTab"><i class="fas fa-users-cog"></i><span class="nav-text">Руководство</span></button>
+    <button class="nav-btn" data-tab="pointsTab"><i class="fas fa-star"></i><span class="nav-text">Баллы / Отчёты</span></button>
     <button class="nav-btn" data-tab="topTab"><i class="fas fa-trophy"></i><span class="nav-text">Топ-3</span></button>
-    <button class="nav-btn" data-tab="factionTab" id="factionNavBtn" style="display:none"><i class="fas fa-users"></i><span class="nav-text">Фракции</span></button>
+    <button class="nav-btn" data-tab="factionTab" id="factionNavBtn" style="display:none"><i class="fas fa-shield"></i><span class="nav-text">Фракции</span></button>
     <button class="nav-btn" data-tab="chartTab"><i class="fas fa-chart-bar"></i><span class="nav-text">Аналитика</span></button>
     <div class="sidebar-section">Профиль</div>
     <button class="nav-btn" id="myProfileBtn"><i class="fas fa-user"></i><span class="nav-text">Мой профиль</span></button>
@@ -389,18 +410,26 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
         <h1 id="pageTitle">Дашборд <span>MJ</span></h1>
       </div>
       <div class="topbar-actions">
-        <div class="my-stats" id="myStats" style="display:none">
-          <div class="my-stat"><div class="my-stat-icon p"><i class="fas fa-clock"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msHours">0<span class="u">ч</span></span><span class="my-stat-label">за месяц</span></div></div>
-          <div class="my-stat"><div class="my-stat-icon y"><i class="fas fa-trophy"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msRank">—</span><span class="my-stat-label">место</span></div></div>
-          <div class="my-stat"><div class="my-stat-icon g"><i class="fas fa-percent"></i></div><div class="my-stat-info"><span class="my-stat-value" id="msAvg">0<span class="u">%</span></span><span class="my-stat-label">средний</span></div></div>
-        </div>
         <div class="live-clock" id="liveClock"><i class="fas fa-clock"></i><span id="clockTime">--:--:--</span><span id="clockDate">—</span></div>
         <button class="icon-btn" id="compactBtn" title="Компактно"><i class="fas fa-compress"></i></button>
         <button class="icon-btn" id="themeBtn" title="Тема"><i class="fas fa-moon"></i></button>
       </div>
     </div>
 
+    <!-- ВКЛАДКА ДАШБОРД -->
     <div id="dashboardTab" class="tab-pane active-pane">
+      <!-- НОВЫЙ БАННЕР (п.1 и п.4) -->
+      <div class="welcome-banner">
+        <div class="welcome-left">
+          <h2>Добро пожаловать, <span id="welcomeNick">...</span></h2>
+          <div class="welcome-badges" id="welcomeBadges"></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--text-3);font-weight:700">ДАТА РЕГИСТРАЦИИ</div>
+          <div id="welcomeRegDate" style="font-size:16px;font-weight:900;color:var(--text)">...</div>
+        </div>
+      </div>
+
       <div class="grid grid-4" style="margin-bottom:20px">
         <div class="card stat"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-label">Всего в списке</div><div class="stat-value" id="statOnline">0</div></div>
         <div class="card stat" data-dash-filter="ok" style="cursor:pointer"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-label">В норме</div><div class="stat-value" id="statOk">0</div></div>
@@ -414,6 +443,7 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
       <div class="card"><div class="card-title"><span><i class="fas fa-bolt"></i> Топ-5 лидеров недели</span><span id="dashPeriodLabel" style="color:var(--text-3);font-size:10px"></span></div><div id="dashTop5"></div></div>
     </div>
 
+    <!-- ВКЛАДКА ОНЛАЙН -->
     <div id="onlineTab" class="tab-pane">
       <div class="calc-panel">
         <div class="calc-header">
@@ -421,7 +451,7 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
           <div class="calc-settings">
             <label><i class="fas fa-bullseye"></i> Норма <input type="number" id="normInput" min="1" max="200" value="21"></label>
             <label><i class="fas fa-exclamation-triangle"></i> Порог <input type="number" id="predInput" min="0" max="200" value="17"></label>
-            <label><i class="fas fa-user-slash"></i> Штраф к норме/день <input type="number" id="penaltyInput" min="0" max="24" value="3"></label>
+            <label><i class="fas fa-user-slash"></i> Штраф/день <input type="number" id="penaltyInput" min="0" max="24" value="3"></label>
           </div>
         </div>
         <div class="calc-input-wrap">
@@ -449,6 +479,49 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
       </div>
     </div>
 
+    <!-- ВКЛАДКА РУКОВОДСТВО (п.2) -->
+    <div id="staffTab" class="tab-pane">
+      <div class="fac-banner" style="background:linear-gradient(135deg, rgba(167,139,250,.15), transparent 80%)">
+        <i class="fas fa-users-cog"></i>
+        <div><h3>Состав руководства</h3><p>Все зарегистрированные следящие и администрация проекта</p></div>
+      </div>
+      <div id="staffGrid" class="grid grid-3"></div>
+    </div>
+
+    <!-- ВКЛАДКА БАЛЛЫ (п.5) -->
+    <div id="pointsTab" class="tab-pane">
+      <div class="grid grid-2">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title"><span><i class="fas fa-terminal"></i> Консоль отчётов</span></div>
+            <p style="font-size:12px;color:var(--text-3);margin-bottom:12px">Доступные команды для Лидеров/Замов:<br>
+              <code style="color:var(--accent)">/lpred [Ник] +1 [Причина]</code> — выдать пред<br>
+              <code style="color:var(--accent)">/lvig [Ник] +1 [Причина]</code> — выдать выговор<br>
+              <code style="color:var(--accent)">/lsetballs [Баллы] [За что]</code> — поставить баллы себе за отчет
+            </p>
+            <div class="console-wrap">
+              <div class="console-output" id="consoleOut">> Готов к вводу команд...<br></div>
+              <div class="console-input-wrap">
+                <span>></span>
+                <input id="consoleInput" type="text" placeholder="/lpred Nick +1 Опоздание..." autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title"><span><i class="fas fa-history"></i> Последние действия</span></div>
+            <div class="table-scroll" style="max-height:400px;overflow-y:auto">
+              <table class="tbl">
+                <thead><tr><th>Кто / Кому</th><th>Действие</th><th>Причина</th></tr></thead>
+                <tbody id="pointsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="topTab" class="tab-pane"><div class="podium" id="podiumGrid"></div></div>
 
     <div id="factionTab" class="tab-pane">
@@ -466,7 +539,7 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
 
     <div id="adminTab" class="tab-pane">
       <div class="card" style="margin-bottom:16px;padding:14px 20px;background:var(--bg-input)"><div style="font-size:12px;color:var(--text-3)"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:8px"></i><span id="adminHint"></span></div></div>
-      <div class="table-wrap"><div class="table-scroll"><table class="tbl"><thead><tr><th>Имя</th><th>Игровой ник</th><th>Фракция</th><th>Роль</th><th>Дата назначения</th><th style="text-align:center">Статус</th><th style="min-width:320px">Действия</th></tr></thead><tbody id="adminTbody"></tbody></table></div></div>
+      <div class="table-wrap"><div class="table-scroll"><table class="tbl"><thead><tr><th>Дата рег.</th><th>Имя</th><th>Игровой ник</th><th>Фракция</th><th>Роль</th><th>Дата назначения</th><th style="text-align:center">Статус</th><th style="min-width:320px">Действия</th></tr></thead><tbody id="adminTbody"></tbody></table></div></div>
     </div>
 
     <div id="archiveTab" class="tab-pane">
@@ -499,17 +572,6 @@ table.tbl tbody tr.candidate-archive:hover{background:rgba(255,107,107,.14)}
           <div class="setting-row"><div><div class="setting-label">Звук при входе</div><div class="setting-desc">Приятный звук при загрузке</div></div><div class="switch on" id="soundSwitch"></div></div>
           <div class="setting-row"><div><div class="setting-label">Аватар</div><div class="setting-desc">Клик по аватару в меню</div></div><button class="theme-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fas fa-upload"></i> Загрузить</button></div>
           <div class="setting-row"><div><div class="setting-label">Проверить звук</div><div class="setting-desc">Проиграть приветствие</div></div><button class="theme-btn" onclick="playWelcomeSound()"><i class="fas fa-play"></i> Проиграть</button></div>
-        </div>
-        <div class="card" style="grid-column:1/-1">
-          <div class="card-title"><span><i class="fas fa-image"></i> Фон</span></div>
-          <div class="bg-grid" id="bgGrid">
-            <div class="bg-preview bg-none" data-bg-prev="none"><div class="bg-preview-label">Обычный</div></div>
-            <div class="bg-preview bg-grid-prev" data-bg-prev="grid"><div class="bg-preview-label">Сетка</div></div>
-            <div class="bg-preview bg-cosmos-prev" data-bg-prev="cosmos"><div class="bg-preview-label">Космос</div></div>
-            <div class="bg-preview bg-gradient-prev" data-bg-prev="gradient"><div class="bg-preview-label">Градиент</div></div>
-            <div class="bg-preview bg-plasma-prev" data-bg-prev="plasma"><div class="bg-preview-label">Плазма</div></div>
-            <div class="bg-preview bg-aurora-prev" data-bg-prev="aurora"><div class="bg-preview-label">Сияние</div></div>
-          </div>
         </div>
       </div>
     </div>
@@ -561,6 +623,25 @@ function trendBadge(u){
   return`<span class="trend-flat" data-tip="Стабильно (${diff>=0?'+':''}${diff.toFixed(1)}ч к прошлой неделе)">➡️</span>`;
 }
 
+// Рендер бейджей (п.1, п.3)
+function renderBadges(profile){
+  if(!profile) return '';
+  let html = '';
+  // Автоматический бейдж для Isaac
+  if((profile.game_nick||'').toLowerCase() === 'isaac') {
+      html += `<span class="c-badge boss"><i class="fas fa-crown"></i> BOss</span>`;
+  }
+  // Бейджи из БД
+  if(profile.badges && Array.isArray(profile.badges)){
+    profile.badges.forEach(b => {
+      if(b==='tester') html += `<span class="c-badge tester"><i class="fas fa-flask"></i> Тестер</span>`;
+      if(b==='unique') html += `<span class="c-badge unique"><i class="fas fa-star"></i> Уникальный бейдж</span>`;
+      if(b==='bibi') html += `<span class="c-badge bibi"><i class="fas fa-dog"></i> Бибиязанчики</span>`;
+    });
+  }
+  return html;
+}
+
 function showLoader(t){$('loadingText').textContent=t;$('loadingOverlay').classList.add('open')}
 function hideLoader(){$('loadingOverlay').classList.remove('open')}
 function toast(title,text,type='info'){const icons={ok:'fa-check',err:'fa-exclamation',info:'fa-info'};const el=document.createElement('div');el.className='toast';el.innerHTML=`<div class="toast-icon ${type}"><i class="fas ${icons[type]}"></i></div><div><div class="toast-title">${esc(title)}</div><div class="toast-text">${esc(text)}</div></div>`;$('toastWrap').appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4000)}
@@ -610,7 +691,7 @@ async function loginDiscord(){const b=$('discordLoginBtn');b.disabled=true;b.inn
 async function logout(){if(!confirm('Выйти?'))return;await sb.auth.signOut();location.reload()}
 window.logout=logout;
 
-async function loadProfile(uid,email,meta){const{data}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(data)return data;const name=meta?.full_name||meta?.name||(email?email.split('@')[0]:'Игрок');const{data:c}=await sb.from('profiles').insert({id:uid,discord_name:name,role:0,active:true}).select().single();return c}
+async function loadProfile(uid,email,meta){const{data}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(data)return data;const name=meta?.full_name||meta?.name||(email?email.split('@')[0]:'Игрок');const{data:c}=await sb.from('profiles').insert({id:uid,discord_name:name,role:0,active:true,registered_at:new Date().toISOString()}).select().single();return c}
 
 async function initAuth(){
   $('tabEmail').onclick=()=>{$('tabEmail').classList.add('active');$('tabDiscord').classList.remove('active');$('emailForm').style.display='block';$('discordForm').style.display='none'};
@@ -628,7 +709,7 @@ async function initAuth(){
   if(currentProfile.active===false){alert('Доступ отключён');await sb.auth.signOut();location.reload();return}
   $('authOverlay').classList.remove('open');
   $('mainInterface').style.display='block';
-  updateUserBadge();applyRole();
+  updateUserBadge();applyRole();initWelcomeBanner();
   await initFullApp();
   handleHash();
   const loginTime=parseInt(localStorage.getItem('mj_login_time')||'0');
@@ -636,6 +717,25 @@ async function initAuth(){
 }
 
 function updateUserBadge(){const name=currentProfile.game_nick||currentProfile.discord_name||'Игрок';$('suName').textContent=name;$('suRole').textContent=ROLE_NAMES[currentProfile.role]||'Нет';$('suRole').style.color=ROLE_COLORS[currentProfile.role]||'#8a94c9';const a=$('suAva');if(currentProfile.avatar_url)a.innerHTML=`<img src="${esc(currentProfile.avatar_url)}">`;else a.textContent=initials(name)}
+
+// Инициализация баннера приветствия (п.1, п.4)
+function initWelcomeBanner(){
+  const name = currentProfile.game_nick || currentProfile.discord_name || 'Игрок';
+  $('welcomeNick').textContent = name;
+  
+  // Бейджи
+  let badgesHtml = renderBadges(currentProfile);
+  if(currentProfile.game_nick?.toLowerCase() === 'ada_adamson') { // Демонстрация со скрина
+     badgesHtml += `<span class="c-badge tester"><i class="fas fa-flask"></i> Тестер</span>
+                    <span class="c-badge unique"><i class="fas fa-star"></i> Уникальный бейдж</span>
+                    <span class="c-badge bibi"><i class="fas fa-dog"></i> Бибиязанчики</span>`;
+  }
+  $('welcomeBadges').innerHTML = badgesHtml;
+
+  // Дата регистрации
+  const reg = currentProfile.registered_at ? new Date(currentProfile.registered_at) : new Date();
+  $('welcomeRegDate').textContent = reg.toLocaleDateString('ru-RU', { day:'2-digit', month:'long', year:'numeric' });
+}
 
 async function handleAvatar(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024)return toast('Ошибка','Максимум 2 МБ','err');showLoader('Загрузка...');try{const ext=f.name.split('.').pop();const path=`${currentUser.id}/avatar.${ext}`;const{error:up}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(up)throw up;const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);const url=publicUrl+'?t='+Date.now();const{error:db}=await sb.from('profiles').update({avatar_url:url}).eq('id',currentProfile.id);if(db)throw db;currentProfile.avatar_url=url;updateUserBadge();toast('Готово','Аватар обновлён','ok')}catch(err){toast('Ошибка',err.message,'err')}hideLoader();e.target.value=''}
 
@@ -649,10 +749,11 @@ async function switchTab(tab,updateHash=false){
   document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active-pane'));
   const nav=document.querySelector(`.nav-btn[data-tab="${tab}"]`);if(nav)nav.classList.add('active');
   const pane=$(tab);if(pane)pane.classList.add('active-pane');
-  const titles={dashboardTab:'Дашборд <span>MJ</span>',onlineTab:'Онлайн <span>таблица</span>',topTab:'Топ-<span>3</span>',factionTab:'<span>Фракции</span>',chartTab:'Аналитика <span>MJ</span>',logsTab:'История <span>логов</span>',archiveTab:'Архив <span>сотрудников</span>',adminTab:'Управление <span>доступом</span>',settingsTab:'Внешний <span>вид</span>',profileTab:'Профиль <span>игрока</span>'};
+  const titles={dashboardTab:'Дашборд <span>MJ</span>',onlineTab:'Онлайн <span>таблица</span>',staffTab:'Руководство <span>МЮ</span>',pointsTab:'Баллы и <span>Отчёты</span>',topTab:'Топ-<span>3</span>',factionTab:'<span>Фракции</span>',chartTab:'Аналитика <span>MJ</span>',logsTab:'История <span>логов</span>',archiveTab:'Архив <span>сотрудников</span>',adminTab:'Управление <span>доступом</span>',settingsTab:'Внешний <span>вид</span>',profileTab:'Профиль <span>игрока</span>'};
   $('pageTitle').innerHTML=titles[tab]||'Space MJ';
   if(window.innerWidth<=900)$('sidebar').classList.remove('open');
   if(updateHash&&tab!=='profileTab')location.hash='tab='+tab.replace('Tab','');
+  
   if(tab==='logsTab')await loadLogs();
   if(tab==='adminTab')await loadAdminTable();
   if(tab==='archiveTab')await loadArchiveTable();
@@ -660,7 +761,130 @@ async function switchTab(tab,updateHash=false){
   if(tab==='topTab')renderTop3();
   if(tab==='factionTab')await renderFaction();
   if(tab==='dashboardTab')await renderDash();
+  if(tab==='staffTab')await loadStaff();
+  if(tab==='pointsTab')await loadPoints();
 }
+
+// Вкладка руководства (п.2)
+async function loadStaff(){
+  const grid=$('staffGrid');
+  grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-spinner fa-spin"></i>Загрузка...</div>';
+  const{data:profs,error}=await sb.from('profiles').select('*').gte('role',1).or('archived.is.null,archived.eq.false').order('role',{ascending:false});
+  if(error||!profs?.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-users-slash"></i>Никого нет</div>';return}
+  grid.innerHTML=profs.map(p=>{
+    const avaHtml=p.avatar_url?`<img src="${esc(p.avatar_url)}">`:initials(p.game_nick||p.discord_name);
+    const facHtml=p.faction?`<span class="fac ${facClass(p.faction)}">${facIcon(p.faction)}${p.faction}</span>`:'';
+    const reg = p.registered_at ? new Date(p.registered_at).toLocaleDateString('ru-RU') : 'Неизвестно';
+    const badges = renderBadges(p);
+    return`<div class="card" style="cursor:pointer;display:flex;gap:16px;align-items:center" onclick="openProfilePage('${esc(p.game_nick||'').replace(/'/g,"\\'")}')">
+      <div class="u-ava" style="width:60px;height:60px;font-size:24px">${avaHtml}</div>
+      <div style="flex:1;min-width:0">
+        <div class="u-nick" style="font-size:16px">${esc(p.game_nick||p.discord_name||'—')}</div>
+        <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">${badges}</div>
+        <div class="u-sub" style="margin-top:6px">${facHtml} <span style="color:${ROLE_COLORS[p.role]};font-weight:800">${ROLE_NAMES[p.role]}</span></div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:6px"><i class="fas fa-calendar-alt"></i> Рег: ${reg}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Вкладка баллов (п.5)
+async function loadPoints(){
+  const tb=$('pointsTbody');
+  tb.innerHTML='<tr><td colspan="3" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
+  const{data,error}=await sb.from('report_actions').select('*, profiles(discord_name)').order('created_at',{ascending:false}).limit(50);
+  if(error){tb.innerHTML=`<tr><td colspan="3" class="empty">Ошибка: ${esc(error.message)}</td></tr>`;return}
+  if(!data?.length){tb.innerHTML='<tr><td colspan="3" class="empty">Пока нет записей</td></tr>';return}
+  tb.innerHTML=data.map(r=>{
+    const who=r.profiles?.discord_name||'Кто-то';
+    const act = r.action_type==='pred'?'<span class="badge pred">Пред</span>': r.action_type==='vig'?'<span class="badge bad">Выговор</span>':'<span class="badge ok">Баллы</span>';
+    return `<tr>
+      <td><b>${esc(who)}</b> → <b>${esc(r.target_nick)}</b></td>
+      <td>${act} ${r.value>0?'+':''}${r.value}</td>
+      <td style="font-size:11px">${esc(r.reason)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Консоль команд (п.5)
+$('consoleInput').addEventListener('keypress', async (e)=>{
+  if(e.key !== 'Enter') return;
+  const val = e.target.value.trim();
+  if(!val) return;
+  e.target.value = '';
+  
+  const out = $('consoleOut');
+  out.innerHTML += `> ${val}\n`;
+  
+  if(currentProfile.role < 1) {
+     out.innerHTML += `<span style="color:red">Ошибка: Доступ только для Лидеров/Замов</span>\n`;
+     return;
+  }
+
+  // Парсер команд
+  // /lpred Nick +1 Reason
+  const parts = val.split(' ');
+  const cmd = parts[0].toLowerCase();
+
+  if(cmd === '/lpred' || cmd === '/lvig'){
+    if(parts.length < 4) { out.innerHTML += `<span style="color:red">Формат: ${cmd} НИК +1 ПРИЧИНА</span>\n`; return; }
+    const target = parts[1];
+    const amount = parseInt(parts[2]);
+    const reason = parts.slice(3).join(' ');
+    const type = cmd === '/lpred' ? 'pred' : 'vig';
+    
+    const {error} = await sb.from('report_actions').insert({
+      user_id: currentProfile.id,
+      target_nick: target,
+      action_type: type,
+      value: amount,
+      reason: reason
+    });
+    if(error) out.innerHTML += `<span style="color:red">Ошибка БД: ${error.message}</span>\n`;
+    else {
+      out.innerHTML += `<span style="color:#4ade80">Успех: ${target} получил ${type} (${amount}) за "${reason}"</span>\n`;
+      loadPoints();
+    }
+  } 
+  else if(cmd === '/lsetballs'){
+    if(parts.length < 3) { out.innerHTML += `<span style="color:red">Формат: /lsetballs +БАЛЛЫ ПРИЧИНА</span>\n`; return; }
+    const amount = parseInt(parts[1]);
+    const reason = parts.slice(2).join(' ');
+    
+    // Себе любимому
+    const target = currentProfile.game_nick || currentProfile.discord_name;
+    
+    const {error: err1} = await sb.from('report_actions').insert({
+      user_id: currentProfile.id,
+      target_nick: target,
+      action_type: 'balls',
+      value: amount,
+      reason: reason
+    });
+    
+    if(!err1) {
+      // Обновляем счетчик в профиле
+      const {error: err2} = await sb.rpc('increment_balls', { row_id: currentProfile.id, inc: amount });
+      // Если нет RPC, делаем вручную (упрощенно)
+      if(err2) {
+          const newBalls = (currentProfile.balls||0) + amount;
+          await sb.from('profiles').update({balls:newBalls}).eq('id', currentProfile.id);
+          currentProfile.balls = newBalls;
+      }
+      
+      out.innerHTML += `<span style="color:#4ade80">Успех: Вам начислено ${amount} баллов за "${reason}"</span>\n`;
+      loadPoints();
+    } else {
+      out.innerHTML += `<span style="color:red">Ошибка: ${err1.message}</span>\n`;
+    }
+  }
+  else {
+    out.innerHTML += `<span style="color:red">Неизвестная команда. Доступно: /lpred, /lvig, /lsetballs</span>\n`;
+  }
+  
+  out.scrollTop = out.scrollHeight;
+});
+
 
 async function openProfilePage(nick){
   if(!nick)return;
@@ -698,7 +922,12 @@ async function renderProfilePage(nick){
   if(role===1&&posStart){const start=new Date(posStart),now=new Date();const days=Math.floor((now-start)/(1000*60*60*24)),weeksOn=Math.floor(days/7);posBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><div class="progress-position-grid"><div class="progress-position-item"><div class="pp-label2">Дата назначения</div><div class="pp-value2 gold">${posStart}</div></div><div class="progress-position-item"><div class="pp-label2">Дней на посту</div><div class="pp-value2">${days}</div></div><div class="progress-position-item"><div class="pp-label2">Недель на посту</div><div class="pp-value2">${weeksOn}</div></div></div></div>`}
   else if(role===1&&!posStart){posBlock=`<div class="progress-position"><h3><i class="fas fa-crown"></i> Прогресс на посту</h3><p style="color:var(--text-3);font-size:13px">Дата назначения не указана. Обратись к ГС МЮ.</p></div>`}
   const normInfo=inactive>0?`<span style="color:var(--yellow);font-size:11px;font-weight:700"> (норма снижена: ${settings.norm}−${inactive}×${settings.inactivePenalty}=${myNorm.toFixed(1)}ч)</span>`:'';
-  $('profileContent').innerHTML=`<div class="profile-hero"><div class="profile-hero-ava">${avaHtml}</div><div class="profile-hero-info"><h2>${esc(nick)} <span class="ach-row">${achBadgesHtml}</span></h2><div class="profile-hero-meta">${facHtml}<span class="badge mute" style="padding:6px 14px;font-size:11px;color:${ROLE_COLORS[role]||'#8a94c9'}">${ROLE_NAMES[role]}</span></div><div class="profile-hero-stats"><div class="profile-hero-stat"><span class="ph-label">За неделю</span><span class="ph-value" style="color:var(--green)">${hours.toFixed(1)}ч</span></div><div class="profile-hero-stat"><span class="ph-label">Неактив</span><span class="ph-value">${inactive} дн</span></div><div class="profile-hero-stat"><span class="ph-label">Норма</span><span class="ph-value" style="color:${inactive>0?'var(--yellow)':'var(--text)'}">${myNorm.toFixed(1)}ч</span></div><div class="profile-hero-stat"><span class="ph-label">Средний % нормы</span><span class="ph-value" style="color:${avgPct>=100?'var(--green)':avgPct>=70?'var(--yellow)':'var(--red)'}">${avgPct.toFixed(0)}%</span></div></div>${normInfo}</div></div>${posBlock}<div class="grid grid-4" style="margin-bottom:20px"><div class="card stat"><div class="stat-icon purple"><i class="fas fa-clock"></i></div><div class="stat-label">Онлайн за неделю</div><div class="stat-value">${hours.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon gold"><i class="fas fa-database"></i></div><div class="stat-label">За 4 недели</div><div class="stat-value">${totalHours.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon green"><i class="fas fa-gauge"></i></div><div class="stat-label">Средний / день</div><div class="stat-value">${avgDay.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon blue"><i class="fas fa-calendar"></i></div><div class="stat-label">Активных дней</div><div class="stat-value">${u?.activeDays||0}</div></div></div><div class="profile-grid"><div class="card"><div class="card-title"><span><i class="fas fa-chart-line"></i> Динамика по неделям</span></div><div class="chart-wrap tall"><canvas id="profileWeekChart"></canvas></div></div><div class="card"><div class="card-title"><span><i class="fas fa-medal"></i> Достижения</span></div><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px 0">${achList.length?achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span style="padding:10px 16px;border-radius:20px;font-size:12px;font-weight:800;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold);display:flex;align-items:center;gap:8px"><i class="fas ${ic.i}"></i> ${ic.t}</span>`}).join(''):'<span style="color:var(--text-3);font-size:13px">Нет достижений</span>'}</div></div></div>`;
+  
+  const customBadges = renderBadges(prof);
+  const regDate = prof?.registered_at ? new Date(prof.registered_at).toLocaleDateString('ru-RU') : '—';
+  const balls = prof?.balls || 0;
+
+  $('profileContent').innerHTML=`<div class="profile-hero"><div class="profile-hero-ava">${avaHtml}</div><div class="profile-hero-info"><h2>${esc(nick)} <span class="ach-row">${achBadgesHtml}</span></h2><div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap">${customBadges}</div><div class="profile-hero-meta">${facHtml}<span class="badge mute" style="padding:6px 14px;font-size:11px;color:${ROLE_COLORS[role]||'#8a94c9'}">${ROLE_NAMES[role]}</span><span class="badge reward" style="padding:6px 14px;font-size:11px">★ ${balls} баллов</span></div><div class="profile-hero-stats"><div class="profile-hero-stat"><span class="ph-label">За неделю</span><span class="ph-value" style="color:var(--green)">${hours.toFixed(1)}ч</span></div><div class="profile-hero-stat"><span class="ph-label">Неактив</span><span class="ph-value">${inactive} дн</span></div><div class="profile-hero-stat"><span class="ph-label">Норма</span><span class="ph-value" style="color:${inactive>0?'var(--yellow)':'var(--text)'}">${myNorm.toFixed(1)}ч</span></div><div class="profile-hero-stat"><span class="ph-label">Дата рег.</span><span class="ph-value" style="font-size:16px">${regDate}</span></div></div>${normInfo}</div></div>${posBlock}<div class="grid grid-4" style="margin-bottom:20px"><div class="card stat"><div class="stat-icon purple"><i class="fas fa-clock"></i></div><div class="stat-label">Онлайн за неделю</div><div class="stat-value">${hours.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon gold"><i class="fas fa-database"></i></div><div class="stat-label">За 4 недели</div><div class="stat-value">${totalHours.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon green"><i class="fas fa-gauge"></i></div><div class="stat-label">Средний / день</div><div class="stat-value">${avgDay.toFixed(1)}<span class="unit">ч</span></div></div><div class="card stat"><div class="stat-icon blue"><i class="fas fa-calendar"></i></div><div class="stat-label">Активных дней</div><div class="stat-value">${u?.activeDays||0}</div></div></div><div class="profile-grid"><div class="card"><div class="card-title"><span><i class="fas fa-chart-line"></i> Динамика по неделям</span></div><div class="chart-wrap tall"><canvas id="profileWeekChart"></canvas></div></div><div class="card"><div class="card-title"><span><i class="fas fa-medal"></i> Достижения</span></div><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px 0">${achList.length?achList.map(a=>{const ic=ACH_ICONS[a];if(!ic)return'';return`<span style="padding:10px 16px;border-radius:20px;font-size:12px;font-weight:800;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold);display:flex;align-items:center;gap:8px"><i class="fas ${ic.i}"></i> ${ic.t}</span>`}).join(''):'<span style="color:var(--text-3);font-size:13px">Нет достижений</span>'}</div></div></div>`;
   if(window._pWeek)window._pWeek.destroy();
   window._pWeek=new Chart($('profileWeekChart'),{type:'line',data:{labels:weeks.reverse().map(w=>w.label),datasets:[{label:'Часы',data:vals.reverse(),borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,320);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:6,pointHoverRadius:9,pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
 }
@@ -717,7 +946,6 @@ function render(){
   let list=[...parsedData];
   if(currentProfile.role===1&&currentProfile.game_nick)list=list.filter(u=>u.nick.toLowerCase()===currentProfile.game_nick.toLowerCase());
   if(currentFactionFilter!=='ALL')list=list.filter(u=>(u.faction||'')===currentFactionFilter);
-  /* фильтр по статусу */
   if(currentStatusFilter!=='all'){
     if(currentStatusFilter==='candidate'){
       const w0c=getWeekRange(0),w1c=getWeekRange(1);
@@ -733,454 +961,4 @@ function render(){
       list=list.filter(u=>effHours(u)<effPred(u));
     }
   }
-  if(currentSearch){const s=currentSearch.toLowerCase();list=list.filter(u=>u.nick.toLowerCase().includes(s))}
-  list.sort((a,b)=>{let va,vb;if(sortBy==='nick'){va=a.nick.toLowerCase();vb=b.nick.toLowerCase();return sortDir==='asc'?(va>vb?1:-1):(va<vb?1:-1)}va=effHours(a);vb=effHours(b);return sortDir==='asc'?va-vb:vb-va});
-  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-search"></i>Не найдено</td></tr>';return}
-  tb.innerHTML=list.map((u,i)=>{
-    const eff=effHours(u);
-    const myNorm=effNorm(u);
-    const myPred=effPred(u);
-    const pct=myNorm>0?Math.min((eff/myNorm)*100,100):100;
-    const col=barCol(eff,myNorm,myPred);
-    const rw=rewardPts(eff,myNorm);
-    const extra=eff-myNorm;
-    let sc='ok',st='Норма';
-    if(eff<myPred){sc='bad';st='Выговор'}else if(eff<myNorm){sc='pred';st='Предупр.'}
-    let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
-    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
-    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}">${facIcon(u.faction)}${u.faction}</span>`:'';
-    const isMe=u.nick===currentProfile.game_nick;
-    const normBadge=myNorm!==settings.norm?`<span class="badge norm-lowered" data-tip="Норма снижена из-за неактива: ${settings.norm}−${u.inactiveDays}×${settings.inactivePenalty}=${myNorm.toFixed(1)}ч">норма: ${myNorm.toFixed(1)}ч</span>`:'';
-    const inactHtml=canEdit?`<span class="badge mute clickable" onclick="event.stopPropagation();setInactive('${esc(u.nick).replace(/'/g,"\\'")}')" data-tip="Клик — задать кол-во дней неактива">${u.inactiveDays||0} дн</span>`:`<span class="badge mute">${u.inactiveDays||0} дн</span>`;
-    return`<tr data-nick="${esc(u.nick)}" style="${isMe?'background:rgba(167,139,250,.06)':''}"><td style="text-align:center"><span class="rank-badge ${rc}">${i+1}</span></td><td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(u.nick)} ${trendBadge(u)} ${facHtml} ${achBadges(u)} ${isMe?'<span class="badge reward" style="font-size:9px">Ты</span>':''}</div><div class="u-sub">${ROLE_NAMES[u.role]||'—'}</div></div></div></td><td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span>${normBadge}${extra>=1?`<span class="badge ok" style="font-size:9px">+${extra.toFixed(1)}</span>`:''}</div></td><td style="text-align:center">${inactHtml}</td><td style="text-align:center"><span class="badge ${sc}">${st}</span></td><td style="text-align:center">${rw>0?`<span class="badge reward"><i class="fas fa-gift"></i>+${rw}</span>`:'<span class="badge mute" style="font-size:10px">нет</span>'}</td><td style="text-align:center">${canEdit?`<div style="display:flex;gap:5px;justify-content:center"><button class="icon-btn" style="width:28px;height:28px;font-size:11px" onclick="event.stopPropagation();rowPlus(${parsedData.indexOf(u)})" data-tip="+1ч бонус">+1</button><button class="icon-btn" style="width:28px;height:28px;font-size:11px;color:var(--red)" onclick="event.stopPropagation();rowMinus(${parsedData.indexOf(u)})" data-tip="−1ч бонус">-1</button></div>`:'—'}</td></tr>`;
-  }).join('');
-  tb.querySelectorAll('tr[data-nick]').forEach(tr=>{tr.onclick=()=>openProfilePage(tr.dataset.nick)});
-  attachSort();
-}
-window.rowPlus=i=>{const u=parsedData[i];if(!u)return;u.bonusHours=(u.bonusHours||0)+1;render()};
-window.rowMinus=i=>{const u=parsedData[i];if(!u)return;u.bonusHours=Math.max(0,(u.bonusHours||0)-1);render()};
-window.setInactive=nick=>{
-  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
-  const u=parsedData.find(x=>x.nick===nick);if(!u)return;
-  const val=prompt(`Сколько дней неактива у ${nick}?\nКаждый день снижает НОРМУ на ${settings.inactivePenalty}ч.`,u.inactiveDays||0);
-  if(val===null)return;
-  const n=parseInt(val);
-  if(isNaN(n)||n<0)return toast('Ошибка','Введи число ≥ 0','err');
-  u.inactiveDays=n;render();
-  const newNorm=Math.max(0,settings.norm-n*settings.inactivePenalty);
-  toast('Готово',`${nick}: ${n} дн неактива → норма ${newNorm.toFixed(1)}ч`,'ok');
-};
-
-function renderTop3(){
-  const g=$('podiumGrid');
-  const sorted=[...parsedData].sort((a,b)=>effHours(b)-effHours(a)).slice(0,3);
-  if(!sorted.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-trophy"></i>Нет данных</div>';return}
-  const order=[1,0,2],cls=['g1','g2','g3'],icons=['fa-crown','fa-medal','fa-medal'],labels=['TOP #1','TOP #2','TOP #3'];
-  g.innerHTML=sorted.map((u,i)=>{
-    const idx=order[i],eff=effHours(u);
-    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
-    const facHtml=u.faction?`<span class="fac ${facClass(u.faction)}" style="margin-top:8px">${facIcon(u.faction)}${u.faction}</span>`:'';
-    return`<div class="pod-card ${cls[idx]}" onclick="openProfilePage('${esc(u.nick).replace(/'/g,"\\'")}')"><div class="pod-medal ${cls[idx]}"><i class="fas ${icons[idx]}"></i></div><div class="pod-rank">${labels[idx]}</div><div class="pod-ava">${avaHtml}</div><div class="pod-nick">${esc(u.nick)}</div>${facHtml}<div class="pod-hours">${eff.toFixed(1)}<span>ч</span></div><div class="pod-label">онлайн за неделю</div></div>`;
-  }).join('');
-}
-
-async function renderDash(){
-  const total=parsedData.length;
-  const okCount=parsedData.filter(u=>effHours(u)>=effNorm(u)).length;
-  const badCount=parsedData.filter(u=>effHours(u)<effPred(u)).length;
-
-  const w0=getWeekRange(0),w1=getWeekRange(1);
-  const{data:histLogs}=await sb.from('online_logs').select('player_nick,hours,period_start').in('period_start',[w0.start,w1.start]);
-  histMapGlobal={};
-  (histLogs||[]).forEach(r=>{const k=r.player_nick.toLowerCase();if(!histMapGlobal[k])histMapGlobal[k]={};histMapGlobal[k][r.period_start]=+r.hours});
-  const candCount=parsedData.filter(u=>{
-    const h=histMapGlobal[u.nick.toLowerCase()];if(!h)return false;
-    return h[w0.start]!==undefined&&h[w1.start]!==undefined&&h[w0.start]<settings.predThreshold&&h[w1.start]<settings.predThreshold;
-  }).length;
-
-  animate('statOnline',total,false);
-  animate('statOk',okCount,false);
-  animate('statBad',badCount,false);
-  animate('statCand',candCount,false);
-
-  const okPct=total?Math.round((okCount/total)*100):0;
-  $('ringValue').textContent=okPct+'%';
-  const circ=2*Math.PI*82;
-  $('ringProgress').setAttribute('stroke-dasharray',circ);
-  $('ringProgress').setAttribute('stroke-dashoffset',circ*(1-okPct/100));
-
-  const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
-  const{data}=await sb.from('online_logs').select('hours,period_start').in('period_start',weeks.map(w=>w.start));
-  const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
-  if(charts.dash)charts.dash.destroy();
-  charts.dash=new Chart($('chartDashWeeks'),{type:'line',data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,borderColor:'#a78bfa',backgroundColor:(c)=>{const g=c.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'rgba(167,139,250,.4)');g.addColorStop(1,'rgba(167,139,250,0)');return g},fill:true,tension:.4,pointBackgroundColor:'#a78bfa',pointRadius:5,pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
-  const top5=[...parsedData].sort((a,b)=>effHours(b)-effHours(a)).slice(0,5);
-  const d=$('dashTop5');
-  if(!top5.length)d.innerHTML='<div class="empty"><i class="fas fa-users"></i>Нет данных</div>';
-  else d.innerHTML=top5.map((u,i)=>{
-    const eff=effHours(u);
-    const myNorm=effNorm(u);
-    const myPred=effPred(u);
-    const pct=myNorm>0?Math.min((eff/myNorm)*100,100):100;
-    const col=barCol(eff,myNorm,myPred);
-    const avaHtml=u.avatar_url?`<img src="${esc(u.avatar_url)}">`:initials(u.nick);
-    let rc='';if(i===0)rc='gold';else if(i===1)rc='silver';else if(i===2)rc='bronze';
-    return`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openProfilePage('${esc(u.nick).replace(/'/g,"\\'")}')"><span class="rank-badge ${rc}">${i+1}</span><div class="u-ava">${avaHtml}</div><div style="flex:1;min-width:0"><div class="u-nick">${esc(u.nick)} ${trendBadge(u)} ${achBadges(u)}</div><div class="u-sub">${eff.toFixed(1)}ч / норма ${myNorm.toFixed(1)}ч</div></div><div class="progress" style="min-width:140px;max-width:200px"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div></div>`;
-  }).join('');
-  await loadMyStats();
-}
-function animate(id,target,hasUnit){const el=$(id);if(!el)return;const cur=parseFloat(el.textContent.replace(/[^\d.]/g,''))||0;const dur=800,start=performance.now();const step=now=>{const p=Math.min((now-start)/dur,1);const v=cur+(target-cur)*p;el.innerHTML=hasUnit?v.toFixed(1)+'<span class="unit">ч</span>':Math.round(v);if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
-
-async function renderFaction(){
-  const tb=$('factionTbody');
-  const facs=['LSPD','SFPD','RCSD','LVPD','FBI'];
-  const labels={LSPD:'ЛСПД',SFPD:'СФПД',RCSD:'РКШД',LVPD:'ЛВПД',FBI:'ФБР'};
-  if(currentProfile.faction)currentFactionView=currentProfile.faction;
-  const chipsBar=$('factionChips');
-  chipsBar.innerHTML=facs.map(f=>`<button class="chip ${f===currentFactionView?'active':''}" data-fac-view="${f}"><i class="fas ${FAC_ICONS[f]}"></i>${labels[f]}</button>`).join('');
-  chipsBar.querySelectorAll('[data-fac-view]').forEach(b=>b.onclick=async()=>{currentFactionView=b.dataset.facView;await renderFaction()});
-  $('factionTitle').innerHTML=`<i class="fas ${FAC_ICONS[currentFactionView]}" style="color:var(--accent)"></i> ${labels[currentFactionView]||currentFactionView}`;
-
-  const{data:facAch}=await sb.from('faction_achievements').select('achievement').eq('faction',currentFactionView);
-  const uniq=[...new Set((facAch||[]).map(a=>a.achievement))];
-  const achListHtml=uniq.length?uniq.map(a=>{
-    const ic=FACH_ICONS[a];if(!ic)return'';
-    return`<span style="padding:6px 12px;border-radius:14px;font-size:11px;font-weight:800;background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.3);color:var(--gold);display:flex;align-items:center;gap:6px" data-tip="${ic.t}"><i class="fas ${ic.i}"></i> ${ic.t}</span>`;
-  }).join(''):'';
-  $('factionAchList').innerHTML=achListHtml;
-
-  const{data:profs,error}=await sb.from('profiles').select('*').eq('faction',currentFactionView).eq('active',true).or('archived.is.null,archived.eq.false').order('role',{ascending:false});
-  if(error){tb.innerHTML=`<tr><td colspan="5" class="empty">${esc(error.message)}</td></tr>`;return}
-  if(!profs?.length){tb.innerHTML=`<tr><td colspan="5" class="empty"><i class="fas fa-user-slash"></i>В этой фракции пока никого нет</td></tr>`;return}
-  const map={};parsedData.forEach(u=>map[u.nick.toLowerCase()]=u);
-  tb.innerHTML=profs.map((p,i)=>{
-    const w=map[(p.game_nick||'').toLowerCase()];
-    const eff=w?effHours(w):0;
-    const myNorm=w?effNorm(w):settings.norm;
-    const myPred=w?effPred(w):settings.predThreshold;
-    const pct=myNorm>0?Math.min((eff/myNorm)*100,100):100;
-    const col=barCol(eff,myNorm,myPred);
-    let sc='ok',st='Норма';
-    if(eff<myPred){sc='bad';st='Выговор'}else if(eff<myNorm){sc='pred';st='Предупр.'}
-    const avaHtml=p.avatar_url?`<img src="${esc(p.avatar_url)}">`:initials(p.game_nick||p.discord_name);
-    const nick=p.game_nick||p.discord_name||'—';
-    return`<tr data-nick="${esc(p.game_nick||'')}" style="${p.game_nick?'cursor:pointer':''}"><td style="text-align:center"><span class="rank-badge">${i+1}</span></td><td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(nick)} ${w?achBadges(w):''}</div><div class="u-sub">${ROLE_NAMES[p.role]||'—'}</div></div></div></td><td><div class="progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span class="progress-num">${eff.toFixed(1)}ч</span></div></td><td style="text-align:center"><span class="badge mute">${w?.inactiveDays||0} дн</span></td><td style="text-align:center"><span class="badge ${sc}">${st}</span></td></tr>`;
-  }).join('');
-  tb.querySelectorAll('tr[data-nick]').forEach(tr=>{if(tr.dataset.nick)tr.onclick=()=>openProfilePage(tr.dataset.nick)});
-}
-
-async function loadWeekLogs(){
-  const tb=$('result');
-  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const{data,error}=await sb.from('online_logs').select('*').eq('period_start',periodStart).eq('period_end',periodEnd).order('created_at',{ascending:false});
-  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
-  const prevRange=getWeekRange(currentWeekOffset+1);
-  const{data:prevData}=await sb.from('online_logs').select('player_nick,hours').eq('period_start',prevRange.start).eq('period_end',prevRange.end);
-  prevWeekHours={};
-  (prevData||[]).forEach(r=>{prevWeekHours[r.player_nick.toLowerCase()]=+r.hours});
-  if(!data?.length){parsedData=[];render();return}
-  const byNick={};data.forEach(r=>{if(!byNick[r.player_nick])byNick[r.player_nick]=r});
-  const nicks=Object.keys(byNick);
-  const{data:prof}=await sb.from('profiles').select('game_nick,avatar_url,faction,role').in('game_nick',nicks);
-  const pm={};(prof||[]).forEach(p=>{if(p.game_nick)pm[p.game_nick]=p});
-  const{data:achAll}=await sb.from('achievements').select('player_nick,achievement').in('player_nick',nicks);
-  const achMap={};(achAll||[]).forEach(a=>{if(!achMap[a.player_nick])achMap[a.player_nick]=[];achMap[a.player_nick].push(a.achievement)});
-  parsedData=Object.values(byNick).map(r=>({nick:r.player_nick,hours:+r.hours,perDayHours:r.per_day_hours?+r.per_day_hours:null,activeDays:r.active_days,bonusHours:0,inactiveDays:0,faction:pm[r.player_nick]?.faction||null,avatar_url:pm[r.player_nick]?.avatar_url||null,role:pm[r.player_nick]?.role||0,achievements:achMap[r.player_nick]||[]})).sort((a,b)=>effHours(b)-effHours(a));
-  render();
-}
-
-function parseInputText(text){
-  const data=[];
-  const re=/(?:\[([^\]]+)\]\s*)?Игрок:\s*([^\n\r]+?)\s*[\r\n]+\s*Онлайн:\s*(\d{1,3}:\d{2}:\d{2})(?:\s*\(~?([\d.,]+)\s*ч\s*\/\s*день\s*,\s*активных\s+дней\s*:\s*(\d+)\s*\))?/gi;
-  let m;while((m=re.exec(text))!==null){const nick=m[2].trim();const hours=timeToHours(m[3]);if(isNaN(hours))continue;data.push({nick,hours,perDayHours:m[4]?parseFloat(m[4].replace(',','.')):null,activeDays:m[5]?parseInt(m[5]):null,bonusHours:0,inactiveDays:0})}
-  return data;
-}
-
-function updateCalcPreview(){
-  const prev=$('calcPreview');if(!prev)return;
-  const data=parseInputText($('input').value);
-  if(!data.length){prev.innerHTML='';return}
-  const total=data.reduce((s,u)=>s+u.hours,0);
-  const ok=data.filter(u=>u.hours>=settings.norm).length;
-  const warn=data.filter(u=>u.hours>=settings.predThreshold&&u.hours<settings.norm).length;
-  const bad=data.filter(u=>u.hours<settings.predThreshold).length;
-  prev.innerHTML=`<span class="calc-chip"><i class="fas fa-users"></i> Найдено: <b>${data.length}</b></span><span class="calc-chip"><i class="fas fa-clock"></i> Всего: <b>${total.toFixed(1)}ч</b></span><span class="calc-chip ok"><i class="fas fa-check"></i> Норма: <b>${ok}</b></span><span class="calc-chip warn"><i class="fas fa-exclamation"></i> Предупр.: <b>${warn}</b></span><span class="calc-chip bad"><i class="fas fa-times"></i> Выговор: <b>${bad}</b></span>`;
-}
-
-async function calculate(){
-  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
-  const text=$('input').value;if(!text.trim())return toast('Пусто','Вставь данные','err');
-  showLoader('Расчёт...');
-  const data=parseInputText(text);
-  if(!data.length){hideLoader();return toast('Ошибка','Не распарсилось','err')}
-  const byNick={};data.forEach(u=>{byNick[u.nick]=u});const uniq=Object.values(byNick);const nicks=uniq.map(u=>u.nick);
-  await sb.from('online_logs').delete().eq('period_start',periodStart).eq('period_end',periodEnd).in('player_nick',nicks);
-  const rows=uniq.map(u=>({user_id:currentProfile.id,player_nick:u.nick,hours:u.hours,per_day_hours:u.perDayHours,active_days:u.activeDays,period_start:periodStart,period_end:periodEnd}));
-  const{error}=await sb.from('online_logs').insert(rows);
-  if(error){hideLoader();return toast('Ошибка',error.message,'err')}
-  await checkAch(uniq);await checkFactionAch();await loadWeekLogs();await renderDash();hideLoader();
-  toast('Готово',`Сохранено ${uniq.length} игроков`,'ok');
-}
-
-async function checkAch(players){
-  const s=[...players].sort((a,b)=>b.hours-a.hours);
-  for(let i=0;i<Math.min(3,s.length);i++){const ach=i===0?'top1':'top3';const{data}=await sb.from('achievements').select('id').eq('player_nick',s[i].nick).eq('achievement',ach).maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:s[i].nick,achievement:ach})}
-  for(const u of players){
-    if(u.hours>=settings.norm+10){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','overwork').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'overwork'})}
-    if(u.hours>=settings.norm){const{data}=await sb.from('achievements').select('id').eq('player_nick',u.nick).eq('achievement','perfect').maybeSingle();if(!data)await sb.from('achievements').insert({user_id:currentProfile.id,player_nick:u.nick,achievement:'perfect'})}
-  }
-}
-
-async function checkFactionAch(){
-  const facs=['LSPD','SFPD','RCSD','LVPD','FBI'];
-  const sums={};
-  for(const f of facs){
-    const members=parsedData.filter(u=>(u.faction||'')===f);
-    if(!members.length)continue;
-    sums[f]=members.reduce((s,u)=>s+effHours(u),0);
-    const allInNorm=members.every(u=>effHours(u)>=effNorm(u));
-    if(allInNorm){
-      const{data}=await sb.from('faction_achievements').select('id').eq('faction',f).eq('achievement','all_norm').eq('week_start',periodStart).maybeSingle();
-      if(!data)await sb.from('faction_achievements').insert({user_id:currentProfile.id,faction:f,achievement:'all_norm',week_start:periodStart});
-    }
-  }
-  const top=Object.entries(sums).sort((a,b)=>b[1]-a[1])[0];
-  if(top&&top[1]>0){
-    const{data}=await sb.from('faction_achievements').select('id').eq('faction',top[0]).eq('achievement','top_faction').eq('week_start',periodStart).maybeSingle();
-    if(!data)await sb.from('faction_achievements').insert({user_id:currentProfile.id,faction:top[0],achievement:'top_faction',week_start:periodStart});
-  }
-}
-
-async function loadCharts(){
-  const weeks=[];for(let i=3;i>=0;i--){const r=getWeekRange(i);weeks.push({start:r.start,label:fmtRu(r.monday)})}
-  const{data}=await sb.from('online_logs').select('hours,period_start,faction').in('period_start',weeks.map(w=>w.start));
-  const vals=weeks.map(w=>(data||[]).filter(d=>d.period_start===w.start).reduce((s,r)=>s+(+r.hours),0));
-  if(charts.weeks)charts.weeks.destroy();
-  charts.weeks=new Chart($('chartWeeks'),{type:'bar',data:{labels:weeks.map(w=>w.label),datasets:[{label:'Часы',data:vals,backgroundColor:'rgba(167,139,250,.6)',borderColor:'#a78bfa',borderWidth:2,borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#7d87b8'}},x:{grid:{display:false},ticks:{color:'#7d87b8'}}}}});
-  const facCount={};(data||[]).forEach(r=>{if(r.faction)facCount[r.faction]=(facCount[r.faction]||0)+(+r.hours)});
-  const facColors={LSPD:'#60a5fa',SFPD:'#4ade80',RCSD:'#fbbf24',LVPD:'#f87171',FBI:'#a78bfa'};
-  if(charts.facs)charts.facs.destroy();
-  charts.facs=new Chart($('chartFactions'),{type:'doughnut',data:{labels:Object.keys(facCount),datasets:[{data:Object.values(facCount),backgroundColor:Object.keys(facCount).map(k=>facColors[k]||'#888'),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#b8c2f0',font:{size:12}}}}}});
-}
-
-async function loadLogs(){
-  const tb=$('logsTbody');
-  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const{data,error}=await sb.from('online_logs').select('*,profiles(discord_name)').order('created_at',{ascending:false}).limit(100);
-  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
-  if(!data?.length){tb.innerHTML='<tr><td colspan="7" class="empty">Пусто</td></tr>';return}
-  tb.innerHTML=data.map(r=>`<tr><td style="font-size:11px">${new Date(r.created_at).toLocaleString('ru-RU')}</td><td><b>${esc(r.player_nick)}</b></td><td>${(+r.hours).toFixed(1)}ч</td><td>${r.per_day_hours?(+r.per_day_hours).toFixed(1):'—'}</td><td>${r.active_days||'—'}</td><td style="font-size:11px">${r.period_start||'—'} — ${r.period_end||'—'}</td><td>${esc(r.profiles?.discord_name||'—')}</td></tr>`).join('');
-}
-
-const getAssign=my=>my>=6?[0,1,2,3,4,5]:my===5?[0,1,2,3,4]:my===4?[0,1,2,3]:my===3?[0,1,2]:my===2?[0,1]:[];
-const canManage=(my,t)=>my<2?false:my>=6?true:my===5?t<=4:my===4?t<=3:my===3?t<=2:my===2?t<=1:false;
-
-async function loadAdminTable(){
-  const tb=$('adminTbody'),my=currentProfile.role;
-  if(my<2){tb.innerHTML='<tr><td colspan="7" class="empty">Нет прав</td></tr>';return}
-  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const{data,error}=await sb.from('profiles').select('*').or('archived.is.null,archived.eq.false').order('role',{ascending:false}).order('game_nick',{ascending:true});
-  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
-  const w0=getWeekRange(0),w1=getWeekRange(1);
-  const{data:histLogs}=await sb.from('online_logs').select('player_nick,hours,period_start').in('period_start',[w0.start,w1.start]);
-  const histMap={};
-  (histLogs||[]).forEach(r=>{const k=r.player_nick.toLowerCase();if(!histMap[k])histMap[k]={};histMap[k][r.period_start]=+r.hours});
-  const isCandidate=p=>{
-    if(!p.game_nick)return false;
-    const h=histMap[p.game_nick.toLowerCase()];
-    if(!h)return false;
-    return h[w0.start]!==undefined&&h[w1.start]!==undefined&&h[w0.start]<settings.predThreshold&&h[w1.start]<settings.predThreshold;
-  };
-  const hints={2:'Можешь менять ники, фракции, роли 0-1, архивировать.',3:'Можешь менять ники, фракции, роли 0-2, архивировать.',4:'Можешь менять ники, фракции, роли 0-3.',5:'Можешь назначать ГС МЮ и ниже.',6:'Полный доступ. Можешь назначать всех, включая ГС МЮ и Owner.'};
-  $('adminHint').textContent=hints[Math.min(my,6)]||'';
-  const assign=getAssign(my);
-  const facs=['','LSPD','SFPD','RCSD','LVPD','FBI'];
-  tb.innerHTML=data.map(p=>{
-    const cm=canManage(my,p.role)&&p.id!==currentProfile.id;
-    const roleOpts=assign.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_NAMES[r]}</option>`).join('');
-    const facOpts=facs.map(f=>`<option value="${f}" ${(p.faction||'')===f?'selected':''}>${f||'—'}</option>`).join('');
-    const facDisplay=p.faction?`<span class="fac ${facClass(p.faction)}">${facIcon(p.faction)}${p.faction}</span>`:'—';
-    const isLeader=p.role===1;
-    const posField=isLeader&&cm?`<input type="date" class="admin-nick" data-pos="${p.id}" value="${p.position_start_date||''}">`:`<span style="color:var(--text-3);font-size:11px">—</span>`;
-    const candidate=isCandidate(p);
-    const candBadge=candidate?'<span class="badge candidate" data-tip="2 недели подряд ниже порога"><i class="fas fa-exclamation-triangle"></i> Кандидат в архив</span> ':'';
-    return`<tr class="${candidate?'candidate-archive':''}"><td>${candBadge}${esc(p.discord_name||p.discord_id||'—')}</td><td><input class="admin-nick" data-nick="${p.id}" value="${esc(p.game_nick||'')}" placeholder="ник"></td><td>${cm?`<select class="admin-select" data-fac="${p.id}">${facOpts}</select>`:facDisplay}</td><td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'Нет'}</td><td>${posField}</td><td style="text-align:center">${p.active?'✅':'❌'}</td><td><div class="admin-actions-cell">${cm?`<select class="admin-select" data-role="${p.id}">${roleOpts}</select><button class="admin-btn ${p.active?'danger':'success'}" data-tog="${p.id}" data-act="${p.active}">${p.active?'Откл.':'Вкл.'}</button><button class="admin-btn warn icon-only" onclick="archiveUser('${p.id}')" data-tip="Отправить в архив"><i class="fas fa-archive"></i></button>`:(p.id===currentProfile.id?'<span style="color:var(--text-3);font-size:11px">Это ты</span>':'—')}</div></td></tr>`;
-  }).join('');
-  tb.querySelectorAll('[data-role]').forEach(s=>s.onchange=async()=>{
-    const{error}=await sb.from('profiles').update({role:+s.value}).eq('id',s.dataset.role);
-    if(error)return toast('Ошибка',error.message,'err');
-    toast('Готово','Роль обновлена','ok');
-    window._lastRoleEdit=s.dataset.role;
-    loadAdminTable();
-  });
-  tb.querySelectorAll('[data-fac]').forEach(s=>s.onchange=async()=>{const{error}=await sb.from('profiles').update({faction:s.value||null}).eq('id',s.dataset.fac);if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Фракция обновлена','ok');loadAdminTable()}});
-  tb.querySelectorAll('[data-pos]').forEach(inp=>inp.onchange=async()=>{const{error}=await sb.from('profiles').update({position_start_date:inp.value||null}).eq('id',inp.dataset.pos);if(error)toast('Ошибка',error.message,'err');else toast('Готово','Дата обновлена','ok')});
-  tb.querySelectorAll('[data-tog]').forEach(b=>b.onclick=async()=>{const{error}=await sb.from('profiles').update({active:b.dataset.act!=='true'}).eq('id',b.dataset.tog);if(error)toast('Ошибка',error.message,'err');else{toast('Готово','Статус обновлён','ok');loadAdminTable()}});
-  tb.querySelectorAll('[data-nick]').forEach(inp=>{inp.onblur=async()=>{const nick=inp.value.trim();const{error}=await sb.from('profiles').update({game_nick:nick||null}).eq('id',inp.dataset.nick);if(error)toast('Ошибка',error.message,'err');else if(inp.dataset.nick===currentProfile.id){currentProfile.game_nick=nick;updateUserBadge();toast('Готово','Ник обновлён','ok')}};inp.onkeypress=e=>{if(e.key==='Enter')inp.blur()}});
-
-  const lastEdit=window._lastRoleEdit;
-  if(lastEdit){
-    const row=tb.querySelector(`[data-role="${lastEdit}"]`)?.closest('tr');
-    if(row){
-      row.style.transition='background .8s';
-      row.style.background='rgba(167,139,250,.18)';
-      row.scrollIntoView({behavior:'smooth',block:'center'});
-      setTimeout(()=>{row.style.background=''},1600);
-    }
-    window._lastRoleEdit=null;
-  }
-}
-
-/* === АРХИВ === */
-async function loadArchiveTable(){
-  const tb=$('archiveTbody');
-  if(currentProfile.role<2){tb.innerHTML='<tr><td colspan="7" class="empty">Нет прав</td></tr>';return}
-  tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i>Загрузка...</td></tr>';
-  const{data,error}=await sb.from('profiles').select('*').eq('archived',true).order('archived_at',{ascending:false});
-  if(error){tb.innerHTML=`<tr><td colspan="7" class="empty">${esc(error.message)}</td></tr>`;return}
-  if(!data?.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-archive"></i>Архив пуст</td></tr>';return}
-  const q=($('archiveSearch')?.value||'').toLowerCase().trim();
-  const filtered=data.filter(p=>!q||(p.game_nick||'').toLowerCase().includes(q)||(p.discord_name||'').toLowerCase().includes(q));
-  if(!filtered.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fas fa-search"></i>Ничего не найдено</td></tr>';return}
-  tb.innerHTML=filtered.map(p=>{
-    const avaHtml=p.avatar_url?`<img src="${esc(p.avatar_url)}">`:initials(p.game_nick||p.discord_name);
-    const facHtml=p.faction?`<span class="fac ${facClass(p.faction)}">${facIcon(p.faction)}${p.faction}</span>`:'—';
-    const date=p.archived_at?new Date(p.archived_at).toLocaleString('ru-RU'):'—';
-    return`<tr><td><div class="user-cell"><div class="u-ava">${avaHtml}</div><div><div class="u-nick">${esc(p.game_nick||p.discord_name||'—')}</div></div></div></td><td style="font-size:12px">${esc(p.discord_name||'—')}</td><td>${facHtml}</td><td style="color:${ROLE_COLORS[p.role]||'#8a94c9'};font-weight:700">${ROLE_NAMES[p.role]||'—'}</td><td style="font-size:11px">${date}</td><td style="font-size:12px">${esc(p.archived_by_name||'—')}</td><td style="text-align:center"><button class="admin-btn success" onclick="restoreFromArchive('${p.id}')"><i class="fas fa-undo"></i> Восстановить</button></td></tr>`;
-  }).join('');
-}
-
-window.archiveUser=async id=>{
-  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
-  const{data:p}=await sb.from('profiles').select('*').eq('id',id).single();
-  if(!p)return toast('Ошибка','Профиль не найден','err');
-  if(p.id===currentProfile.id)return toast('Нельзя','Себя нельзя архивировать','err');
-  if(!confirm(`Отправить ${p.game_nick||p.discord_name||'игрока'} в архив?`))return;
-  const{error}=await sb.from('profiles').update({
-    archived:true,
-    archived_at:new Date().toISOString(),
-    archived_by:currentProfile.id,
-    archived_by_name:currentProfile.game_nick||currentProfile.discord_name||'—',
-    active:false
-  }).eq('id',id);
-  if(error)return toast('Ошибка',error.message,'err');
-  toast('Готово',`${p.game_nick||p.discord_name} в архиве`,'ok');
-  await loadAdminTable();
-};
-
-window.restoreFromArchive=async id=>{
-  if(currentProfile.role<2)return toast('Нет прав','Только следящий+','err');
-  if(!confirm('Восстановить из архива?'))return;
-  const{error}=await sb.from('profiles').update({archived:false,archived_at:null,archived_by:null,archived_by_name:null,active:true}).eq('id',id);
-  if(error)return toast('Ошибка',error.message,'err');
-  toast('Готово','Сотрудник восстановлен','ok');
-  await loadArchiveTable();
-};
-
-/* Настройки */
-function applyThemeBySystem(){
-  const saved=localStorage.getItem('mj_theme')||'dark';
-  if(saved==='auto'){
-    const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.dataset.theme=isDark?'dark':'light';
-  } else {
-    document.documentElement.dataset.theme=saved;
-  }
-  const actual=document.documentElement.dataset.theme;
-  document.querySelectorAll('[data-theme-val]').forEach(b=>b.classList.toggle('active',b.dataset.themeVal===saved));
-  $('themeBtn').innerHTML=actual==='dark'?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
-}
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if((localStorage.getItem('mj_theme')||'dark')==='auto')applyThemeBySystem()});
-
-function loadPrefs(){
-  const a=localStorage.getItem('mj_accent')||'purple',c=localStorage.getItem('mj_compact')==='1',s=localStorage.getItem('mj_sound')!=='0',bg=localStorage.getItem('mj_bg')||'none';
-  applyThemeBySystem();
-  document.documentElement.dataset.accent=a;
-  document.documentElement.dataset.bg=bg;
-  document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('active',b.dataset.accent===a));
-  document.querySelectorAll('[data-bg-prev]').forEach(b=>b.classList.toggle('active',b.dataset.bgPrev===bg));
-  if(c){$('sidebar').classList.add('compact');$('compactSwitch')?.classList.add('on')}
-  if(s)$('soundSwitch')?.classList.add('on');else $('soundSwitch')?.classList.remove('on');
-}
-document.querySelectorAll('[data-theme-val]').forEach(b=>b.onclick=()=>{
-  localStorage.setItem('mj_theme',b.dataset.themeVal);
-  applyThemeBySystem();
-  if(parsedData.length){render();renderDash();renderTop3()}
-});
-document.querySelectorAll('[data-accent]').forEach(b=>b.onclick=()=>{
-  document.documentElement.dataset.accent=b.dataset.accent;
-  localStorage.setItem('mj_accent',b.dataset.accent);
-  document.querySelectorAll('[data-accent]').forEach(x=>x.classList.toggle('active',x===b));
-});
-document.querySelectorAll('[data-bg-prev]').forEach(b=>b.onclick=()=>{
-  document.documentElement.dataset.bg=b.dataset.bgPrev;
-  localStorage.setItem('mj_bg',b.dataset.bgPrev);
-  document.querySelectorAll('[data-bg-prev]').forEach(x=>x.classList.toggle('active',x===b));
-});
-$('themeBtn').onclick=()=>{
-  const cur=localStorage.getItem('mj_theme')||'dark';
-  const nxt=cur==='dark'?'light':'dark';
-  document.querySelector(`[data-theme-val="${nxt}"]`).click();
-};
-$('compactBtn').onclick=()=>{$('sidebar').classList.toggle('compact');localStorage.setItem('mj_compact',$('sidebar').classList.contains('compact')?'1':'0')};
-$('compactSwitch').onclick=function(){this.classList.toggle('on');$('compactBtn').click()};
-$('soundSwitch').onclick=function(){this.classList.toggle('on');const on=this.classList.contains('on');localStorage.setItem('mj_sound',on?'1':'0');if(on)playWelcomeSound()};
-$('menuBurger')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
-$('sidebarUser').onclick=e=>{if(!e.target.closest('button'))$('avatarFileInput').click()};
-
-function initGlobalTooltip(){
-  if($('globalTip'))return;
-  const tip=document.createElement('div');tip.id='globalTip';document.body.appendChild(tip);
-  let current=null;
-  const position=el=>{const r=el.getBoundingClientRect();tip.style.left=(r.left+r.width/2)+'px';tip.style.top=r.top+'px'};
-  document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]');if(t){current=t;tip.textContent=t.dataset.tip;tip.classList.add('show');position(t)}});
-  document.addEventListener('mouseout',e=>{const t=e.target.closest('[data-tip]');if(t&&t===current){tip.classList.remove('show');current=null}});
-  window.addEventListener('scroll',()=>{if(current)position(current)},true);
-}
-
-async function initFullApp(){
-  const r=getWeekRange(0);periodStart=r.start;periodEnd=r.end;
-  updatePeriodDisplay();renderWeekPicker();
-  startClock();
-  $('normInput').value=settings.norm;
-  $('predInput').value=settings.predThreshold;
-  $('penaltyInput').value=settings.inactivePenalty;
-  $('normInput').oninput=e=>{settings.norm=Math.max(1,+e.target.value||21);render();updateCalcPreview()};
-  $('predInput').oninput=e=>{settings.predThreshold=Math.max(0,+e.target.value||17);render();updateCalcPreview()};
-  $('penaltyInput').oninput=e=>{settings.inactivePenalty=Math.max(0,+e.target.value||0);render();updateCalcPreview()};
-  $('input').addEventListener('input',updateCalcPreview);
-  $('exampleBtn').onclick=()=>{$('input').value='Игрок: Nick_Reason\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)\n\nИгрок: Хуесос\nОнлайн: 49:39:14 (~16.6 ч/день, активных дней: 3)';updateCalcPreview()};
-  $('clearBtn').onclick=()=>{$('input').value='';updateCalcPreview()};
-  $('archiveSearch')?.addEventListener('input',()=>{loadArchiveTable()});
-  if(currentProfile.role>=1){await loadWeekLogs();await renderDash()}
-  else render();
-  $('periodBtn').onclick=()=>$('weekPicker').classList.toggle('open');
-  $('calcButton').onclick=calculate;
-  $('searchInput').oninput=e=>{currentSearch=e.target.value;render()};
-
-  document.querySelectorAll('[data-dash-filter]').forEach(c=>{
-    c.onclick=()=>{
-      const f=c.dataset.dashFilter;
-      currentStatusFilter=(f==='candidate')?'candidate':f;
-      switchTab('onlineTab',true);
-      setTimeout(()=>{
-        document.querySelectorAll('#statusChips [data-stat-filter]').forEach(x=>x.classList.toggle('active',x.dataset.statFilter===currentStatusFilter));
-        render();
-      },150);
-    };
-  });
-  document.querySelectorAll('#statusChips [data-stat-filter]').forEach(b=>{
-    b.onclick=()=>{
-      currentStatusFilter=b.dataset.statFilter;
-      document.querySelectorAll('#statusChips [data-stat-filter]').forEach(x=>x.classList.toggle('active',x===b));
-      render();
-    };
-  });
-
-  loadPrefs();
-  initGlobalTooltip();
-}
-(function(){const t=()=>{if(window.supabase)initAuth();else setTimeout(t,100)};t()})();
-</script>
-</body>
-</html>
+  if(currentSearch){const s=currentSearch.toLowerCase();list=list.filter(u=>u
